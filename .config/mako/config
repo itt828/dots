@@ -1,0 +1,30 @@
+
+max-history=5
+sort=-time
+on-button-middle=exec makoctl menu -n "$id" wofi -d -p 'Select action: '
+font=Noto Sans CJK JP 9
+layer=overlay
+width=300
+height=100
+margin=20
+padding=10,10,10,15
+border-size=2
+icon-path=/usr/share/icons/WhiteSur:/usr/share/icons/WhiteSur-dark
+background-color=#292433dd
+text-color=#d2ced9
+border-color=#d9989c
+border-radius=10
+default-timeout=10000
+
+[urgency=low]
+border-color=#d2ced9
+
+[urgency=normal]
+border-color=#abbf86
+
+[urgency=critical]
+border-color=#d9989c
+on-notify=exec mpv --keep-open=no /usr/share/sounds/freedesktop/stereo/message-new-instant.oga
+
+[mode=do-not-disturb]
+invisible=1
