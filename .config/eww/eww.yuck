@@ -1,36 +1,36 @@
 ; common
 (defwidget base [icon text]
-    (box  :class "base" :space-evenly false
-        (label  :class "base-icon"
-                :text icon)
-        (label  :class "base-text"
-                :text text)))
+  (box  :class "base" :space-evenly false
+    (label  :class "base-icon"
+    :text icon)
+    (label  :class "base-text"
+    :text text)))
 
 ; workspace
 ; clock
 (defpoll dt :interval "1s" "date '+%Y/%m/%d %H:%M:%S'")
 (defwidget clock []
-    (base :icon "" :text {dt}))
+  (base :icon "" :text {dt}))
 
 ;calendar
 (defpoll calendar_day :interval "10h" "date '+%d'")
 (defpoll calendar_month :interval "10h" "scripts/calendar")
 (defpoll calendar_year :interval "10h" "date '+%Y'")
 (defwidget cal []
-    (calendar :class "cal"
-              :day calendar_day
-              :month calendar_month
-              :year calendar_year))
+  (calendar :class "cal"
+    :day calendar_day
+    :month calendar_month
+  :year calendar_year))
 
 ; battery
 (defpoll _battery :interval "30s" "cat /sys/class/power_supply/BAT0/capacity")
 (defwidget battery []
-    (base :icon "" :text {_battery}))
+  (base :icon "" :text {_battery}))
 
 ; wifi
 (defpoll _wifi :interval "1s" "nmcli c | grep -e 'wlp' | awk '{print ($1)}'")
 (defwidget wifi []
-    (base :icon "" :text {_wifi}))
+  (base :icon "" :text {_wifi}))
 
 ; apps
 ; system trayが実装されたら
@@ -38,82 +38,119 @@
 ; now playing
 (defpoll _playing :interval "1s" "playerctl metadata --format '{{ title }}'")
 (defwidget now_playing []
-    (button _playing)
+  (button _playing)
 )
 ;cpu
 (defwidget cpu []
-    (base :icon ""
-           :text "${round(EWW_CPU.avg,0)}%"
-    )
+  (base :icon ""
+    :text "${round(EWW_CPU.avg,0)}%"
+  )
 )
 ;mem
 (defwidget mem []
-    (base :icon "󰍛"
-          :text "${round(EWW_RAM.used_mem_perc,0)}%"
-    )
+  (base :icon ""
+    :text "${round(EWW_RAM.used_mem_perc,0)}%"
+  )
 )
 ;storage
 (defwidget storage []
-    (base :icon ""
-          :text "${round(EWW_DISK['/'].used_perc, 0)}%"
-    )
+  (base :icon ""
+    :text "${round(EWW_DISK['/'].used_perc, 0)}%"
+  )
 )
 ;bluetooth
 ; notification
 (defpoll notify_icon :interval "1s" "python scripts/notify_icon.py")
 (defwidget notification []
-    (button :onclick "makoctl mode | grep 'do-not-disturb' && makoctl mode -r do-not-disturb || makoctl mode -a do-not-disturb;"
-        {notify_icon})
+  (button :onclick "makoctl mode | grep 'do-not-disturb' && makoctl mode -r do-not-disturb || makoctl mode -a do-not-disturb;"
+  {notify_icon})
 )
 ;light
 (defpoll _light :interval "0.3s" "light")
 (defwidget light []
-    (base :icon "l"
-          :text {_light}
-    )
+  (base :icon "󱩎"
+    :text {_light}
+  )
 )
 ;volume
 (defpoll _volume :interval "0.3s" "pactl get-sink-volume 0 | grep '^Volume:' | cut -d / -f 2 | tr -d ' '")
 (defwidget volume []
-    (base :icon "v"
-          :text {_volume}
-    )
-)
-; power
-(defwidget power []
-    (box
-        :space-evenly false
-        :spacing 8
-        (button :onclick "shutdown now" "  shutdown")
-        (button :onclick "reboot" "  reboot")
-        (button :onclick "playerctl pause; swaylock -f" " lock")
-    )
+  (base :icon "󰕾"
+    :text {_volume}
+  )
 )
 (defwidget bar []
-    (box :orientation "h"
-        :class "bar"
-        :space-evenly false
-        :spacing 8
-        ;(workspaces)
-        (clock)
-        (battery)
-        (wifi)
-        (cpu)
-        (mem)
-        (storage)
-        ;(now_playing)
-        (volume)
-        (light)
-        (notification)
-        (power)
-    )
+  (box :orientation "h"
+    :class "bar"
+    :space-evenly false
+    :spacing 16
+    ;(workspaces)
+    (clock)
+    (battery)
+    (wifi)
+    (cpu)
+    (mem)
+    (storage)
+    ;(now_playing)
+    (volume)
+    (light)
+    ;(notification)
+  )
 )
 (defwindow bar
   :monitor 0
   :geometry (geometry :x "0%"
-                      :y "0%"
-                      :width "100%"
-                      :anchor "top center")
+    :y "0%"
+    :width "100%"
+  :anchor "top center")
   :exclusive true
   (bar)
+)
+
+; power
+(defwidget my-button [fn icon color]
+  (box
+    :class "my-button"
+    :height 80
+    :width 80
+    (button :onclick {fn} {icon})))
+(defwidget power-popup []
+  (box
+    :class "power-popup"
+    :space-evenly false
+    :spacing 8
+    :orientation "v"
+    (box
+      :spacing 8
+      (my-button :fn "shutdown now" :icon "" :color "blue")
+      (my-button :fn "reboot" :icon "" :color "blue")
+      (my-button :fn "playerctl pause; swaylock -f" :icon "" :color "blue")
+      (my-button :fn "makoctl mode | grep 'do-not-disturb' && makoctl mode -r do-not-disturb || makoctl mode -a do-not-disturb;" :icon {notify_icon} :color "blue")
+    )
+    (box
+      :spacing 8
+      (my-button :fn "shutdown now" :icon "" :color "blue")
+      (my-button :fn "reboot" :icon "" :color "blue")
+      (my-button :fn "playerctl pause; swaylock -f" :icon "" :color "blue")
+      (my-button :fn "makoctl mode | grep 'do-not-disturb' && makoctl mode -r do-not-disturb || makoctl mode -a do-not-disturb;" :icon {notify_icon} :color "blue")
+    )
+    (box
+      :spacing 8
+      (my-button :fn "shutdown now" :icon "" :color "blue")
+      (my-button :fn "reboot" :icon "" :color "blue")
+      (my-button :fn "playerctl pause; swaylock -f" :icon "" :color "blue")
+      (my-button :fn "makoctl mode | grep 'do-not-disturb' && makoctl mode -r do-not-disturb || makoctl mode -a do-not-disturb;" :icon {notify_icon} :color "blue")
+    )
+  )
+  
+)
+
+(defwindow power
+  :monitor 0
+  :geometry (geometry :x "50%"
+    :y "50%"
+  :anchor "top left")
+  :exclusive false
+  (power-popup)
+  
 )

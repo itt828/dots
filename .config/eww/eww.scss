@@ -3,44 +3,39 @@ $col2: #01587a;
 $bg: #e1e8ec;
 
 * {
-  all: unset; //Unsets everything so you can style everything from scratch
-}
-
-.ws {
-  font-family: "JetBrains Mono";
+    all: unset; //Unsets everything so you can style everything from scratch
+    font-family: "M PLUS 1p";
+    //debug
+    //border: solid 1px white;
 }
 
 .base {
-    //background-color: ;
-    //border: 2px solid #000000;
-    //border-radius: 4px;
-    color: $col2;
-    //box-shadow:  2px 2px 2px darken($bg,50%);
-    padding: 2px 0;
-    border: 2px solid #0C0F59;
-    border-radius: 8px;
+    color: #FFFDD9;
+    font-size: 16px;
 
     .base-icon {
-        padding:  2px 16px ;
-        font-size: 16px;
-    }
-    .base-text {
-        margin: 0 4px;
-    }
-}
-
-button {
-    color: #49535B;
-    &:hover {
-        color: red;
+        padding: 4px 12px 4px 4px;
+        font-family: "UDEV Gothic 35NF";
     }
 }
 
 .bar {
-    margin: 8px;
+    margin: 8px 0 0 8px;
 }
 
-.cal {
-    color: black;
+.power-popup {
+    background-color: #2E496D;
+    padding: 8px;
+    border-radius: 20px;
 }
 
+.my-button {
+    border-radius: 20px;
+    background-color: #6498A6;
+    font-size: 24px;
+    font-family: "UDEV Gothic 35NF";
+
+    :hover {
+        background-color: #2E496D;
+    }
+}
