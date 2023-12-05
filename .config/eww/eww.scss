@@ -1,17 +1,25 @@
-$col1: #5cb3c1;
-$col2: #01587a;
-$bg: #e1e8ec;
+$red: #A66F7E;
+$blue: #3E688C;
+$cyan: #94E9F2;
+$green: #A2F2C5;
+$yellow: #F2F0D0;
+$shadow: #111111;
 
 * {
     all: unset; //Unsets everything so you can style everything from scratch
-    font-family: "M PLUS 1p";
-    //debug
-    //border: solid 1px white;
+    font-family: "Noto Sans CJK JP";
+    font-weight: 400;
 }
 
 .base {
     color: #FFFDD9;
-    font-size: 16px;
+    font-size: 1rem;
+    background-color: $blue;
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.75rem;
+    box-shadow: 0px 0px 2px $shadow;
+    margin: 0 0 4px 0;
+
 
     .base-icon {
         padding: 4px 12px 4px 4px;
@@ -19,7 +27,7 @@ $bg: #e1e8ec;
     }
 }
 
-.bar {
+.statusBar {
     margin: 8px 0 0 8px;
 }
 

@@ -6,26 +6,15 @@
     (label  :class "base-text"
     :text text)))
 
-; workspace
 ; clock
 (defpoll dt :interval "1s" "date '+%Y/%m/%d %H:%M:%S'")
 (defwidget clock []
   (base :icon "" :text {dt}))
 
-;calendar
-(defpoll calendar_day :interval "10h" "date '+%d'")
-(defpoll calendar_month :interval "10h" "scripts/calendar")
-(defpoll calendar_year :interval "10h" "date '+%Y'")
-(defwidget cal []
-  (calendar :class "cal"
-    :day calendar_day
-    :month calendar_month
-  :year calendar_year))
-
 ; battery
 (defpoll _battery :interval "30s" "cat /sys/class/power_supply/BAT0/capacity")
 (defwidget battery []
-  (base :icon "" :text {_battery}))
+  (base :icon "" :text "${_battery}%"))
 
 ; wifi
 (defpoll _wifi :interval "1s" "nmcli c | grep -e 'wlp' | awk '{print ($1)}'")
@@ -79,11 +68,11 @@
     :text {_volume}
   )
 )
-(defwidget bar []
+(defwidget statusBar []
   (box :orientation "h"
-    :class "bar"
+    :class "statusBar"
     :space-evenly false
-    :spacing 16
+    :spacing 8
     ;(workspaces)
     (clock)
     (battery)
@@ -104,7 +93,7 @@
     :width "100%"
   :anchor "top center")
   :exclusive true
-  (bar)
+  (statusBar)
 )
 
 ; power
@@ -142,7 +131,7 @@
       (my-button :fn "makoctl mode | grep 'do-not-disturb' && makoctl mode -r do-not-disturb || makoctl mode -a do-not-disturb;" :icon {notify_icon} :color "blue")
     )
   )
-  
+
 )
 
 (defwindow power
@@ -152,5 +141,5 @@
   :anchor "top left")
   :exclusive false
   (power-popup)
-  
+
 )
