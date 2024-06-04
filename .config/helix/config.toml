@@ -1,4 +1,9 @@
-theme = "onedark"
+# theme = "catppuccin_latte"
+theme = "base16_transparent"
+
+[editor]
+line-number = "relative"
+popup-border = "all"
 
 [editor.cursor-shape]
 insert = "bar"
@@ -7,3 +12,12 @@ select = "underline"
 
 [editor.file-picker]
 hidden = false
+
+[editor.lsp]
+display-inlay-hints = true
+
+[editor.soft-wrap]
+enable = true
+
+[editor.indent-guides]
+render = true

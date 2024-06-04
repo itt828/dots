@@ -1,2 +1,17 @@
+[language-server]
+satysfi-language-server = { command = "satysfi-language-server" }
+
 [[language]]
-name = "rust"
+name = "satysfi"
+scope = "source.satysfi"
+file-types = ["saty", "satyh", "satyg"]
+roots = []
+auto-format = false
+comment-tokens = ["%"]
+block-comment-tokens = []
+indent = { tab-width = 4, unit = "    " }
+language-servers = [ "satysfi-language-server" ]
+
+[[grammar]]
+name = "satysfi"
+source = { git = "https://github.com/monaqa/tree-sitter-satysfi.git", rev = "5519c547418ecb31ac7d63e64653aed726b5d1c3" }
