@@ -19,9 +19,9 @@
 }
 
 .workspace>label.occupied {
-  background-color: maroon;
+  background-color: lightpink;
 }
 
 .workspace>label.active {
-  background-color: lightpink;
+  background-color: maroon;
 }
