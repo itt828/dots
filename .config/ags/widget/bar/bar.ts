@@ -9,7 +9,7 @@ export const bar = () => Widget.Window({
   anchor: ['top', 'left', 'right'],
   exclusivity: 'exclusive',
   child: Widget.CenterBox({
-    startWidget: workspace(),
+    startWidget: workspace(5),
     centerWidget: clock(),
     endWidget: battery()
   }

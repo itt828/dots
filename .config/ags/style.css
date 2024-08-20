@@ -5,3 +5,11 @@
 .bar {
   background-color: black;
 }
+
+.occupied {
+  color: maroon;
+}
+
+.active {
+  color: lightpink;
+}
