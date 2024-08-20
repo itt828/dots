@@ -16,6 +16,8 @@ const wsLabel = (ws: number) => Widget.Label({
 })
 
 export const workspace = (maxWSNum: number) => Widget.Box({
-  spacing: 12,
-  children: (new Array(maxWSNum).fill(1).map((_, i) => wsLabel(i + 1)))
+  class_name: "workspace",
+  vpack: "center",
+  spacing: 8,
+  children: new Array(maxWSNum).fill(1).map((_, i) => wsLabel(i + 1))
 })

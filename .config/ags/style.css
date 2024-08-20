@@ -6,10 +6,22 @@
   background-color: black;
 }
 
-.occupied {
-  color: maroon;
+.workspace {
+  padding: 0 12px;
 }
 
-.active {
-  color: lightpink;
+.workspace>label {
+  font-size: 0;
+  background-color: white;
+  min-width: 12px;
+  min-height: 12px;
+  border-radius: 9999px;
+}
+
+.workspace>label.occupied {
+  background-color: maroon;
+}
+
+.workspace>label.active {
+  background-color: lightpink;
 }
