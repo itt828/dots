@@ -4,5 +4,5 @@ const currentTime = Variable(GLib.DateTime.new_now_local(), {
 })
 
 export const clock = () => Widget.Label({
-  label: currentTime.bind().as(v=> v.format("%m/%e %a %H:%M:%S")!)
+  label: currentTime.bind().as(v=> v.format("%m/%d %a %H:%M:%S")!)
 })

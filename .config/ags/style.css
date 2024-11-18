@@ -1,9 +1,14 @@
 * {
   font-family: "Noto Sans Mono CJK JP";
+  font-weight: 700;
+  /* color: #bbbbbb; */
+  color: #624b33;
 }
 
 .bar {
-  background-color: black;
+  background-color: #efd5bc;
+  /* background-color: #3E3232; */
+  border-radius: 4px;
 }
 
 .workspace {
@@ -12,16 +17,22 @@
 
 .workspace>label {
   font-size: 0;
-  background-color: white;
+  /* background-color: #cccccc; */
+  background-color: #aaaaaa;
   min-width: 12px;
   min-height: 12px;
   border-radius: 9999px;
 }
 
 .workspace>label.occupied {
-  background-color: lightpink;
+  background-color: #A87C7C;
 }
 
 .workspace>label.active {
-  background-color: maroon;
+  background-color: #7E6363;
+}
+
+.menu {
+  background-color: #3E3232;
+  padding: 99px;
 }
