@@ -1,9 +1,0 @@
-# import = [ "~/.config/alacritty/catppuccin-latte.toml" ]
-
-[font]
-size = 12
-normal = { family = "UDEV Gothic NFLG" }
-
-[window]
-opacity = 0.4
-padding = { x = 4, y = 4 }

@@ -1,6 +1,10 @@
 [language-server]
 satysfi-language-server = { command = "satysfi-language-server" }
 
+[[grammar]]
+name = "satysfi"
+source = { git = "https://github.com/monaqa/tree-sitter-satysfi.git", rev = "5519c547418ecb31ac7d63e64653aed726b5d1c3" }
+
 [[language]]
 name = "satysfi"
 scope = "source.satysfi"
@@ -12,6 +16,29 @@ block-comment-tokens = []
 indent = { tab-width = 4, unit = "    " }
 language-servers = [ "satysfi-language-server" ]
 
-[[grammar]]
-name = "satysfi"
-source = { git = "https://github.com/monaqa/tree-sitter-satysfi.git", rev = "5519c547418ecb31ac7d63e64653aed726b5d1c3" }
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
+[[language]]
+name = "python"
+language-servers = [ {name = "ruff", except-features = ["hover"] }, "pyright", "pylsp" ]
+auto-format = true
+
+[[language]]
+name = "vue"
+auto-format = true
+formatter = { command = "prettier", args = ["--parser", "vue"] }
+language-servers = ["typescript-language-server"]
+
+[[language-server.typescript-language-server.config.plugins]]
+name = "@vue/typescript-plugin"
+location = "/usr/lib/node_modules/@vue/language-server/"
+languages = ["vue"]
+
+[[language]]
+name = "scheme"
+formatter = { command = "raco", args = ["fmt", "-i"]}
+auto-format = true
+language-servers = [ "steel-language-server"]
+

@@ -1,9 +1,7 @@
-# theme = "catppuccin_latte"
-theme = "base16_transparent"
+theme = "rose_pine_dawn"
 
 [editor]
 line-number = "relative"
-popup-border = "all"
 
 [editor.cursor-shape]
 insert = "bar"
@@ -21,3 +19,6 @@ enable = true
 
 [editor.indent-guides]
 render = true
+
+[editor.inline-diagnostics]
+cursor-line="hint"
