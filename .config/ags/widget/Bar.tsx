@@ -1,7 +1,14 @@
 import { App, Astal, Gtk, Gdk } from "astal/gtk3"
-import { Variable } from "astal"
+import { Battery } from "../components/battery"
+import { Tray } from "../components/tray"
+import { Clock } from "../components/clock"
+import { Network } from "../components/network"
+import { Notification } from "../components/notification"
+import { Volume } from "../components/volume"
+import { Brightness } from "../components/brightness"
 
-const time = Variable("").poll(1000, "date")
+
+
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   return <window
@@ -12,19 +19,14 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       | Astal.WindowAnchor.LEFT
       | Astal.WindowAnchor.RIGHT}
     application={App}>
-    <label label={time()} />
+    <box spacing={8}>
+      <Clock />
+      <Tray />
+      <Battery />
+      <Network />
+      <Notification />
+      <Volume />
+      <Brightness />
+    </box>
   </window>
 }
-    // <centerbox>
-    //   <button
-    //     onClicked="echo hello"
-    //     halign={Gtk.Align.CENTER} >
-    //     Welcome to AGS!
-    //   </button>
-    //   <box />
-    //   <button
-    //     onClick={() => print("hello")}
-    //     halign={Gtk.Align.CENTER} >
-    //     <label label={time()} />
-    //   </button>
-    // </centerbox>

@@ -2,10 +2,38 @@
 $theme_fg_color: "@theme_fg_color";
 $theme_bg_color: "@theme_bg_color";
 
+* {
+  color: #000000;
+  font-family: "M PLUS 1";
+  font-weight: 500;
+}
+
 window.Bar {
-  background: transparent;
-  color: #{$theme_bg_color};
-  font-weight: bold;
+
+  /* background: transparent; */
+  /* color: #{$theme_bg_color}; */
+  &>box {
+    margin: 8px 8px 0px;
+
+
+    &>box {
+      background: #ffe5c7;
+      border-radius: 8px;
+      border: 1px solid #00000011;
+      /* box-shadow: 1px 1px 1px 0px #00000033; */
+
+      &.Battery,
+      &.Clock,
+      &.Network,
+      &.Notification,
+      &.Volume,
+      &.Brightness {
+        padding: 8px;
+      }
+
+    }
+
+  }
 
   >centerbox {
     background: #{$theme_bg_color};
