@@ -1,5 +1,57 @@
 [language-server]
 satysfi-language-server = { command = "satysfi-language-server" }
+moonbit-lsp = { command = "moonbit-lsp" }
+# texlab = { command = "texlab" }
+
+[language-server.copilot-language-server]
+command = "copilot-language-server"
+args = ["--stdio"]
+
+[language-server.gpt]
+command = "helix-gpt"
+args = ["--handler", "copilot"]
+
+[language-server.tailwindcss-ls]
+command = "tailwindcss-language-server"
+args = ["--stdio"]
+
+[language-server.unocss-language-server]
+command = "unocss-language-server"
+args = ["--stdio"]
+
+[[language-server.typescript-language-server.config.plugins]]
+name = "@vue/typescript-plugin"
+location = "/usr/lib/node_modules/@vue/language-server/"
+languages = ["vue"]
+
+[language-server.texlab.config.texlab.build]
+executable = "latexmk"
+args = ["%f"]
+onSave = true
+forwardSearchAfter = true
+pdfDirectory = "out"
+[language-server.texlab.config.texlab.forwardSearch]
+executable = "zathura"
+args = ["--synctex-forward", "%l:1:%f", "%p"]
+[language-server.texlab.config.texlab.chktex]
+onEdit = true
+
+[language-server.typescript-language-server]
+required-root-patterns = ["package.json"]
+
+[language-server.deno-lsp]
+command = "deno"
+args = ["lsp"]
+config = { deno = { enable = true}}
+required-root-patterns = []
+
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
+
+[language-server.vue-language-server]
+command = "vue-language-server"
+args = ["--stdio"]
 
 [[grammar]]
 name = "satysfi"
@@ -16,29 +68,80 @@ block-comment-tokens = []
 indent = { tab-width = 4, unit = "    " }
 language-servers = [ "satysfi-language-server" ]
 
-[language-server.ruff]
-command = "ruff"
-args = ["server"]
 
 [[language]]
 name = "python"
-language-servers = [ {name = "ruff", except-features = ["hover"] }, "pyright", "pylsp" ]
+language-servers = [ {name = "ruff", except-features = ["hover"] }, "pyright", "pylsp" , "copilot-language-server"]
 auto-format = true
 
 [[language]]
 name = "vue"
 auto-format = true
-formatter = { command = "prettier", args = ["--parser", "vue"] }
-language-servers = ["typescript-language-server"]
+formatter = { command = "prettier" }
+language-servers = ["typescript-language-server", "tailwindcss-ls",  "vue-language-server","unocss-language-server"]
 
-[[language-server.typescript-language-server.config.plugins]]
-name = "@vue/typescript-plugin"
-location = "/usr/lib/node_modules/@vue/language-server/"
-languages = ["vue"]
+
+[[language]]
+name = "html"
+auto-format = true
+language-servers = [ "vscode-html-language-server", "tailwindcss-ls", "unocss-language-server" ]
+
+[[language]]
+name = "css"
+auto-format = true
+language-servers = [ "vscode-css-language-server", "tailwindcss-ls", "unocss-language-server"]
+
+[[language]]
+name = "scss"
+auto-format = true
+language-servers = [ "vscode-css-language-server", "tailwindcss-ls" ]
+
+[[language]]
+name = "jsx"
+auto-format = true
+language-servers = [ "typescript-language-server", "tailwindcss-ls" ]
+
+[[language]]
+name = "tsx"
+auto-format = true
+language-servers = [ "typescript-language-server", "tailwindcss-ls" ]
+
+[[language]]
+name = "svelte"
+auto-format = true
+language-servers = [ "svelteserver", "tailwindcss-ls" ]
 
 [[language]]
 name = "scheme"
 formatter = { command = "raco", args = ["fmt", "-i"]}
 auto-format = true
 language-servers = [ "steel-language-server"]
+
+[[language]]
+name = "moonbit"
+scope = "source.moonbit"
+injection-regex = "moonbit"
+file-types = ["mbt"]
+comment-token = "//"
+block-comment-tokens = []
+indent = { tab-width = 2, unit = "  "}
+language-servers = ["moonbit-lsp"]
+
+[[grammar]]
+name = "moonbit"
+source = { git = "https://github.com/moonbitlang/tree-sitter-moonbit.git", rev = "5f88ac4708e41087015295d7eff66a740f056c28" }
+
+
+[[language]]
+name = "typst"
+auto-format = true
+[language-server.tinymist]
+config = {exportPdf = "onType", formatterMode="typstyle"}
+
+
+[[language]]
+name = "typescript"
+roots = ["deno.json", "package.json", "tsconfig.json"]
+language-servers = ["typescript-language-server", "deno-lsp" ]
+auto-format = true
 

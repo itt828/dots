@@ -22,3 +22,14 @@ render = true
 
 [editor.inline-diagnostics]
 cursor-line="hint"
+
+[editor.whitespace]
+render = "all"
+
+[editor.whitespace.characters]
+space = "·"
+nbsp = "⍽"
+nnbsp = "␣"
+tab = "→"
+newline = "⏎"
+tabpad = "·" # Tabs will look like "→···" (depending on tab width)
