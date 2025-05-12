@@ -1,28 +1,56 @@
-import { bind } from "astal"
-import { App, Astal, Gdk, Gtk } from "astal/gtk3"
+import { bind, timeout, Variable } from "astal"
+import { type Subscribable } from "astal/binding"
+import { App, Astal, Gdk, Gtk } from "astal/gtk4"
 import AstalNotifd from "gi://AstalNotifd"
+import Notification from "../components/Notification/notification_item"
 
-export const Notifications = (gdkmonitor: Gdk.Monitor) => {
-  const notifd = AstalNotifd.get_default()
-  const notifications = bind(notifd, "notifications")
+class NotificationMap implements Subscribable {
+    private map: Map<number, Gtk.Widget> = new Map()
+    private var: Variable<Array<Gtk.Widget>> = Variable([])
+    private notify() {
+        this.var.set([...this.map.values()].reverse())
+    }
+    constructor() {
+        const notifd = AstalNotifd.get_default()
+        notifd.connect("notified", (_, id) => {
+            this.set(id, Notification({
+                notification: notifd.get_notification(id)!,
+                onHoverLost: () => this.delete(id),
+                setup: () => timeout(5000, () => {
+                    // this.delete(id)
+                })
+            }))
+        })
 
-  return <window
-    className="Notifications"
-    gdkmonitor={gdkmonitor}
-    exclusivity={Astal.Exclusivity.IGNORE}
-    anchor={Astal.WindowAnchor.TOP
-      | Astal.WindowAnchor.RIGHT}
-    application={App}>
-    <box spacing={8} vertical>
-      {
-        notifications.as((notifs) => notifs.map(notif => {
-          return <box vertical>
-            <label label={notif.app_name} />
-            <label label={notif.summary} />
-            <label label={notif.body} />
-          </box>
-        }))
-      }
-    </box>
-  </window >
+        notifd.connect("resolved", (_, id) => {
+            this.delete(id)
+        })
+    }
+    private set(key: number, value: Gtk.Widget) {
+        this.map.get(key)?.destroy()
+        this.map.set(key, value)
+        this.notify()
+    }
+    get() {
+        return this.var.get()
+    }
+    subscribe(callback: (list: Array<Gtk.Widget>) => void): () => void {
+        return this.var.subscribe(callback)
+    }
+}
+
+export default function NotificationPopups(gdkmonitor: Gdk.Monitor) {
+    const { TOP, RIGHT } = Astal.WindowAnchor
+    const notifs = new NotificationMap()
+    return <window
+        className="NotificationPopups"
+        gdkmonitor={gdkmonitor}
+        exclusivity={Astal.Exclusivity.EXCLUSIVE}
+        anchor={TOP | RIGHT}
+
+    >
+        <box vertical noImplicitDestroy>
+            {bind(notifs)}
+        </box>
+    </window>
 }

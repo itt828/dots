@@ -1,48 +1,43 @@
-// https://gitlab.gnome.org/GNOME/gtk/-/blob/gtk-3-24/gtk/theme/Adwaita/_colors-public.scss
-$theme_fg_color: "@theme_fg_color";
-$theme_bg_color: "@theme_bg_color";
-
 * {
-  color: #000000;
-  font-family: "M PLUS 1";
-  font-weight: 500;
+    color: #555555;
+    font-family: "M PLUS 1";
+    font-weight: 500;
 }
 
-window.Bar {
-
-  /* background: transparent; */
-  /* color: #{$theme_bg_color}; */
-  &>box {
+.Bar>*>box {
+    background-color: #f9f2f2aa;
+    /* margin: 0px 8px; */
+    /* border-radius: 0px 0px 12px 12px; */
+    /* border-bottom: 1px solid black; */
+    /* border-left: 1px solid black; */
+    /* border-right: 1px solid black; */
+    border-radius: 12px 12px;
     margin: 8px 8px 0px;
+    border: 1px solid black;
+    min-height: 32px;
+    padding: 2px 16px;
 
 
-    &>box {
-      background: #ffe5c7;
-      border-radius: 8px;
-      border: 1px solid #00000011;
-      /* box-shadow: 1px 1px 1px 0px #00000033; */
+    &>.Battery,
+    &>.Clock,
+    &>.Network,
+    &>.Notification,
+    &>.Volume,
+    &>.Brightness,
+    &>.River {}
 
-      &.Battery,
-      &.Clock,
-      &.Network,
-      &.Notification,
-      &.Volume,
-      &.Brightness {
-        padding: 8px;
-      }
-
+    >centerbox {
+        border-radius: 10px;
+        margin: 8px;
     }
 
-  }
+    button {
+        border-radius: 8px;
+        margin: 2px;
+    }
+}
 
-  >centerbox {
-    background: #{$theme_bg_color};
-    border-radius: 10px;
-    margin: 8px;
-  }
-
-  button {
-    border-radius: 8px;
-    margin: 2px;
-  }
+.Focused>label {
+    color: green;
+    font-weight: 800;
 }

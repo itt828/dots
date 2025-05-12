@@ -1,32 +1,41 @@
-import { App, Astal, Gtk, Gdk } from "astal/gtk3"
-import { Battery } from "../components/battery"
+import { App, Astal, Gdk } from "astal/gtk4"
+import { Clock } from "../components/Clock"
+import { Battery } from "../components/Battery"
+import { Network } from "../components/Network"
+import { Audio } from "../components/Audio"
 import { Tray } from "../components/tray"
-import { Clock } from "../components/clock"
-import { Network } from "../components/network"
-import { Notification } from "../components/notification"
-import { Volume } from "../components/volume"
 import { Brightness } from "../components/brightness"
+// import { Notification } from "../components/Notification/notification_counter"
+// import { Workspaces } from "../components/river/workspaces"
+import { Monitor } from "../components/monitor"
+import { Output } from "../components/river/Output"
 
-
-
-
-export default function Bar(gdkmonitor: Gdk.Monitor) {
-  return <window
-    className="Bar"
-    gdkmonitor={gdkmonitor}
-    exclusivity={Astal.Exclusivity.EXCLUSIVE}
-    anchor={Astal.WindowAnchor.TOP
-      | Astal.WindowAnchor.LEFT
-      | Astal.WindowAnchor.RIGHT}
-    application={App}>
-    <box spacing={8}>
-      <Clock />
-      <Tray />
-      <Battery />
-      <Network />
-      <Notification />
-      <Volume />
-      <Brightness />
-    </box>
-  </window>
+export default function Bar(gdkmonitor: Gdk.Monitor, isPrimary: boolean) {
+    const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
+    return <window
+        visible
+        cssClasses={["Bar"]}
+        application={App}
+        gdkmonitor={gdkmonitor}
+        anchor={TOP | LEFT | RIGHT}
+        exclusivity={Astal.Exclusivity.EXCLUSIVE}>
+        <centerbox>
+            <box spacing={32}>
+                <Clock />
+                <Battery />
+                <Network />
+                <Audio />
+                <Brightness />
+                <Monitor gdkmonitor={gdkmonitor} />
+            </box>
+            {isPrimary ?
+                <box>
+                    <Output connector={gdkmonitor.connector} />
+                </box> : <label />}
+            {isPrimary ?
+                <box>
+                    <Tray />
+                </box> : <label />}
+        </centerbox>
+    </window >
 }
