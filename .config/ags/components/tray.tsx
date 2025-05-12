@@ -1,16 +1,17 @@
-import { bind } from "astal"
+import { bind, GObject } from "astal"
+import { Gtk } from "astal/gtk4"
 import AstalTray from "gi://AstalTray"
 
 export const Tray = () => {
     const tray = AstalTray.get_default()
-    return <box cssName="Tray">
+    return <box cssClasses={[]}>
         {bind(tray, "items").as(items => items.map(item => (
             <menubutton
-                tooltipMarkup={bind(item, "tooltipMarkup")}
-                usePopover={false}
-                actionGroup={bind(item, "action-group").as(ag => ["dbusmenu", ag])}
-                menuModel={bind(item, "menu-model")}>
+                setup={(self) => { self.insert_action_group("dbusmenu", item.actionGroup) }}
+                tooltipText={bind(item, "tooltipMarkup")}
+            >
                 <image gicon={bind(item, "gicon")} />
+                {Gtk.PopoverMenu.new_from_model(item.menuModel)}
             </menubutton>
         )))}
     </box>
