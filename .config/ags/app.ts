@@ -3,8 +3,8 @@ import Bar from "./widget/Bar"
 import AstalRiver from "gi://AstalRiver"
 import { exec } from "astal/process";
 
-exec("bunx unocss **/*.tsx -o .uno.css")
-const style = exec("cat .uno.css")
+exec("bunx unocss **/*.tsx -o /tmp/ags-uno.css")
+const style = exec("cat /tmp/ags-uno.css")
 
 App.start({
     css: style,
