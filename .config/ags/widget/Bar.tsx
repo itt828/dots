@@ -15,7 +15,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor, isPrimary: boolean) {
 	return (
 		<window
 			visible
-			cssClasses={['Bar']}
+			cssClasses={['mt-2', 'mx-2']}
 			application={App}
 			gdkmonitor={gdkmonitor}
 			anchor={TOP | LEFT | RIGHT}

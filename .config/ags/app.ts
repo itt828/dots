@@ -5,7 +5,6 @@ import Bar from './widget/Bar';
 
 exec('bunx unocss **/*.tsx -o /tmp/ags-uno.css');
 const style = exec('cat /tmp/ags-uno.css');
-console.log(style);
 
 App.start({
 	css: style,

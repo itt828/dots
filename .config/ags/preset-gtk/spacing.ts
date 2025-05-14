@@ -18,8 +18,8 @@ const directionSuffixes: Record<string, string[]> = {
 
 const handleSpacing: DynamicMatcher<Theme> = ([, p, d, v], { theme }) => {
 	const suffixes = directionSuffixes[d];
-	const size = /^\d+$/.test(d)
-		? `${Number(d) * 4}px`
+	const size = /^\d+$/.test(v)
+		? `${Number(v) * 4}px`
 		: resolveSize(v, theme, 'spacing');
 	if (!size) return;
 

@@ -2,9 +2,9 @@ export const resolveColor = (value: string, theme: { [key: string]: any }) => {
 	if (value.startsWith('[') && value.endsWith(']')) {
 		const s = value.substring(1, value.length - 1).replaceAll('_', ' ');
 		if (
-			/^(#[\da-fA-F]{3-8}|)$/.test(s) ||
+			/^(#[\da-fA-F]{3,8})$/.test(s) ||
 			/^(rgba?|hsl|hwb|oklab|oklch|color|color-mix)\(.*\)$/.test(s) ||
-			/^[a-zA-Z]$/.test(s)
+			/^[a-zA-Z]+$/.test(s)
 		) {
 			return s;
 		}
@@ -23,6 +23,10 @@ export const resolveColor = (value: string, theme: { [key: string]: any }) => {
 			return current;
 		}
 	}
+	if (/^[a-zA-Z]+$/.test(value)) {
+		return value;
+	}
+
 	return undefined;
 };
 
@@ -34,7 +38,7 @@ export const resolveSize = (
 	if (value.startsWith('[') && value.endsWith(']')) {
 		const s = value.substring(1, value.length - 1).replaceAll('_', ' ');
 		if (
-			/^[\d.-](px|pt|em|ex|rem|pc|in|cm|mm|%)?$/.test(s) ||
+			/^[\d.-]+(px|pt|em|ex|rem|pc|in|cm|mm|%)?$/.test(s) ||
 			s.startsWith('calc(')
 		) {
 			return s;
