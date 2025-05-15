@@ -6,6 +6,7 @@
 		"lint": "biome check . --write"
 	},
 	"dependencies": {
+		"@itt/unocss-preset-gtk": "npm:@jsr/itt__unocss-preset-gtk@^0.0.1",
 		"astal": "/usr/share/astal/gjs"
 	},
 	"devDependencies": {

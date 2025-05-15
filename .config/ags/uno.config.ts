@@ -1,5 +1,5 @@
 import { defineConfig } from 'unocss';
-import { presetGtk } from './preset-gtk';
+import { presetGtk } from '@itt/unocss-preset-gtk';
 
 export default defineConfig({
 	presets: [presetGtk()],
