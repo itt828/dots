@@ -18,5 +18,6 @@ fish_add_path $HOME/.dotnet/tools
 fish_add_path $HOME/.moon/bin
 fish_add_path $HOME/.bun/bin
 fish_add_path $PNPM_HOME
+fish_add_path $HOME/.npm-global/bin
 
 starship init fish | source
