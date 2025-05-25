@@ -21,7 +21,13 @@ input {
 
 output "eDP-1" {
     scale 1
-    transform "normal"
+    position x=1920 y=0
+    // background-color "#a99"
+}
+output "DP-2" {
+    scale 1
+    position x=0 y=0
+    // background-color "#a99"
 }
 
 layout {
@@ -86,6 +92,7 @@ binds {
     Mod+Alt+L { spawn "swaylock"; }
     Mod+N { spawn "swaync-client" "-t";}
     Mod+M { spawn "niri-mirror"; }
+    Mod+Shift+B { spawn "sh" "-c"  "ags quit;  ags run --gtk4"; }
     XF86AudioMute        allow-when-locked=true { spawn "pactl" "set-sink-mute" "@DEFAULT_SINK@" "toggle"; }
     XF86AudioRaiseVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "+5%"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "-5%"; }

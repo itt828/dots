@@ -28,6 +28,7 @@ dots = [
             "fuzzel",
             "helix",
             "niri",
+            "swaync",
             "starship.toml",
         ],
     },
