@@ -14,6 +14,7 @@ dots = [
         "paths": [
             ".zshenv",
             ".zshrc",
+            ".bin",
         ],
     },
     {
@@ -42,6 +43,7 @@ def main() -> None:
             else:
                 from_path: Path = (dot["dir"] / path).absolute()
                 p.absolute().symlink_to(from_path)
+                print(f"{p} created.")
 
 
 if __name__ == "__main__":
