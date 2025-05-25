@@ -1,0 +1,8 @@
+#!/bin/sh
+
+outputs=$(niri msg --json outputs | jq -r "keys[]" )
+outputs=$(IFS="aa\n";echo "${outputs[*]}")
+from=$( echo "$outputs" | fuzzel -d --placeholder="from") || exit 0
+to=$(echo  "$outputs" | fuzzel -d --placeholder="to") || exit 0
+
+wl-mirror --fullscreen-output $to -F $from

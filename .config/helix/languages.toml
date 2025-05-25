@@ -41,6 +41,10 @@ required-root-patterns = ["deno.json"]
 command = "ruff"
 args = ["server"]
 
+[language-server.ty]
+command = "ty"
+args = ["server"]
+
 [language-server.vue-language-server]
 command = "vue-language-server"
 args = ["--stdio"]
@@ -63,13 +67,13 @@ language-servers = [ "satysfi-language-server" ]
 
 [[language]]
 name = "python"
-language-servers = [ {name = "ruff", except-features = ["hover"] }, "pyright", "pylsp" ]
+language-servers = [ "ruff", "ty", "pyright", "pylsp" ]
 auto-format = true
 
 [[language]]
 name = "vue"
 auto-format = true
-formatter = { command = "prettier" }
+formatter = { command = "prettier", args=["--parser", "vue"] }
 language-servers = ["typescript-language-server", "tailwindcss-ls",  "vue-language-server","unocss-language-server"]
 
 

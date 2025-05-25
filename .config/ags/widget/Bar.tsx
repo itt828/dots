@@ -4,11 +4,10 @@ import { Battery } from '../components/Battery';
 import { Clock } from '../components/Clock';
 import { Network } from '../components/Network';
 import { Brightness } from '../components/brightness';
-// import { Notification } from "../components/Notification/notification_counter"
-// import { Workspaces } from "../components/river/workspaces"
-import { Monitor } from '../components/monitor';
-import { Output } from '../components/river/Output';
+// import { Monitor } from '../components/monitor';
+// import { Output } from '../components/river/Output';
 import { Tray } from '../components/tray';
+import { bind } from 'astal';
 
 export default function Bar(gdkmonitor: Gdk.Monitor, isPrimary: boolean) {
 	const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
@@ -28,11 +27,12 @@ export default function Bar(gdkmonitor: Gdk.Monitor, isPrimary: boolean) {
 					<Network />
 					<Audio />
 					<Brightness />
-					<Monitor gdkmonitor={gdkmonitor} />
+					{/* <Monitor gdkmonitor={gdkmonitor} /> */}
 				</box>
 				{isPrimary ? (
 					<box>
-						<Output connector={gdkmonitor.connector} />
+						{/* <Output connector={gdkmonitor.connector} /> */}
+						<label label={bind(App, 'monitors').as((v) => String(v.length))} />
 					</box>
 				) : (
 					<label />
