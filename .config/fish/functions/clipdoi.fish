@@ -3,5 +3,7 @@ function clipdoi
     if not string match -q "https://doi.org/*" $doi
         set doi https://doi.org/$doi
     end
-    curl -sLH "Accept: text/bibliography; style=bibtex" $doi | wl-copy
+    set bib (curl -sLH "Accept: text/bibliography; style=bibtex" $doi)
+    echo $bib
+    echo $bib | wl-copy
 end
