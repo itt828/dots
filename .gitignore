@@ -1,1 +1,3 @@
 fish_variables
+.config/steel-lsp/*
+!.config/steel-lsp/globals.scm

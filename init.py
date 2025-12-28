@@ -30,6 +30,7 @@ dots = [
             "niri",
             "swaync",
             "starship.toml",
+            "steel-lsp",
         ],
     },
 ]
