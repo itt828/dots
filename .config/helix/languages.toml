@@ -1,19 +1,46 @@
-[language-server]
-satysfi-language-server = { command = "satysfi-language-server" }
-moonbit-lsp = { command = "moonbit-lsp" }
-# texlab = { command = "texlab" }
+[language-server.satysfi-language-server]
+command = "satysfi-language-server"
+
+[language-server.moonbit-lsp]
+command = "moonbit-lsp"
+
+[language-server.steel-language-server]
+command = "steel-language-server"
 
 [language-server.tailwindcss-ls]
 command = "tailwindcss-language-server"
 args = ["--stdio"]
 
+
 [language-server.unocss-language-server]
 command = "unocss-language-server"
 args = ["--stdio"]
 
-[[language-server.typescript-language-server.config.plugins]]
+[language-server.biome]
+command = "biome"
+args = ["lsp-proxy"]
+
+[language-server.typescript-language-server]
+command = "typescript-language-server"
+args = ["--stdio"]
+config.hostInfo = "helix"
+required-root-patterns = ["package.json"]
+# [[language-server.typescript-language-server.config.plugins]]
+# name = "@vue/typescript-plugin"
+# location = "/home/itt/.local/share/mise/installs/npm-vue-language-server/3.1.8/bin/vue-language-server"
+# languages = ["vue"]
+
+[language-server.vtsls]
+command = "vtsls"
+args = ["--stdio"]
+required-root-patterns = ["package.json"]
+
+[language-server.vtsls.config]
+hostInfo = "helix"
+
+[[language-server.vtsls.config.vtsls.tsserver.globalPlugins]]
 name = "@vue/typescript-plugin"
-location = "/usr/lib/node_modules/@vue/language-server/"
+location = "/home/itt/.local/share/mise/installs/npm-vue-language-server/latest/lib/node_modules/@vue/language-server"
 languages = ["vue"]
 
 [language-server.texlab.config.texlab.build]
@@ -22,20 +49,21 @@ args = ["%f"]
 onSave = true
 forwardSearchAfter = true
 pdfDirectory = "out"
+
 [language-server.texlab.config.texlab.forwardSearch]
 executable = "zathura"
 args = ["--synctex-forward", "%l:1:%f", "%p"]
+
 [language-server.texlab.config.texlab.chktex]
 onEdit = true
-
-[language-server.typescript-language-server]
-required-root-patterns = ["package.json"]
 
 [language-server.deno-lsp]
 command = "deno"
 args = ["lsp"]
-config = { deno = { enable = true}}
 required-root-patterns = ["deno.json"]
+
+[language-server.deno-lsp.config.deno]
+enable = true
 
 [language-server.ruff]
 command = "ruff"
@@ -48,10 +76,28 @@ args = ["server"]
 [language-server.vue-language-server]
 command = "vue-language-server"
 args = ["--stdio"]
+config = { typescript = { tsdk = "node_modules/typescript/lib" } }
+
+[language-server.tinymist]
+command = "tinymist"
+
+[language-server.tinymist.config]
+exportPdf = "onType"
+rootFile = "main.typ"
 
 [[grammar]]
 name = "satysfi"
-source = { git = "https://github.com/monaqa/tree-sitter-satysfi.git", rev = "5519c547418ecb31ac7d63e64653aed726b5d1c3" }
+
+[grammar.source]
+git = "https://github.com/monaqa/tree-sitter-satysfi.git"
+rev = "5519c547418ecb31ac7d63e64653aed726b5d1c3"
+
+[[grammar]]
+name = "moonbit"
+
+[grammar.source]
+git = "https://github.com/moonbitlang/tree-sitter-moonbit.git"
+rev = "5f88ac4708e41087015295d7eff66a740f056c28"
 
 [[language]]
 name = "satysfi"
@@ -61,65 +107,95 @@ roots = []
 auto-format = false
 comment-tokens = ["%"]
 block-comment-tokens = []
-indent = { tab-width = 4, unit = "    " }
-language-servers = [ "satysfi-language-server" ]
+language-servers = ["satysfi-language-server"]
 
+[language.indent]
+tab-width = 4
+unit = "    "
 
 [[language]]
 name = "python"
-language-servers = [ "ruff", "ty", "pyright", "pylsp" ]
+language-servers = ["ruff", "ty", "pyright", "pylsp"]
 auto-format = true
 
 [[language]]
 name = "vue"
-auto-format = true
-formatter = { command = "prettier", args=["--parser", "vue"] }
-language-servers = ["typescript-language-server", "tailwindcss-ls",  "vue-language-server","unocss-language-server"]
+language-servers = [
+  "vtsls",
+  # "vue-language-server",
+  # "vscode-html-language-server",
+  # "vscode-css-language-server",
+  "unocss-language-server",
+  # "tailwindcss-ls",
+  # "biome"
+]
 
+[language.formatter]
+command = "prettier"
+args = ["--parser", "vue"]
 
 [[language]]
 name = "html"
 auto-format = true
-language-servers = [ "vscode-html-language-server", "tailwindcss-ls", "unocss-language-server" ]
+language-servers = [
+  "vscode-html-language-server",
+  "tailwindcss-ls",
+  "unocss-language-server",
+  "biome",
+]
 
 [[language]]
 name = "css"
 auto-format = true
-language-servers = [ "vscode-css-language-server", "tailwindcss-ls", "unocss-language-server"]
+language-servers = [
+  "vscode-css-language-server",
+  "tailwindcss-ls",
+  "unocss-language-server",
+  # "biome"
+]
 
 [[language]]
 name = "scss"
 auto-format = true
-language-servers = [ "vscode-css-language-server", "tailwindcss-ls" ]
+language-servers = ["vscode-css-language-server", "tailwindcss-ls", "biome"]
 
 [[language]]
 name = "jsx"
 auto-format = true
-language-servers = [ "typescript-language-server", "tailwindcss-ls" ]
+language-servers = ["typescript-language-server", "tailwindcss-ls"]
 
 [[language]]
 name = "tsx"
 auto-format = true
-formatter = { command = "biome", args = ["format", "--stdin-file-path", "test.tsx"] }
-language-servers = [ "typescript-language-server", "tailwindcss-ls" ]
+language-servers = ["typescript-language-server", "tailwindcss-ls"]
+
+[language.formatter]
+command = "biome"
+args = ["format", "--stdin-file-path", "test.tsx"]
 
 [[language]]
 name = "typescript"
 roots = ["deno.json", "package.json", "tsconfig.json"]
-language-servers = ["typescript-language-server", "deno-lsp" ]
+language-servers = [
+  "typescript-language-server",
+  "deno-lsp",
+  # "biome"
+]
 auto-format = true
-formatter = { command = "biome", args = ["format", "--stdin-file-path=test.ts"] }
+
+[language.formatter]
+command = "biome"
+args = ["format", "--stdin-file-path=test.ts"]
 
 [[language]]
 name = "svelte"
 auto-format = true
-language-servers = [ "svelteserver", "tailwindcss-ls" ]
+language-servers = ["svelteserver", "tailwindcss-ls"]
 
 [[language]]
 name = "scheme"
-formatter = { command = "raco", args = ["fmt", "-i"]}
 auto-format = true
-language-servers = [ "steel-language-server"]
+language-servers = ["steel-language-server"]
 
 [[language]]
 name = "moonbit"
@@ -128,17 +204,16 @@ injection-regex = "moonbit"
 file-types = ["mbt"]
 comment-token = "//"
 block-comment-tokens = []
-indent = { tab-width = 2, unit = "  "}
 language-servers = ["moonbit-lsp"]
 
-[[grammar]]
-name = "moonbit"
-source = { git = "https://github.com/moonbitlang/tree-sitter-moonbit.git", rev = "5f88ac4708e41087015295d7eff66a740f056c28" }
-
+[language.indent]
+tab-width = 2
+unit = "  "
 
 [[language]]
 name = "typst"
 auto-format = true
-[language-server.tinymist]
-config = {exportPdf = "onType", formatterMode="typstyle"}
 
+[language.indent]
+tab-width = 2
+unit = "  "

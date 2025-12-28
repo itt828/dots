@@ -21,7 +21,7 @@ enable = true
 render = true
 
 [editor.inline-diagnostics]
-cursor-line="hint"
+cursor-line = "hint"
 
 [editor.whitespace]
 render = "all"
@@ -32,4 +32,7 @@ nbsp = "⍽"
 nnbsp = "␣"
 tab = "→"
 newline = "⏎"
-tabpad = "·" # Tabs will look like "→···" (depending on tab width)
+tabpad = "·"  # Tabs will look like "→···" (depending on tab width)
+
+[keys.normal]
+"C-p" = ':lsp-workspace-command tinymist.pinMain "%sh{realpath %{buffer_name}}"'
