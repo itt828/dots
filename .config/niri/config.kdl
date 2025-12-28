@@ -15,57 +15,78 @@ input {
     trackpoint {
     }
     tablet {
+        map-to-output "eDP-1"
+        // map-to-output "DP-2"
     }
     warp-mouse-to-focus
+}
+
+gestures {
+    hot-corners {
+        off
+    }
 }
 
 output "eDP-1" {
     scale 1
     position x=1920 y=0
-    // background-color "#a99"
+
 }
 output "DP-2" {
     scale 1
     position x=0 y=0
-    // background-color "#a99"
+    mode "1920x1080"
 }
 
 layout {
-    gaps 16
+    gaps 8
     center-focused-column "never"
+    background-color "#f9f5e9"
     preset-column-widths {
-        proportion 0.33333
+        proportion 0.3
         proportion 0.5
-        proportion 0.66667
+        proportion 0.66
     }
     default-column-width { proportion 0.5; }
     focus-ring {
-        width 2
+        off
+        width 1
         active-color "#fcc"
-        // active-color "#7fc8ff"
-        inactive-color "#505050"
+        // inactive-color "#a00"
     }
     border {
-        off
-        width 4
-        active-color "#ffc87f"
-        inactive-color "#505050"
+        width 2
+        active-color "#ecc"
+        inactive-color "#fed"
     }
-    shadow {
-        softness 30
-        spread 5
+     shadow {
+        on
+        softness 15
+        spread 2
         offset x=0 y=5
-        color "#0007"
+        draw-behind-window true
+        color "#00000070"
+        inactive-color "#00000054"
     }
     struts {
+        left 0
+        right 0
+        top 0
+        bottom 0
     }
 }
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 animations {
 }
 window-rule {
+    geometry-corner-radius 8
+    clip-to-geometry true
+}
+window-rule {
     match app-id=r#"^org\.wezfurlong\.wezterm$"#
-    default-column-width {}
+    default-column-width {
+        proportion 0.5
+    }
 }
 window-rule {
     match app-id=r#"firefox$"# title="^ピクチャーインピクチャー$"
@@ -76,12 +97,17 @@ window-rule {
     open-floating true
 }
 
-spawn-at-startup "ags" "run" "--gtk4" "--log-file" "/home/itt/.logs/ags.log"
+spawn-at-startup "ags" "run" "--gtk" "4" "--log-file" "/home/itt/.logs/ags.log"
+// spawn-at-startup "qs" "-c" "noctalia-shell"
 spawn-at-startup "xwayland-satellite"
 
 environment {
     DISPLAY ":0"
     ELECTRON_OZONE_PLATFORM_HINT "auto"
+}
+
+debug {
+    honor-xdg-activation-with-invalid-serial
 }
 
 
@@ -92,15 +118,19 @@ binds {
     Mod+Alt+L { spawn "swaylock"; }
     Mod+N { spawn "swaync-client" "-t";}
     Mod+M { spawn "niri-mirror"; }
-    Mod+Shift+B { spawn "sh" "-c"  "ags quit;  ags run --gtk4"; }
+    Mod+T { spawn "niri-tablet"; }
+    // Mod+Shift+B { spawn "qs" "-c"  "noctalia-shell"; }
+    Mod+Shift+B { spawn "sh" "-c" "astal -q; ags run --gtk 4"; }
     XF86AudioMute        allow-when-locked=true { spawn "pactl" "set-sink-mute" "@DEFAULT_SINK@" "toggle"; }
     XF86AudioRaiseVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "+5%"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "-5%"; }
+    // XF86AudioPlay allow-when-locked=true { spawn "p"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "pactl" "set-source-mute" "@DEFAULT_SOURCE@" "toggle"; }
     XF86MonBrightnessDown allow-when-locked=true {spawn "brightnessctl" "set" "5%-"; }
     Super+XF86MonBrightnessDown allow-when-locked=true {spawn "brightnessctl" "set" "1"; }
     XF86MonBrightnessUp allow-when-locked=true {spawn "brightnessctl" "set" "+5%"; }
     Mod+Q { close-window; }
+    Mod+O repeat=false {toggle-overview;}
 
     Mod+Left  { focus-column-left; }
     Mod+Down  { focus-window-down; }
