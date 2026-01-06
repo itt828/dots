@@ -11,7 +11,7 @@ export default defineConfig({
 		{
 			getCSS: () => `
             * {
-                color: #555555;
+                color: #434343;
                 font-family: "M PLUS 1";
                 font-weight: 500;
             }

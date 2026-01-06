@@ -14,7 +14,14 @@ export default function Bar(gdkmonitor: Gdk.Monitor, isPrimary: boolean) {
 	return (
 		<window
 			visible
-			cssClasses={['mt-2', 'mx-2']}
+			cssClasses={[
+				'mt-0',
+				'mx-2',
+				'px-3',
+				'py-0',
+				'rounded-b-6',
+				'bg-[#bcdbcd]',
+			]}
 			application={App}
 			gdkmonitor={gdkmonitor}
 			anchor={TOP | LEFT | RIGHT}
@@ -30,9 +37,13 @@ export default function Bar(gdkmonitor: Gdk.Monitor, isPrimary: boolean) {
 					{/* <Monitor gdkmonitor={gdkmonitor} /> */}
 				</box>
 				{isPrimary ? (
+					// <box>{/* <Output connector={gdkmonitor.connector} /> */}</box>
 					<box>
-						{/* <Output connector={gdkmonitor.connector} /> */}
-						<label label={bind(App, 'monitors').as((v) => String(v.length))} />
+					{/*
+    					<button onClicked={()=>App.toggle_window("Dock")}>
+                            <label label="ああ"/>
+    				    </button>
+				    */}
 					</box>
 				) : (
 					<label />
