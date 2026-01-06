@@ -28,6 +28,7 @@ dots = [
             "fuzzel",
             "helix",
             "niri",
+            "quickshell",
             "swaync",
             "starship.toml",
             "steel-lsp",

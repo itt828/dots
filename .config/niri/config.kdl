@@ -39,7 +39,7 @@ output "DP-2" {
 }
 
 layout {
-    gaps 8
+    gaps 16
     center-focused-column "never"
     background-color "#f9f5e9"
     preset-column-widths {
@@ -71,7 +71,8 @@ layout {
     struts {
         left 0
         right 0
-        top 0
+        // top 0
+        top -16
         bottom 0
     }
 }
@@ -97,9 +98,11 @@ window-rule {
     open-floating true
 }
 
-spawn-at-startup "ags" "run" "--gtk" "4" "--log-file" "/home/itt/.logs/ags.log"
+// spawn-at-startup "ags" "run" "--gtk" "4" "--log-file" "/home/itt/.logs/ags.log"
+// spawn-at-startup "quickshell"
 // spawn-at-startup "qs" "-c" "noctalia-shell"
 spawn-at-startup "xwayland-satellite"
+spawn-at-startup "swww-daemon"
 
 environment {
     DISPLAY ":0"
@@ -120,7 +123,8 @@ binds {
     Mod+M { spawn "niri-mirror"; }
     Mod+T { spawn "niri-tablet"; }
     // Mod+Shift+B { spawn "qs" "-c"  "noctalia-shell"; }
-    Mod+Shift+B { spawn "sh" "-c" "astal -q; ags run --gtk 4"; }
+    // Mod+Shift+B { spawn "sh" "-c" "astal -q; ags run --gtk 4"; }
+    Mod+Shift+B { spawn "quickshell"; }
     XF86AudioMute        allow-when-locked=true { spawn "pactl" "set-sink-mute" "@DEFAULT_SINK@" "toggle"; }
     XF86AudioRaiseVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "+5%"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "-5%"; }

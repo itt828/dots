@@ -85,6 +85,9 @@ command = "tinymist"
 exportPdf = "onType"
 rootFile = "main.typ"
 
+[language-server.qmlls]
+command = "qmlls6"
+
 [[grammar]]
 name = "satysfi"
 
@@ -217,3 +220,8 @@ auto-format = true
 [language.indent]
 tab-width = 2
 unit = "  "
+
+[[language]]
+name = "qml"
+language-servers = ["qmlls"]
+
