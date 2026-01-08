@@ -7,4 +7,7 @@ ColumnLayout {
 
     MediaControl {}
     CalendarWidget {}
+    NotificationHistory {
+        Layout.fillHeight: true
+    }
 }

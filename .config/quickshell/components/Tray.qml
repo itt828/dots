@@ -5,6 +5,8 @@ import Quickshell.Services.SystemTray
 Row {
     id: root
     spacing: 5
+
+    required property var rootWindow
     
     Repeater {
         model: SystemTray.items
@@ -25,7 +27,8 @@ Row {
                         if (mouse.button === Qt.LeftButton) {
                             modelData.activate()
                         } else if (mouse.button === Qt.RightButton) {
-                            modelData.menu.open()
+                            var pos = mapToItem(null, mouse.x, mouse.y)
+                            modelData.display(root.rootWindow, pos.x, pos.y)
                         }
                     }
                 }

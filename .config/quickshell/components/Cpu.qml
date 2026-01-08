@@ -9,7 +9,7 @@ Item {
     height: display.height
     implicitWidth: display.implicitWidth
     implicitHeight: display.implicitHeight
-    
+
     property real cpuVal: 0.0
     property string cpuText: "-"
 
@@ -24,7 +24,7 @@ Item {
         trackColor: "#aaaaaa"
     }
 
-    // Load Average / CPU 
+    // Load Average / CPU
     Process {
         id: loadProc
         command: ["cat", "/proc/loadavg"]

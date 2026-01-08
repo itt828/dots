@@ -12,7 +12,7 @@ Rectangle {
     height: 100
     Layout.fillWidth: true
 
-    property var currentPlayer: Mpris.mediaPlayers.length > 0 ? Mpris.mediaPlayers[0] : null
+    property var currentPlayer: (Mpris.mediaPlayers && Mpris.mediaPlayers.length > 0) ? Mpris.mediaPlayers[0] : null
 
     RowLayout {
         anchors.fill: parent

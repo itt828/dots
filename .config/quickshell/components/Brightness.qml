@@ -39,25 +39,21 @@ Item {
     FileView {
         id: currentBrightness
         path: "/sys/class/backlight/intel_backlight/brightness"
+        watchChanges: true
         onLoaded: root.updateBrightness()
+    }
+    
+    Connections {
+        target: currentBrightness
+        function onFileChanged() { 
+            currentBrightness.reload()
+        }
     }
 
     FileView {
         id: maxBrightness
         path: "/sys/class/backlight/intel_backlight/max_brightness"
         onLoaded: root.updateBrightness()
-    }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            if (typeof currentBrightness.reload === 'function') {
-                currentBrightness.reload()
-            }
-        }
     }
 
     BarValue {

@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell
 import Quickshell.Services.Pipewire
 import "UI"
 
@@ -8,22 +7,30 @@ Item {
     height: display.height
     implicitWidth: display.implicitWidth
     implicitHeight: display.implicitHeight
-    
+
     property var sink: Pipewire.defaultAudioSink
     
+    // Track the sink object to ensure properties are updated instantly
+    PwObjectTracker {
+        objects: sink ? [sink] : []
+    }
+
+    property real currentVolume: (sink && sink.audio && !isNaN(sink.audio.volume)) ? sink.audio.volume : 0
+    property bool isMuted: (sink && sink.audio) ? sink.audio.muted : true
+
     BarValue {
         id: display
-        value: sink ? sink.volume : 0
+        value: currentVolume
         showLabel: true
-        labelText: sink ? Math.round(sink.volume * 100) + "%" : "--%"
-        
+        labelText: Math.round(currentVolume * 100) + "%"
+
         iconName: {
-            if (!sink || sink.muted) return FontIcons.volumeMuted
-            if (sink.volume > 0.6) return FontIcons.volumeHigh
-            if (sink.volume > 0.3) return FontIcons.volumeMedium
+            if (isMuted) return FontIcons.volumeMuted
+            if (currentVolume > 0.45) return FontIcons.volumeHigh
+            if (currentVolume > 0.0) return FontIcons.volumeMedium
             return FontIcons.volumeLow
         }
-        
+
         progressColor: "black"
         trackColor: "#aaaaaa"
     }

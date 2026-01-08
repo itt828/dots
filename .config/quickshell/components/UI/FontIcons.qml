@@ -8,11 +8,19 @@ QtObject {
     readonly property string batteryMedium: "\ue0c6"
     readonly property string batteryLow: "\ue0c4"
 
+    readonly property string wifiSlash: "\ue4f2"
+    readonly property string wifiX: "\ue4f4"
+    readonly property string wifiNone: "\ue4f0"
+    readonly property string wifiLow: "\ue4ec"
+    readonly property string wifiMedium: "\ue4ee"
+    readonly property string wifiHigh: "\ue4ea"
+
     readonly property string sunDim: "\ue474"
-    readonly property string volumeMuted: "\ue428"
-    readonly property string volumeLow: "\ue429"
-    readonly property string volumeMedium: "\ue42a"
-    readonly property string volumeHigh: "\ue42b"
+
+    readonly property string volumeMuted: "\ue45a"
+    readonly property string volumeLow: "\ue44e"
+    readonly property string volumeMedium: "\ue44c"
+    readonly property string volumeHigh: "\ue44a"
 
     readonly property string mediaPrev: "\ue406"
     readonly property string mediaPlay: "\ue400"

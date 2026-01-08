@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell
 import Quickshell.Io
 import "UI"
 
@@ -9,7 +8,7 @@ Item {
     height: display.height
     implicitWidth: display.implicitWidth
     implicitHeight: display.implicitHeight
-    
+
     property real memVal: 0.0
     property string memText: "-"
 

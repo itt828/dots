@@ -13,7 +13,9 @@ Scope {
         
         PanelWindow {
             id: dashboardWindow
-            
+            required property var modelData
+            screen: modelData
+
             // Bind visibility to the singleton
             visible: DashboardContext.visible
             
@@ -36,11 +38,11 @@ Scope {
                 id: dashboardContent
                 
                 // Position aligned with the clock (approx)
-                x: 8 + 12 
-                y: 50 
+                x: 16
+                y: 60
                 
-                width: 320
-                height: contentCol.implicitHeight + 20
+                width: 340
+                height: parent.height - 120
                 color: "#eeeeee"
                 radius: 16
                 border.color: "#cccccc"
@@ -61,9 +63,7 @@ Scope {
 
                 DashboardContent {
                     id: contentCol
-                    anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+                    anchors.fill: parent
                     anchors.margins: 10
                 }
             }

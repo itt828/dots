@@ -3,14 +3,13 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
 import "../components"
-import "../components/UI"
 
 Scope {
     id: root
 
     Variants {
-        model: Quickshell.screens
-        // model: Quickshell.screens.filter(screen => ["eDP-1"].includes(screen.name))
+        // model: Quickshell.screens
+        model: Quickshell.screens.filter(screen => ["eDP-1"].includes(screen.name))
 
         PanelWindow {
             id: barWindow
@@ -23,7 +22,7 @@ Scope {
                 right: true
             }
             color: "transparent"
-            height: barRect.implicitHeight + 16
+            implicitHeight: barRect.implicitHeight + 16
 
             Rectangle {
                 id: barRect
@@ -44,8 +43,8 @@ Scope {
                 layer.effect: MultiEffect {
                     shadowEnabled: true
                     shadowColor: "black"
-                    shadowOpacity: 0.25
-                    shadowBlur: 0.8
+                    shadowOpacity: 0.35
+                    shadowBlur: 0.9
                     shadowHorizontalOffset: 1
                     shadowVerticalOffset: 1
                     autoPaddingEnabled: true
@@ -91,12 +90,17 @@ Scope {
                         Layout.alignment: Qt.AlignVCenter
                     }
 
+                    Network {
+                        Layout.alignment: Qt.AlignVCenter
+                    }
+
                     Battery {
                         Layout.alignment: Qt.AlignVCenter
                     }
 
                     Tray {
                         Layout.alignment: Qt.AlignVCenter
+                        rootWindow: barWindow
                     }
                 }
             }
