@@ -108,7 +108,8 @@ window-rule {
 spawn-at-startup "quickshell"
 // spawn-at-startup "qs" "-c" "noctalia-shell"
 spawn-at-startup "xwayland-satellite"
-spawn-at-startup "swww-daemon"
+// spawn-at-startup "swww-daemon"
+spawn-at-startup "fcitx5"
 
 environment {
     DISPLAY ":0"
@@ -122,7 +123,7 @@ debug {
 
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
-    Mod+Return { spawn "wezterm"; }
+    Mod+Return { spawn "ghostty"; }
     Mod+D { spawn "fuzzel"; }
     Mod+Alt+L { spawn "swaylock"; }
     Mod+N { spawn "swaync-client" "-t";}

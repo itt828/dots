@@ -1,2 +1,2 @@
-. "$HOME/.cargo/env"
-PATH=$PATH:$HOME/.bin
+# . "$HOME/.cargo/env"
+# PATH=$PATH:$HOME/.bin
