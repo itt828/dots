@@ -34,7 +34,7 @@ output "eDP-1" {
     struts {
         left 0
         right 0
-        top -16
+        top -8
         bottom 0
     }
 }
@@ -48,7 +48,7 @@ output "DP-2" {
 layout {
     gaps 16
     center-focused-column "never"
-    background-color "#f9f5e9"
+    background-color "transparent"
     preset-column-widths {
         proportion 0.3
         proportion 0.5
@@ -57,23 +57,26 @@ layout {
     default-column-width { proportion 0.5; }
     focus-ring {
         off
-        width 1
+        width 2
         active-color "#fcc"
         // inactive-color "#a00"
     }
     border {
         width 2
         active-color "#ecc"
-        inactive-color "#fed"
+        inactive-color "#ddd"
     }
      shadow {
         on
-        softness 15
-        spread 2
-        offset x=0 y=5
+        // softness 8
+        softness 0
+        spread 0
+        offset x=8 y=8
+        // offset x=6 y=6
         draw-behind-window true
-        color "#00000070"
-        inactive-color "#00000054"
+        // color "#00000040"
+        color "#74b6caaa"
+        inactive-color "#7e9da8bb"
     }
     struts {
         left 0
@@ -82,6 +85,12 @@ layout {
         bottom 0
     }
 }
+
+layer-rule {
+    match namespace="^awww-daemon$"
+    place-within-backdrop true
+}
+
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 animations {
 }
@@ -103,12 +112,26 @@ window-rule {
     match app-id="firefox" title=r"拡張機能: \(Bitwarden パスワードマネージャー\) - Bitwarden — Mozilla Firefox"
     open-floating true
 }
+window-rule {
+    match app-id="firefox" title=r"Firefox - Choose a profile"
+    open-floating true
+}
+window-rule {
+    match app-id=r#"showmethekey"#
+    open-floating true
+}
+window-rule {
+    match app-id="krita"
+    default-column-width {
+        proportion 1.0
+    }
+}
 
 // spawn-at-startup "ags" "run" "--gtk" "4" "--log-file" "/home/itt/.logs/ags.log"
 spawn-at-startup "quickshell"
 // spawn-at-startup "qs" "-c" "noctalia-shell"
 spawn-at-startup "xwayland-satellite"
-spawn-at-startup "swww-daemon"
+spawn-at-startup "awww-daemon"
 
 environment {
     DISPLAY ":0"
@@ -128,13 +151,17 @@ binds {
     Mod+N { spawn "swaync-client" "-t";}
     Mod+M { spawn "niri-mirror"; }
     Mod+T { spawn "niri-tablet"; }
+    Mod+P { spawn "clcnt"; }
     // Mod+Shift+B { spawn "qs" "-c"  "noctalia-shell"; }
     // Mod+Shift+B { spawn "sh" "-c" "astal -q; ags run --gtk 4"; }
     Mod+Shift+B { spawn "quickshell"; }
     XF86AudioMute        allow-when-locked=true { spawn "pactl" "set-sink-mute" "@DEFAULT_SINK@" "toggle"; }
     XF86AudioRaiseVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "+5%"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "-5%"; }
-    // XF86AudioPlay allow-when-locked=true { spawn "p"; }
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+    XF86AudioPrev allow-when-locked=true { spawn "playerctl" "previous"; }
     XF86AudioMicMute     allow-when-locked=true { spawn "pactl" "set-source-mute" "@DEFAULT_SOURCE@" "toggle"; }
     XF86MonBrightnessDown allow-when-locked=true {spawn "brightnessctl" "set" "5%-"; }
     Super+XF86MonBrightnessDown allow-when-locked=true {spawn "brightnessctl" "set" "1"; }
