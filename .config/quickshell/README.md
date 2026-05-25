@@ -4,4 +4,4 @@
 https://phosphoricons.com/
 からDownload all
 
-Fonts/Regular/Phosphor.ttfをassetsにコピー
+Fonts/Regular/Phosphor.ttfをCommon/Assetsにコピー
