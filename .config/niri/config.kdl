@@ -127,9 +127,7 @@ window-rule {
     }
 }
 
-// spawn-at-startup "ags" "run" "--gtk" "4" "--log-file" "/home/itt/.logs/ags.log"
 spawn-at-startup "quickshell"
-// spawn-at-startup "qs" "-c" "noctalia-shell"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "awww-daemon"
 spawn-at-startup "fcitx5"

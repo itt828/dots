@@ -7,55 +7,79 @@ import "."
 Item {
     id: root
 
-    property int count: 0
-    property int currentIndex: -1
-    property var _workspaces: []
-    property int urgentMask: 0
+    property var workspaces: []
     
     // Internal state to track window titles for activity detection
     property var _windowTitles: ({}) // { windowId: title }
 
-    function update(workspaces) {
-        if (!workspaces || !Array.isArray(workspaces)) return;
+    function update(newWorkspaces) {
+        if (!newWorkspaces || !Array.isArray(newWorkspaces)) return;
         
-        _workspaces = workspaces;
-        root.count = workspaces.length;
-        
-        let newMask = urgentMask;
-        for (let i = 0; i < workspaces.length; i++) {
-            const ws = workspaces[i];
-            
-            // If niri says it's urgent, mark it
-            if (ws.is_urgent) {
-                newMask |= (1 << ws.idx);
+        // Preserve local urgency if it was set
+        let oldWorkspaces = workspaces;
+        workspaces = newWorkspaces.map(ws => {
+            let oldWs = oldWorkspaces.find(o => o.id === ws.id);
+            if (oldWs && oldWs.local_urgent && !ws.is_focused) {
+                ws.is_urgent = true;
+                ws.local_urgent = true;
+            } else {
+                ws.local_urgent = ws.is_urgent;
             }
+            return ws;
+        });
+    }
 
-            if (ws.is_focused || ws.is_active) {
-                root.currentIndex = ws.idx;
-                // Clear urgency when focusing
-                if (ws.is_focused) {
-                    newMask &= ~(1 << ws.idx);
-                }
+    function setLocalUrgent(workspaceId, urgent) {
+        workspaces = workspaces.map(ws => {
+            if (ws.id === workspaceId) {
+                ws.is_urgent = urgent;
+                ws.local_urgent = urgent;
             }
-        }
-        urgentMask = newMask;
+            return ws;
+        });
     }
 
     Connections {
         target: NiriService
         
-        function onWorkspacesChanged(workspaces) {
-            update(workspaces);
+        function onWorkspacesChanged(newWorkspaces) {
+            update(newWorkspaces);
         }
         
         function onWorkspaceActivated(data) {
-            for (let i = 0; i < _workspaces.length; i++) {
-                if (_workspaces[i].id === data.id) {
-                    root.currentIndex = _workspaces[i].idx;
-                    urgentMask &= ~(1 << root.currentIndex);
-                    break;
+            // When a workspace is activated, update states and clear its local urgency
+            let targetOutput = "";
+            let wsToUpdate = workspaces.find(w => w.id === data.id);
+            if (wsToUpdate) targetOutput = wsToUpdate.output;
+
+            workspaces = workspaces.map(ws => {
+                if (ws.id === data.id) {
+                    return Object.assign({}, ws, {
+                        is_active: true,
+                        is_focused: true,
+                        is_urgent: false,
+                        local_urgent: false
+                    });
+                } else if (targetOutput !== "" && ws.output === targetOutput) {
+                    return Object.assign({}, ws, {
+                        is_active: false,
+                        is_focused: false
+                    });
+                } else {
+                    return ws;
                 }
-            }
+            });
+
+            // Trigger a full refresh to be sure
+            refreshWorkspaces.running = true;
+        }
+
+        function onWindowFocused(data) {
+            refreshWorkspaces.running = true;
+        }
+
+        function onWindowFocusChanged(data) {
+            refreshWorkspaces.running = true;
         }
 
         function onWindowOpenedOrChanged(window) {
@@ -67,26 +91,12 @@ Item {
 
             // Activity detection: title changed and window is NOT focused
             if (oldTitle !== undefined && oldTitle !== newTitle && !window.is_focused) {
-                // Find workspace index for this ID
-                for (let i = 0; i < _workspaces.length; i++) {
-                    if (_workspaces[i].id === window.workspace_id) {
-                        let idx = _workspaces[i].idx;
-                        if (idx !== root.currentIndex) {
-                            urgentMask |= (1 << idx);
-                        }
-                        break;
-                    }
-                }
+                setLocalUrgent(window.workspace_id, true);
             }
             
             // Also handle explicit urgency flag from niri
             if (window.is_urgent) {
-                for (let i = 0; i < _workspaces.length; i++) {
-                    if (_workspaces[i].id === window.workspace_id) {
-                        urgentMask |= (1 << _workspaces[i].idx);
-                        break;
-                    }
-                }
+                setLocalUrgent(window.workspace_id, true);
             }
         }
 

@@ -7,6 +7,7 @@ import "../../Assets"
 
 Item {
     id: root
+    property string outputName: ""
     width: layout.implicitWidth
     height: layout.implicitHeight
     implicitWidth: layout.implicitWidth
@@ -17,16 +18,18 @@ Item {
         spacing: 8
 
         Repeater {
-            model: WorkspaceStore.count
+            model: WorkspaceStore.workspaces
+                    .filter(ws => ws.output === root.outputName)
+                    .sort((a, b) => a.idx - b.idx)
             
             Rectangle {
-                property int workspaceIdx: index + 1
                 width: 16
                 height: 16
                 radius: 2
                 color: {
-                    if (workspaceIdx === WorkspaceStore.currentIndex) return Theme.accent;
-                    if (WorkspaceStore.urgentMask & (1 << workspaceIdx)) return Theme.danger;
+                    if (modelData.is_focused) return Theme.accent;
+                    if (modelData.is_active) return "#505050"; // Darker gray for active but unfocused
+                    if (modelData.is_urgent) return Theme.danger;
                     return Theme.surfaceVariant;
                 }
                 
@@ -38,7 +41,8 @@ Item {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        switchProcess.command = ["niri", "msg", "action", "focus-workspace", workspaceIdx.toString()]
+                        let cmd = `niri msg action focus-monitor "${root.outputName}"; niri msg action focus-workspace ${modelData.idx}`;
+                        switchProcess.command = ["bash", "-c", cmd]
                         switchProcess.running = true
                     }
                 }

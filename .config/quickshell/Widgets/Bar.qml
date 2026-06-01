@@ -35,7 +35,9 @@ Scope {
 
                 leftContent: RowLayout {
                     spacing: 16
-                    Workspaces {}
+                    Workspaces {
+                        outputName: barWindow.screen.name
+                    }
                     WindowTitle {}
                 }
 
