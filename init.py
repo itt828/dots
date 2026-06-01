@@ -23,7 +23,6 @@ dots = [
             os.getenv("XDG_CONFIG_HOME") or (Path(os.environ["HOME"]) / ".config")
         ),
         "paths": [
-            "ags",
             "fish",
             "fuzzel",
             "helix",

@@ -6,28 +6,12 @@ grammar = [
 [language-server]
 ruff = { command = "ruff", args = ["server"]}
 ty = { command = "ty", args = ["server"]}
-qmlls = { command = "qmlls6"}
+qmlls = { command = "qmlls"}
 tinymist = { command = "tinymist", config = { exportPdf = "onType", rootFile = "main.typ"}}
 satysfi-language-server = { command = "satysfi-language-server"}
 moonbit-lsp = { command = "moonbit-lsp" }
 steel-language-server = { command = "steel-language-server" }
-texlab = {
-    config.texlab = {
-        build = {
-            executable = "latexmk",
-            args = ["%f"],
-            onSave = true,
-            forwardSearchAfter = true,
-            pdfDirectory = "out"
-
-        },
-        forwardSearch = {
-            executable = "zathura",
-            args = ["--synctex-forward", "%l:1:%f", "%p"]
-        },
-        chktex.onEdit = true
-    }
-}
+texlab = { config.texlab = { build = { executable = "latexmk", args = ["%f"], onSave = true, forwardSearchAfter = true, pdfDirectory = "out" }, forwardSearch = { executable = "zathura", args = ["--synctex-forward", "%l:1:%f", "%p"] }, chktex.onEdit = true } }
 
 oxlint = { command = "oxlint", args = ["--lsp"]}
 oxfmt = { command = "oxfmt", args = ["--lsp"]}
@@ -36,25 +20,8 @@ unocss-language-server = { command = "unocss-language-server", args = ["--stdio"
 biome = { command = "biome", args = ["lsp-proxy"]}
 vue-language-server = { command = "vue-language-server", args = ["--stdio"], config.typescript.tsdk = "node_modules/typescript/lib" }
 typescript-language-server = { command = "typescript-language-server", args = ["--stdio"], config.hostInfo = "helix", required-root-patterns = ["package.json"] }
-vtsls = {
-    command = "vtsls",
-    args = ["--stdio"],
-    # required-root-patterns = ["package.json"],
-    config.hostInfo =   "helix",
-    config.vtsls.tsserver.globalPlugins = [
-        {
-            name = "@vue/typescript-plugin",
-            location = "/home/itt/.local/share/mise/installs/npm-vue-language-server/latest/lib/node_modules/@vue/language-server",
-            languages = ["vue"],
-            configNamespace = "typescript"
-        }]
-}
-deno-lsp ={
-    command = "deno",
-    args = ["lsp"],
-    required-root-patterns = ["deno.json"],
-    config.deno.enable = true
-}
+vtsls = { command = "vtsls", args = ["--stdio"],  config.hostInfo =   "helix", config.vtsls.tsserver.globalPlugins = [ { name = "@vue/typescript-plugin", location = "/home/itt/.local/share/mise/installs/npm-vue-language-server/latest/lib/node_modules/@vue/language-server", languages = ["vue"], configNamespace = "typescript" }] }
+deno-lsp ={ command = "deno", args = ["lsp"], required-root-patterns = ["deno.json"], config.deno.enable = true }
 
 [[language]]
 name = "vue"
@@ -146,10 +113,7 @@ auto-format = false
 comment-tokens = ["%"]
 block-comment-tokens = []
 language-servers = ["satysfi-language-server"]
-
-[language.indent]
-tab-width = 4
-unit = "    "
+indent = { tab-width = 4, unit = "    " }
 
 
 [[language]]
@@ -165,10 +129,7 @@ file-types = ["mbt"]
 comment-token = "//"
 block-comment-tokens = []
 language-servers = ["moonbit-lsp"]
-
-[language.indent]
-tab-width = 2
-unit = "  "
+indent = { tab-width = 2, unit = "  " }
 
 
 [[language]]

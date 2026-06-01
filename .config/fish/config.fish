@@ -21,6 +21,7 @@ fish_add_path $HOME/go/bin
 fish_add_path $PNPM_HOME
 fish_add_path $HOME/.npm-global/bin
 fish_add_path $HOME/.bin
+fish_add_path $HOME/.local/bin
 
 starship init fish | source
 mise activate fish | source

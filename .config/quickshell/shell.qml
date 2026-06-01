@@ -1,22 +1,27 @@
 //@ pragma UseQApplication
 import QtQuick
 import Quickshell
-import Quickshell.Io
-import "Modules"
+import "Widgets"
 import "Services"
 
 ShellRoot {
-    Bar {}
-    Dashboard {}
-    NotificationPopups {}
-    PowerMenu {}
-    ScreenLock {}
-
-    IpcHandler {
-        target: "shell"
-        function lock(): void {
-            console.log("IPC lock request received");
-            PowerContext.lock();
-        }
+    Scope {
+        id: services
+        property var niri: NiriService
     }
+
+    Bar {}
+    SimpleBar {}
+    Dashboard {}
+    Notification {}
+    PowerMenu {}
+    LockScreen {}
+
+    // IpcHandler {
+    //     target: "shell"
+    //     function lock(): void {
+    //         console.log("IPC lock request received");
+    //         PowerContext.lock();
+    //     }
+    // }
 }
