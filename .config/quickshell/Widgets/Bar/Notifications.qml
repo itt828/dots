@@ -10,17 +10,19 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    required property var notificationStore
+
     HighlightEffect {
         id: highlight
     }
 
     Connections {
-        target: NotificationStore
+        target: notificationStore
         function onDndChanged() { highlight.flash() }
     }
 
     // Monitor history count changes
-    property int lastCount: NotificationStore.history.count
+    property int lastCount: notificationStore.history.count
     onLastCountChanged: {
         highlight.flash()
     }
@@ -28,13 +30,13 @@ Item {
     IconLabel {
         id: display
         anchors.centerIn: parent
-        icon: NotificationStore.dnd ? FontIcons.bellSlash : (NotificationStore.history.count > 0 ? FontIcons.bellRinging : FontIcons.bell)
-        text: NotificationStore.history.count.toString()
+        icon: notificationStore.dnd ? FontIcons.bellSlash : (notificationStore.history.count > 0 ? FontIcons.bellRinging : FontIcons.bell)
+        text: notificationStore.history.count.toString()
         
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: NotificationStore.dnd = !NotificationStore.dnd
+            onClicked: notificationStore.dnd = !notificationStore.dnd
         }
     }
 }

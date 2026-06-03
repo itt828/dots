@@ -7,6 +7,10 @@ import "../Assets"
 import "./Dashboard"
 
 Scope {
+    id: root
+    required property var dashboardContext
+    required property var notificationStore
+
     Variants {
         model: Quickshell.screens.filter(screen => Config.targetScreens.length === 0 || Config.targetScreens.includes(screen.name))
 
@@ -15,7 +19,7 @@ Scope {
             required property var modelData
             screen: modelData
 
-            visible: DashboardContext.visible
+            visible: dashboardContext.visible
 
             anchors {
                 top: true
@@ -27,7 +31,7 @@ Scope {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: DashboardContext.visible = false
+                onClicked: dashboardContext.visible = false
             }
             Rectangle {
                 id: dashboardContent
@@ -58,6 +62,7 @@ Scope {
                     id: contentCol
                     anchors.fill: parent
                     anchors.margins: 10
+                    notificationStore: root.notificationStore
                 }
             }
         }

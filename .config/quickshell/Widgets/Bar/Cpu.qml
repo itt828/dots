@@ -10,12 +10,14 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    required property var cpuService
+
     BarValue {
         id: display
-        value: CpuService.usage
+        value: cpuService.usage
         iconName: FontIcons.cpu
         showLabel: true
-        labelText: CpuService.label
+        labelText: cpuService.label
         progressColor: "black"
         trackColor: "#aaaaaa"
     }

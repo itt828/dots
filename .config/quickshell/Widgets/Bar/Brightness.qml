@@ -10,7 +10,8 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
-    property real brightnessVal: BrightnessService.brightness
+    required property var brightnessService
+    property real brightnessVal: brightnessService.brightness
     onBrightnessValChanged: highlight.flash()
 
     HighlightEffect {

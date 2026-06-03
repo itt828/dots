@@ -7,6 +7,7 @@ import "../../Assets"
 
 Item {
     id: root
+    required property var workspaceStore
     property string outputName: ""
     width: layout.implicitWidth
     height: layout.implicitHeight
@@ -18,7 +19,7 @@ Item {
         spacing: 8
 
         Repeater {
-            model: WorkspaceStore.workspaces
+            model: workspaceStore.workspaces
                     .filter(ws => ws.output === root.outputName)
                     .sort((a, b) => a.idx - b.idx)
             

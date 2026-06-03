@@ -5,23 +5,38 @@ import "Widgets"
 import "Services"
 
 ShellRoot {
-    Scope {
-        id: services
-        property var niri: NiriService
+    Provider { id: services }
+
+    Bar {
+        services: services
     }
 
-    Bar {}
-    SimpleBar {}
-    Dashboard {}
-    Notification {}
-    PowerMenu {}
-    LockScreen {}
+    SimpleBar {
+        workspaceStore: services.workspaces
+    }
+
+    Dashboard {
+        dashboardContext: services.dashboard
+        notificationStore: services.notifications
+    }
+
+    Notification {
+        notificationStore: services.notifications
+    }
+
+    PowerMenu {
+        powerContext: services.power
+    }
+
+    LockScreen {
+        powerContext: services.power
+    }
 
     // IpcHandler {
     //     target: "shell"
     //     function lock(): void {
     //         console.log("IPC lock request received");
-    //         PowerContext.lock();
+    //         services.power.lock();
     //     }
     // }
 }

@@ -1,4 +1,3 @@
-pragma Singleton
 import QtQuick
 import Quickshell.Services.Notifications
 

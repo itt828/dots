@@ -10,7 +10,8 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
-    property bool isMuted: VolumeService.sourceMuted
+    required property var volumeService
+    property bool isMuted: volumeService.sourceMuted
     onIsMutedChanged: highlight.flash()
 
     HighlightEffect {
@@ -27,6 +28,6 @@ Item {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: VolumeService.toggleSourceMute()
+        onClicked: volumeService.toggleSourceMute()
     }
 }

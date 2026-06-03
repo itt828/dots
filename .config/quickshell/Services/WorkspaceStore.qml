@@ -1,4 +1,3 @@
-pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -6,6 +5,7 @@ import "."
 
 Item {
     id: root
+    required property var niriService
 
     property var workspaces: []
     
@@ -40,7 +40,7 @@ Item {
     }
 
     Connections {
-        target: NiriService
+        target: niriService
         
         function onWorkspacesChanged(newWorkspaces) {
             update(newWorkspaces);

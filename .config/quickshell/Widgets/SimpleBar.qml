@@ -6,8 +6,9 @@ import "Bar"
 
 Scope {
     id: root
-    Variants {
+    required property var workspaceStore
 
+    Variants {
         model: Quickshell.screens.filter((screen, index) => {
             if (Config.targetScreens.length > 0) {
                 return !Config.targetScreens.includes(screen.name);
@@ -46,6 +47,7 @@ Scope {
                 clip: true
                 centerContent: RowLayout {
                     Workspaces {
+                        workspaceStore: root.workspaceStore
                         outputName: modelData.name
                     }
                 }

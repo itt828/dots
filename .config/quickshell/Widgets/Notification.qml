@@ -7,6 +7,8 @@ import "./Notification"
 PanelWindow {
     id: root
 
+    required property var notificationStore
+
     anchors {
         top: true
         right: true
@@ -27,10 +29,10 @@ PanelWindow {
     }
 
     Connections {
-        target: NotificationStore
+        target: notificationStore
 
         function onNotificationReceived(notification) {
-            if (NotificationStore.dnd) return
+            if (notificationStore.dnd) return
             popupModel.append({
                 "notificationObj": notification,
                 "appName": notification.appName || "System",

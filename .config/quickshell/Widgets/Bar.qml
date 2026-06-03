@@ -7,6 +7,7 @@ import "./Bar"
 
 Scope {
     id: root
+    required property var services
 
     Variants {
         model: Quickshell.screens.filter((screen, index) => {
@@ -36,16 +37,19 @@ Scope {
                 leftContent: RowLayout {
                     spacing: 16
                     Workspaces {
+                        workspaceStore: services.workspaces
                         outputName: barWindow.screen.name
                     }
-                    WindowTitle {}
+                    WindowTitle {
+                        windowService: services.windows
+                    }
                 }
 
                 centerContent: Clock {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: DashboardContext.toggle()
+                        onClicked: services.dashboard.toggle()
                     }
                 }
 
@@ -54,15 +58,31 @@ Scope {
                     Tray {
                         rootWindow: barWindow
                     }
-                    Notifications {}
-                    Volume {}
-                    Microphone {}
-                    Brightness {}
-                    // Cpu {}
-                    // Mem {}
-                    Network {}
+                    Notifications {
+                        notificationStore: services.notifications
+                    }
+                    Volume {
+                        volumeService: services.volume
+                    }
+                    Microphone {
+                        volumeService: services.volume
+                    }
+                    Brightness {
+                        brightnessService: services.brightness
+                    }
+                    Cpu {
+                        cpuService: services.cpu
+                    }
+                    Mem {
+                        memService: services.mem
+                    }
+                    Network {
+                        networkService: services.network
+                    }
                     Battery {}
-                    PowerButton {}
+                    PowerButton {
+                        powerContext: services.power
+                    }
                 }
             }
         }

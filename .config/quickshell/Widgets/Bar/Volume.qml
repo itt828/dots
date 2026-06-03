@@ -13,8 +13,9 @@ Item {
     onCurrentVolumeChanged: highlight.flash()
     onIsMutedChanged: highlight.flash()
 
-    property real currentVolume: VolumeService.volume
-    property bool isMuted: VolumeService.muted
+    required property var volumeService
+    property real currentVolume: volumeService.volume
+    property bool isMuted: volumeService.muted
 
     HighlightEffect {
         id: highlight

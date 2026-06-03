@@ -1,10 +1,10 @@
-pragma Singleton
 import QtQuick
 import Quickshell.Io
 import "."
 
 Item {
     id: root
+    required property var niriService
 
     property string focusedWindowTitle: ""
 
@@ -13,7 +13,7 @@ Item {
     }
 
     Connections {
-        target: NiriService
+        target: niriService
         
         function onWindowFocused(data) {
             updateFocusedWindow();

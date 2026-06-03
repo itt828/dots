@@ -10,12 +10,14 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    required property var memService
+
     BarValue {
         id: display
-        value: MemService.usage
-        iconName: FontIcons.ram
+        value: memService.usage
+        iconName: FontIcons.memory
         showLabel: true
-        labelText: MemService.label
+        labelText: memService.label
         progressColor: "black"
         trackColor: "#aaaaaa"
     }

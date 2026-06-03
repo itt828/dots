@@ -9,29 +9,31 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    required property var networkService
+
     IconLabel {
         id: display
         text: {
-            if (NetworkService.isConnected) return NetworkService.connectionName
-            if (!NetworkService.isWifiEnabled) return "Disabled"
+            if (networkService.isConnected) return networkService.connectionName
+            if (!networkService.isWifiEnabled) return "Disabled"
             return "Disconnected"
         }
 
         icon: {
-            if (NetworkService.isConnected) {
-                if (!NetworkService.isWifi) return FontIcons.wifiHigh // Ethernet
+            if (networkService.isConnected) {
+                if (!networkService.isWifi) return FontIcons.wifiHigh // Ethernet
                 
-                var signal = NetworkService.signalStrength
+                var signal = networkService.signalStrength
                 if (signal > 80) return FontIcons.wifiHigh
                 if (signal > 50) return FontIcons.wifiMedium
                 if (signal > 20) return FontIcons.wifiLow
                 return FontIcons.wifiNone
             }
             
-            if (!NetworkService.isWifiEnabled) return FontIcons.power
+            if (!networkService.isWifiEnabled) return FontIcons.power
             return FontIcons.wifiX
         }
 
-        color: NetworkService.isConnected ? "black" : "#555555"
+        color: networkService.isConnected ? "black" : "#555555"
     }
 }

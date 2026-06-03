@@ -10,6 +10,8 @@ Item {
     implicitWidth: icon.width
     implicitHeight: icon.height
 
+    required property var powerContext
+
     AIcon {
         id: icon
         icon: FontIcons.power
@@ -18,7 +20,7 @@ Item {
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: PowerContext.toggle()
+            onClicked: powerContext.toggle()
         }
     }
 }

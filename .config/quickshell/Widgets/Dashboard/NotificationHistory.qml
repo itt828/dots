@@ -14,6 +14,8 @@ Rectangle {
     radius: 12
     clip: true
 
+    required property var notificationStore
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10
@@ -30,11 +32,11 @@ Rectangle {
             AIcon {
                 icon: "edit-clear-all" // or trash
                 size: 20
-                visible: NotificationStore.history.count > 0
+                visible: notificationStore.history.count > 0
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: NotificationStore.clearAll()
+                    onClicked: notificationStore.clearAll()
                 }
             }
         }
@@ -46,7 +48,7 @@ Rectangle {
             Layout.fillHeight: true
             clip: true
             spacing: 8
-            model: NotificationStore.history
+            model: notificationStore.history
 
             delegate: NotificationPopup {
                 width: list.width

@@ -11,11 +11,13 @@ Item {
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
 
+    required property var windowService
+
     RowLayout {
         id: layout
         
         Text {
-            text: WindowService.focusedWindowTitle
+            text: windowService.focusedWindowTitle
             font.pixelSize: 13
             color: Theme.text
             elide: Text.ElideRight

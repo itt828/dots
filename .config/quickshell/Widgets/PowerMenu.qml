@@ -8,6 +8,8 @@ import "../Components"
 import "../Assets"
 
 Scope {
+    required property var powerContext
+
     Variants {
         model: Quickshell.screens.filter(screen => Config.targetScreens.length === 0 || Config.targetScreens.includes(screen.name))
         
@@ -16,7 +18,7 @@ Scope {
             required property var modelData
             screen: modelData
 
-            visible: PowerContext.visible
+            visible: powerContext.visible
             
             anchors {
                 top: true
@@ -28,7 +30,7 @@ Scope {
             
             MouseArea {
                 anchors.fill: parent
-                onClicked: PowerContext.visible = false
+                onClicked: powerContext.visible = false
             }
             
             Rectangle {
@@ -68,8 +70,8 @@ Scope {
                         text: "Lock"
                         icon: FontIcons.lock
                         onClicked: {
-                            PowerContext.visible = false
-                            PowerContext.lock()
+                            powerContext.visible = false
+                            powerContext.lock()
                         }
                     }
 
@@ -77,7 +79,7 @@ Scope {
                         text: "Shutdown"
                         icon: FontIcons.power
                         onClicked: {
-                            PowerContext.visible = false
+                            powerContext.visible = false
                             shutdownProc.running = true
                         }
                     }
@@ -86,7 +88,7 @@ Scope {
                         text: "Reboot"
                         icon: FontIcons.power
                         onClicked: {
-                            PowerContext.visible = false
+                            powerContext.visible = false
                             rebootProc.running = true
                         }
                     }
@@ -95,9 +97,9 @@ Scope {
                         text: "Suspend"
                         icon: FontIcons.power
                         onClicked: {
-                            PowerContext.visible = false;
+                            powerContext.visible = false;
                             // 即座にロックとサスペンドを実行
-                            PowerContext.lock();
+                            powerContext.lock();
                             suspendProc.running = true;
                         }
                     }
@@ -106,7 +108,7 @@ Scope {
                         text: "Exit"
                         icon: FontIcons.power
                         onClicked: {
-                            PowerContext.visible = false
+                            powerContext.visible = false
                             logoutProc.running = true
                         }
                     }
