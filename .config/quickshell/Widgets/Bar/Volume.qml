@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import "../../Components"
 import "../../Assets"
 import "../../Services"
@@ -32,6 +33,14 @@ Item {
             if (currentVolume > 0.0) return FontIcons.volumeMedium
             return FontIcons.volumeLow
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        ToolTip.visible: containsMouse
+        ToolTip.text: volumeService.sinkName
+        ToolTip.delay: 500
     }
 }
 

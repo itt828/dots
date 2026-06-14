@@ -70,12 +70,12 @@ Scope {
                     Brightness {
                         brightnessService: services.brightness
                     }
-                    Cpu {
-                        cpuService: services.cpu
-                    }
-                    Mem {
-                        memService: services.mem
-                    }
+                    // Cpu {
+                    //     cpuService: services.cpu
+                    // }
+                    // Mem {
+                    //     memService: services.mem
+                    // }
                     Network {
                         networkService: services.network
                     }

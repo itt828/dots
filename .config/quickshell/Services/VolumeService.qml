@@ -19,9 +19,11 @@ QtObject {
 
     readonly property real volume: (sink && sink.audio && !isNaN(sink.audio.volume)) ? sink.audio.volume : 0
     readonly property bool muted: (sink && sink.audio) ? sink.audio.muted : true
+    readonly property string sinkName: sink ? (sink.description || sink.name || "Unknown Sink") : "No Sink"
 
     readonly property real sourceVolume: (source && source.audio && !isNaN(source.audio.volume)) ? source.audio.volume : 0
     readonly property bool sourceMuted: (source && source.audio) ? source.audio.muted : true
+    readonly property string sourceName: source ? (source.description || source.name || "Unknown Source") : "No Source"
 
     function setVolume(value) {
         if (sink && sink.audio) {

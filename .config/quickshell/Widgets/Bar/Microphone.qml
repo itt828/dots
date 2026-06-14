@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import "../../Components"
 import "../../Assets"
 import "../../Services"
@@ -29,5 +30,9 @@ Item {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: volumeService.toggleSourceMute()
+        hoverEnabled: true
+        ToolTip.visible: containsMouse
+        ToolTip.text: volumeService.sourceName
+        ToolTip.delay: 500
     }
 }

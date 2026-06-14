@@ -6,31 +6,17 @@ import "Services"
 
 ShellRoot {
     Provider { id: services }
-
-    Bar {
-        services: services
-    }
-
-    SimpleBar {
-        workspaceStore: services.workspaces
-    }
+    Bar { services: services }
+    SimpleBar { workspaceStore: services.workspaces }
 
     Dashboard {
         dashboardContext: services.dashboard
         notificationStore: services.notifications
     }
 
-    Notification {
-        notificationStore: services.notifications
-    }
-
-    PowerMenu {
-        powerContext: services.power
-    }
-
-    LockScreen {
-        powerContext: services.power
-    }
+    Notification { notificationStore: services.notifications }
+    PowerMenu { powerContext: services.power }
+    LockScreen { powerContext: services.power }
 
     // IpcHandler {
     //     target: "shell"
