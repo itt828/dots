@@ -1,11 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
-import Quickshell
 import Quickshell.Services.Mpris
 import "../../Components"
 import "../../Assets"
-import "../../Services"
 
 Rectangle {
     id: root
