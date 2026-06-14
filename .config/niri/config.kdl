@@ -19,6 +19,7 @@ input {
         // map-to-output "DP-2"
     }
     warp-mouse-to-focus
+    focus-follows-mouse
 }
 
 gestures {
@@ -105,7 +106,7 @@ window-rule {
     }
 }
 window-rule {
-    match app-id=r#"firefox$"# title="^ピクチャーインピクチャー$"
+    match app-id=r#"firefox$"# title="^(ピクチャーインピクチャー|Picture-in-Picture)$"
     open-floating true
 }
 window-rule {
