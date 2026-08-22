@@ -69,10 +69,10 @@ Rectangle {
         enabled: !root.busy
         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: {
-            root.busy = true
-            root.resultColor = ""
-            root.status = "色を取得する位置を選択してください"
-            root.dashboardContext.visible = false
+            root.busy = true;
+            root.resultColor = "";
+            root.status = "色を取得する位置を選択してください";
+            root.dashboardContext.visible = false;
         }
     }
 
@@ -94,24 +94,23 @@ Rectangle {
 
         stdout: StdioCollector {
             onStreamFinished: {
-                const value = text.trim()
+                const value = text.trim();
                 if (value !== "")
-                    root.resultColor = value
+                    root.resultColor = value;
             }
         }
 
         onExited: (exitCode, exitStatus) => {
-            root.busy = false
+            root.busy = false;
             if (exitCode === 0) {
-                root.pickedColor = root.resultColor
-                root.status = root.resultColor + " をコピーしました"
-            }
-            else if (exitCode === 10)
-                root.status = "色の選択をキャンセルしました"
+                root.pickedColor = root.resultColor;
+                root.status = root.resultColor + " をコピーしました";
+            } else if (exitCode === 10)
+                root.status = "色の選択をキャンセルしました";
             else if (exitCode === 20)
-                root.status = "必要なコマンドが見つかりません"
+                root.status = "必要なコマンドが見つかりません";
             else
-                root.status = "色の取得に失敗しました"
+                root.status = "色の取得に失敗しました";
         }
     }
 }

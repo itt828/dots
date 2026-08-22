@@ -7,14 +7,16 @@ QtObject {
 
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property var source: Pipewire.defaultAudioSource
-    
+
     // Track objects to ensure properties are updated instantly
     property var tracker: PwObjectTracker {
         objects: {
-            let objs = []
-            if (sink) objs.push(sink)
-            if (source) objs.push(source)
-            return objs
+            let objs = [];
+            if (sink)
+                objs.push(sink);
+            if (source)
+                objs.push(source);
+            return objs;
         }
     }
 
@@ -28,25 +30,25 @@ QtObject {
 
     function setVolume(value) {
         if (sink && sink.audio) {
-            sink.audio.volume = Math.max(0, Math.min(1, value))
+            sink.audio.volume = Math.max(0, Math.min(1, value));
         }
     }
 
     function toggleMute() {
         if (sink && sink.audio) {
-            sink.audio.muted = !sink.audio.muted
+            sink.audio.muted = !sink.audio.muted;
         }
     }
 
     function setSourceVolume(value) {
         if (source && source.audio) {
-            source.audio.volume = Math.max(0, Math.min(1, value))
+            source.audio.volume = Math.max(0, Math.min(1, value));
         }
     }
 
     function toggleSourceMute() {
         if (source && source.audio) {
-            source.audio.muted = !source.audio.muted
+            source.audio.muted = !source.audio.muted;
         }
     }
 
@@ -68,12 +70,12 @@ QtObject {
                     if (alsaCard) {
                         root.alsaCardName = alsaCard.name;
                         root.activeProfile = alsaCard.active_profile;
-                        
+
                         let profiles = Object.keys(alsaCard.profiles || {});
                         root.headphoneProfile = profiles.find(p => p.includes("Headphones")) || "";
                         root.speakerProfile = profiles.find(p => p.includes("Speaker")) || "";
                     }
-                } catch(e) {
+                } catch (e) {
                     console.log("Error parsing pactl cards:", e);
                 }
             }
@@ -93,14 +95,16 @@ QtObject {
     }
 
     function toggleProfile() {
-        if (!alsaCardName) return;
+        if (!alsaCardName)
+            return;
         let newProfile = "";
         if (isHeadphones) {
             newProfile = speakerProfile;
         } else {
             newProfile = headphoneProfile;
         }
-        if (!newProfile) return;
+        if (!newProfile)
+            return;
         setProfileProc.command = ["pactl", "set-card-profile", root.alsaCardName, newProfile];
         setProfileProc.running = true;
     }

@@ -11,7 +11,7 @@ QtObject {
     readonly property color accent: "#0078d4"
     readonly property color danger: "#ff6b6b"
     readonly property color success: "#00aa00"
-    
+
     readonly property int radius: 8
     readonly property int padding: 10
     readonly property int spacing: 10

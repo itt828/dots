@@ -32,7 +32,8 @@ PanelWindow {
         target: notificationStore
 
         function onNotificationReceived(notification) {
-            if (notificationStore.dnd) return
+            if (notificationStore.dnd)
+                return;
             popupModel.append({
                 "notificationObj": notification,
                 "appName": notification.appName || "System",
@@ -41,15 +42,15 @@ PanelWindow {
                 "icon": notification.icon || "",
                 "appIcon": notification.appIcon || "",
                 "image": notification.image || ""
-            })
+            });
         }
     }
 
     function removePopup(notification) {
         for (var i = 0; i < popupModel.count; i++) {
             if (popupModel.get(i).notificationObj === notification) {
-                popupModel.remove(i)
-                break
+                popupModel.remove(i);
+                break;
             }
         }
     }

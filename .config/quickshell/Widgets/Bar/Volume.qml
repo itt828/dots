@@ -28,10 +28,13 @@ Item {
         text: Math.round(currentVolume * 100) + "%"
 
         icon: {
-            if (isMuted) return FontIcons.volumeMuted
-            if (currentVolume > 0.45) return FontIcons.volumeHigh
-            if (currentVolume > 0.0) return FontIcons.volumeMedium
-            return FontIcons.volumeLow
+            if (isMuted)
+                return FontIcons.volumeMuted;
+            if (currentVolume > 0.45)
+                return FontIcons.volumeHigh;
+            if (currentVolume > 0.0)
+                return FontIcons.volumeMedium;
+            return FontIcons.volumeLow;
         }
     }
 
@@ -43,4 +46,3 @@ Item {
         ToolTip.delay: 500
     }
 }
-

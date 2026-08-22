@@ -15,7 +15,7 @@ Item {
 
     RowLayout {
         id: layout
-        
+
         Text {
             text: windowService.focusedWindowTitle
             font.pixelSize: 13

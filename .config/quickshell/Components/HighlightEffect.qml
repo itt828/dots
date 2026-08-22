@@ -3,7 +3,7 @@ import "../Assets"
 
 Rectangle {
     id: root
-    
+
     property color highlightColor: Theme.accent
     property real maxOpacity: 0.4
     property int flashInDuration: 100
@@ -16,13 +16,19 @@ Rectangle {
     radius: cornerRadius
 
     function flash() {
-        flashAnim.restart()
+        flashAnim.restart();
     }
 
     SequentialAnimation on opacity {
         id: flashAnim
         running: false
-        NumberAnimation { to: root.maxOpacity; duration: root.flashInDuration }
-        NumberAnimation { to: 0; duration: root.flashOutDuration }
+        NumberAnimation {
+            to: root.maxOpacity
+            duration: root.flashInDuration
+        }
+        NumberAnimation {
+            to: 0
+            duration: root.flashOutDuration
+        }
     }
 }

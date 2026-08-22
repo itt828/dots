@@ -23,15 +23,17 @@ Item {
 
         const entries = [];
         outputs.forEach(output => {
-            const outputWorkspaces = all
-                .filter(ws => ws.output === output)
-                .sort((a, b) => a.idx - b.idx);
+            const outputWorkspaces = all.filter(ws => ws.output === output).sort((a, b) => a.idx - b.idx);
 
             if (outputWorkspaces.length === 0)
                 return;
             if (entries.length > 0)
-                entries.push({ separator: true });
-            outputWorkspaces.forEach(ws => entries.push({ workspace: ws }));
+                entries.push({
+                    separator: true
+                });
+            outputWorkspaces.forEach(ws => entries.push({
+                    workspace: ws
+                }));
         });
         return entries;
     }
@@ -66,15 +68,21 @@ Item {
                     visible: !modelData.separator
                     radius: 2
                     color: {
-                        if (!workspace) return Theme.surfaceVariant;
-                        if (workspace.is_focused) return Theme.accent;
-                        if (workspace.is_active) return "#505050"; // Darker gray for active but unfocused
-                        if (workspace.is_urgent) return Theme.danger;
+                        if (!workspace)
+                            return Theme.surfaceVariant;
+                        if (workspace.is_focused)
+                            return Theme.accent;
+                        if (workspace.is_active)
+                            return "#505050"; // Darker gray for active but unfocused
+                        if (workspace.is_urgent)
+                            return Theme.danger;
                         return Theme.surfaceVariant;
                     }
 
                     Behavior on color {
-                        ColorAnimation { duration: 200 }
+                        ColorAnimation {
+                            duration: 200
+                        }
                     }
 
                     MouseArea {
@@ -83,8 +91,8 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
                             let cmd = `niri msg action focus-monitor "${workspace.output}"; niri msg action focus-workspace ${workspace.idx}`;
-                            switchProcess.command = ["bash", "-c", cmd]
-                            switchProcess.running = true
+                            switchProcess.command = ["bash", "-c", cmd];
+                            switchProcess.running = true;
                         }
                     }
                 }

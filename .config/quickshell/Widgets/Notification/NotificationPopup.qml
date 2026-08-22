@@ -10,7 +10,7 @@ import "../../Services"
 
 Rectangle {
     id: root
-    
+
     property var notification // The Notification object
     property bool isPopup: true // True if showing as popup, False if in center
 
@@ -27,11 +27,13 @@ Rectangle {
     radius: 8
     clip: true
 
-    signal closed()
+    signal closed
 
     function resolveIcon(icon, fallback) {
-        if (!icon) return fallback ? resolveIcon(fallback) : "";
-        if (icon.indexOf("/") >= 0 || icon.indexOf("file://") >= 0 || icon.indexOf("image://") >= 0) return icon;
+        if (!icon)
+            return fallback ? resolveIcon(fallback) : "";
+        if (icon.indexOf("/") >= 0 || icon.indexOf("file://") >= 0 || icon.indexOf("image://") >= 0)
+            return icon;
         return Quickshell.iconPath(icon, fallback || "");
     }
 
@@ -62,14 +64,17 @@ Rectangle {
                 // Prioritize App Icon, then App Name, then generic notification icon
                 source: {
                     var src = resolveIcon(root.appIconSource);
-                    if (!src) src = resolveIcon(root.appName.toLowerCase());
-                    if (!src) src = resolveIcon(root.iconSource);
+                    if (!src)
+                        src = resolveIcon(root.appName.toLowerCase());
+                    if (!src)
+                        src = resolveIcon(root.iconSource);
                     return src || Quickshell.iconPath("dialog-information");
                 }
                 fillMode: Image.PreserveAspectFit
-                onStatusChanged: if (status == Image.Error) visible = false
+                onStatusChanged: if (status == Image.Error)
+                    visible = false
             }
-            
+
             AIcon {
                 anchors.centerIn: parent
                 icon: "dialog-information" // Fallback
@@ -92,7 +97,7 @@ Rectangle {
                     opacity: 0.7
                     Layout.fillWidth: true
                 }
-                
+
                 // Close button for popups
                 AIcon {
                     visible: root.isPopup
@@ -102,8 +107,9 @@ Rectangle {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (root.notification && root.notification.close) root.notification.close()
-                            root.closed()
+                            if (root.notification && root.notification.close)
+                                root.notification.close();
+                            root.closed();
                         }
                     }
                 }
@@ -135,7 +141,7 @@ Rectangle {
                 radius: 4
                 clip: true
                 color: "transparent"
-                
+
                 Image {
                     anchors.fill: parent
                     source: root.imageSource
@@ -144,7 +150,7 @@ Rectangle {
             }
         }
     }
-    
+
     // Popup timeout visualization (optional)
     Rectangle {
         visible: root.isPopup
@@ -153,7 +159,7 @@ Rectangle {
         height: 2
         width: parent.width
         color: "#0078d4"
-        
+
         // Animation could be added here
     }
 }

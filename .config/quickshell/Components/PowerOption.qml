@@ -6,7 +6,7 @@ Rectangle {
     id: root
     property string text: ""
     property string icon: ""
-    signal clicked()
+    signal clicked
 
     Layout.fillWidth: true
     height: 40

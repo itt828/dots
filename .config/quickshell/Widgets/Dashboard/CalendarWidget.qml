@@ -73,12 +73,12 @@ Rectangle {
             // Days
             Repeater {
                 model: root.getDaysInMonth(root.year, root.month)
-                
+
                 Rectangle {
                     Layout.preferredWidth: 30
                     Layout.preferredHeight: 30
                     radius: 15
-                    
+
                     property bool isToday: (index + 1) === root.currentDate.getDate()
                     color: isToday ? "black" : "transparent"
 

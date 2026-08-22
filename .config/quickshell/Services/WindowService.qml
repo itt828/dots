@@ -14,7 +14,7 @@ Item {
 
     Connections {
         target: niriService
-        
+
         function onWindowFocused(data) {
             updateFocusedWindow();
         }

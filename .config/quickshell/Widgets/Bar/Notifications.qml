@@ -18,13 +18,15 @@ Item {
 
     Connections {
         target: notificationStore
-        function onDndChanged() { highlight.flash() }
+        function onDndChanged() {
+            highlight.flash();
+        }
     }
 
     // Monitor history count changes
     property int lastCount: notificationStore.history.count
     onLastCountChanged: {
-        highlight.flash()
+        highlight.flash();
     }
 
     IconLabel {
@@ -32,7 +34,7 @@ Item {
         anchors.centerIn: parent
         icon: notificationStore.dnd ? FontIcons.bellSlash : (notificationStore.history.count > 0 ? FontIcons.bellRinging : FontIcons.bell)
         text: notificationStore.history.count.toString()
-        
+
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor

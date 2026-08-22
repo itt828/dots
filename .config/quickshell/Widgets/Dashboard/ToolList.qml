@@ -78,7 +78,7 @@ ColumnLayout {
             enabled: !root.dashboardContext.qrBusy && !root.dashboardContext.qrSelecting
             cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
             onClicked: {
-                root.dashboardContext.startQrSelection()
+                root.dashboardContext.startQrSelection();
             }
         }
     }
@@ -97,6 +97,7 @@ ColumnLayout {
         wrapMode: Text.Wrap
     }
 
-    Item { Layout.fillHeight: true }
-
+    Item {
+        Layout.fillHeight: true
+    }
 }

@@ -16,7 +16,7 @@ Item {
         id: icon
         icon: FontIcons.power
         size: 16
-        
+
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor

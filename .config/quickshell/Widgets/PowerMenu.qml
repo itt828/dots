@@ -12,14 +12,14 @@ Scope {
 
     Variants {
         model: Quickshell.screens.filter(screen => Config.targetScreens.length === 0 || Config.targetScreens.includes(screen.name))
-        
+
         PanelWindow {
             id: powerMenuWindow
             required property var modelData
             screen: modelData
 
             visible: powerContext.visible
-            
+
             anchors {
                 top: true
                 bottom: true
@@ -27,31 +27,31 @@ Scope {
                 right: true
             }
             color: "transparent"
-            
+
             MouseArea {
                 anchors.fill: parent
                 onClicked: powerContext.visible = false
             }
-            
+
             Rectangle {
                 id: menuContent
-                
+
                 anchors.top: parent.top
                 anchors.right: parent.right
                 anchors.topMargin: 60
                 anchors.rightMargin: 16
-                
+
                 width: 180
                 height: contentCol.implicitHeight + 20
                 color: "#eeeeee"
                 radius: 12
                 border.color: "#cccccc"
                 border.width: 1
-                
+
                 MouseArea {
                     anchors.fill: parent
                 }
-                
+
                 layer.enabled: true
                 layer.effect: MultiEffect {
                     shadowEnabled: true
@@ -70,8 +70,8 @@ Scope {
                         text: "Lock"
                         icon: FontIcons.lock
                         onClicked: {
-                            powerContext.visible = false
-                            powerContext.lock()
+                            powerContext.visible = false;
+                            powerContext.lock();
                         }
                     }
 
@@ -79,8 +79,8 @@ Scope {
                         text: "Shutdown"
                         icon: FontIcons.power
                         onClicked: {
-                            powerContext.visible = false
-                            shutdownProc.running = true
+                            powerContext.visible = false;
+                            shutdownProc.running = true;
                         }
                     }
 
@@ -88,8 +88,8 @@ Scope {
                         text: "Reboot"
                         icon: FontIcons.power
                         onClicked: {
-                            powerContext.visible = false
-                            rebootProc.running = true
+                            powerContext.visible = false;
+                            rebootProc.running = true;
                         }
                     }
 
@@ -108,8 +108,8 @@ Scope {
                         text: "Exit"
                         icon: FontIcons.power
                         onClicked: {
-                            powerContext.visible = false
-                            logoutProc.running = true
+                            powerContext.visible = false;
+                            logoutProc.running = true;
                         }
                     }
                 }

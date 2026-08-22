@@ -30,9 +30,9 @@ Rectangle {
             height: playerList.height
             anchors.margins: 10
             spacing: 10
-            
+
             // Only show the first player for now (or could be improved to show active)
-            visible: index === 0 
+            visible: index === 0
 
             property var player: modelData
 
@@ -51,7 +51,7 @@ Rectangle {
                     fillMode: Image.PreserveAspectCrop
                     visible: source != ""
                 }
-                
+
                 AIcon {
                     anchors.centerIn: parent
                     size: 40
@@ -98,9 +98,7 @@ Rectangle {
                     }
 
                     AIcon {
-                        icon: player && player.playbackState === Mpris.Playing
-                                ? FontIcons.mediaPause
-                                : FontIcons.mediaPlay
+                        icon: player && player.playbackState === Mpris.Playing ? FontIcons.mediaPause : FontIcons.mediaPlay
                         size: 24
                         MouseArea {
                             anchors.fill: parent

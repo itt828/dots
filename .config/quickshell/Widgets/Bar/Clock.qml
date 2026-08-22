@@ -13,7 +13,7 @@ Item {
         id: clock
         precision: SystemClock.Minutes
     }
-    
+
     Text {
         id: clockText
         font.pixelSize: 14

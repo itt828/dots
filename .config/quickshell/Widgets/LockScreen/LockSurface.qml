@@ -5,20 +5,20 @@ import QtQuick.Controls.Fusion
 import Quickshell.Wayland
 
 Rectangle {
-	id: root
-	required property LockContext context
-	
-	color: "black"
+    id: root
+    required property LockContext context
+
+    color: "black"
 
     // Escape hatch
-	Button {
-		text: "Emergency Exit"
+    Button {
+        text: "Emergency Exit"
         visible: false // Hidden by default, enable if debugging
-		onClicked: context.unlocked();
+        onClicked: context.unlocked()
         z: 999
-	}
+    }
 
-	ColumnLayout {
+    ColumnLayout {
         anchors.centerIn: parent
         spacing: 50
 
@@ -33,7 +33,7 @@ Rectangle {
                 font.pixelSize: 96
                 color: "white"
                 verticalAlignment: Text.AlignVCenter
-                
+
                 text: Qt.formatTime(new Date(), "HH:mm")
 
                 Timer {
@@ -50,7 +50,7 @@ Rectangle {
                 font.pixelSize: 24
                 color: "#cccccc"
                 verticalAlignment: Text.AlignVCenter
-                
+
                 text: Qt.formatDate(new Date(), "dddd, MMMM d")
 
                 Timer {
@@ -63,16 +63,16 @@ Rectangle {
         }
 
         // Login Box
-		ColumnLayout {
+        ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
             spacing: 15
 
-			TextField {
-				id: passwordBox
+            TextField {
+                id: passwordBox
 
-				implicitWidth: 300
+                implicitWidth: 300
                 implicitHeight: 40
-				padding: 10
+                padding: 10
                 horizontalAlignment: TextInput.AlignHCenter
 
                 background: Rectangle {
@@ -84,28 +84,28 @@ Rectangle {
                 }
 
                 color: "white"
-				focus: true
-				enabled: !root.context.unlockInProgress
-				echoMode: TextInput.Password
-				inputMethodHints: Qt.ImhSensitiveData
+                focus: true
+                enabled: !root.context.unlockInProgress
+                echoMode: TextInput.Password
+                inputMethodHints: Qt.ImhSensitiveData
 
                 placeholderText: "Password"
                 placeholderTextColor: "#88ffffff"
 
-				// Update the text in the context when the text in the box changes.
-				onTextChanged: root.context.currentText = this.text;
+                // Update the text in the context when the text in the box changes.
+                onTextChanged: root.context.currentText = this.text
 
-				// Try to unlock when enter is pressed.
-				onAccepted: root.context.tryUnlock();
+                // Try to unlock when enter is pressed.
+                onAccepted: root.context.tryUnlock()
 
-				// Update the text in the box to match the text in the context.
-				Connections {
-					target: root.context
-					function onCurrentTextChanged() {
-						passwordBox.text = root.context.currentText;
-					}
-				}
-			}
+                // Update the text in the box to match the text in the context.
+                Connections {
+                    target: root.context
+                    function onCurrentTextChanged() {
+                        passwordBox.text = root.context.currentText;
+                    }
+                }
+            }
 
             Text {
                 visible: root.context.showFailure
@@ -115,6 +115,6 @@ Rectangle {
                 font.pixelSize: 14
                 verticalAlignment: Text.AlignVCenter
             }
-		}
-	}
+        }
+    }
 }

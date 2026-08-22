@@ -60,12 +60,12 @@ Rectangle {
                 iconSource: model.icon
                 imageSource: model.image
                 isPopup: false // Full view in history
-                
-                // Add a close button logic for history items if needed, 
+
+                // Add a close button logic for history items if needed,
                 // NotificationPopup has a close button but it closes the notification object.
                 // We might want to just remove from history or close.
             }
-            
+
             // Empty State
             Text {
                 anchors.centerIn: parent

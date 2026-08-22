@@ -79,7 +79,7 @@ Scope {
                     RowLayout {
                         Layout.fillWidth: true
                         spacing: 8
-                        
+
                         Repeater {
                             model: ["Home", "Media", "Tools"]
                             Rectangle {
@@ -87,7 +87,7 @@ Scope {
                                 height: 32
                                 radius: 6
                                 color: layout.currentIndex === index ? "#ffffff" : "#b0bec5"
-                                
+
                                 Text {
                                     anchors.centerIn: parent
                                     text: modelData
@@ -125,7 +125,9 @@ Scope {
                                 Layout.alignment: Qt.AlignVCenter
                             }
 
-                            Item { Layout.fillWidth: true } // Spacer
+                            Item {
+                                Layout.fillWidth: true
+                            } // Spacer
 
                             RowLayout {
                                 spacing: 8
@@ -144,7 +146,7 @@ Scope {
                                     height: 20
                                     radius: 10
                                     color: "#cfd8dc"
-                                    
+
                                     Rectangle {
                                         id: handle
                                         width: 16
@@ -153,9 +155,12 @@ Scope {
                                         color: "#455a64"
                                         anchors.verticalCenter: parent.verticalCenter
                                         x: volumeService.isSpeaker ? 22 : 2
-                                        
+
                                         Behavior on x {
-                                            NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+                                            NumberAnimation {
+                                                duration: 150
+                                                easing.type: Easing.OutQuad
+                                            }
                                         }
                                     }
 
@@ -201,7 +206,9 @@ Scope {
                         ColumnLayout {
                             spacing: 12
                             MediaControl {}
-                            Item { Layout.fillHeight: true } // Spacer
+                            Item {
+                                Layout.fillHeight: true
+                            } // Spacer
                         }
 
                         // Tools Page

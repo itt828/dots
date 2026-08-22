@@ -20,10 +20,11 @@ Item {
         stdout: SplitParser {
             onRead: data => {
                 const line = data.toString().trim();
-                if (!line) return;
-                
+                if (!line)
+                    return;
+
                 // Use print for more reliable console output in some environments
-                // print("[NiriService] Raw:", line); 
+                // print("[NiriService] Raw:", line);
 
                 try {
                     const event = JSON.parse(line);
@@ -54,7 +55,7 @@ Item {
                 }
             }
         }
-        
+
         onExited: restartTimer.start()
     }
 

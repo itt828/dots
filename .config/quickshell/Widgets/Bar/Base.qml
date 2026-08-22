@@ -5,7 +5,7 @@ import "../../Components"
 
 Rectangle {
     id: root
-    
+
     default property alias content: layout.data
     property alias leftContent: leftLayout.data
     property alias centerContent: centerLayout.data

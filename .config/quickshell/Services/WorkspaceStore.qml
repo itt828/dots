@@ -8,13 +8,14 @@ Item {
     required property var niriService
 
     property var workspaces: []
-    
+
     // Internal state to track window titles for activity detection
     property var _windowTitles: ({}) // { windowId: title }
 
     function update(newWorkspaces) {
-        if (!newWorkspaces || !Array.isArray(newWorkspaces)) return;
-        
+        if (!newWorkspaces || !Array.isArray(newWorkspaces))
+            return;
+
         // Preserve local urgency if it was set
         let oldWorkspaces = workspaces;
         workspaces = newWorkspaces.map(ws => {
@@ -41,16 +42,17 @@ Item {
 
     Connections {
         target: niriService
-        
+
         function onWorkspacesChanged(newWorkspaces) {
             update(newWorkspaces);
         }
-        
+
         function onWorkspaceActivated(data) {
             // When a workspace is activated, update states and clear its local urgency
             let targetOutput = "";
             let wsToUpdate = workspaces.find(w => w.id === data.id);
-            if (wsToUpdate) targetOutput = wsToUpdate.output;
+            if (wsToUpdate)
+                targetOutput = wsToUpdate.output;
 
             workspaces = workspaces.map(ws => {
                 if (ws.id === data.id) {
@@ -83,8 +85,9 @@ Item {
         }
 
         function onWindowOpenedOrChanged(window) {
-            if (!window || !window.id || !window.workspace_id) return;
-            
+            if (!window || !window.id || !window.workspace_id)
+                return;
+
             let oldTitle = _windowTitles[window.id];
             let newTitle = window.title;
             _windowTitles[window.id] = newTitle;
@@ -93,7 +96,7 @@ Item {
             if (oldTitle !== undefined && oldTitle !== newTitle && !window.is_focused) {
                 setLocalUrgent(window.workspace_id, true);
             }
-            
+
             // Also handle explicit urgency flag from niri
             if (window.is_urgent) {
                 setLocalUrgent(window.workspace_id, true);
@@ -143,7 +146,8 @@ Item {
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
-                if (!text) return;
+                if (!text)
+                    return;
                 try {
                     const windows = JSON.parse(text);
                     windows.forEach(win => {

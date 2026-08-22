@@ -5,18 +5,32 @@ import "Widgets"
 import "Services"
 
 ShellRoot {
-    Provider { id: services }
-    Bar { services: services }
-    SimpleBar { workspaceStore: services.workspaces }
+    Provider {
+        id: services
+    }
+    Bar {
+        services: services
+    }
+    SimpleBar {
+        workspaceStore: services.workspaces
+    }
     Dashboard {
         dashboardContext: services.dashboard
         volumeService: services.volume
         notificationStore: services.notifications
     }
-    QrScanner { dashboardContext: services.dashboard }
-    Notification { notificationStore: services.notifications }
-    PowerMenu { powerContext: services.power }
-    LockScreen { powerContext: services.power }
+    QrScanner {
+        dashboardContext: services.dashboard
+    }
+    Notification {
+        notificationStore: services.notifications
+    }
+    PowerMenu {
+        powerContext: services.power
+    }
+    LockScreen {
+        powerContext: services.power
+    }
 
     // IpcHandler {
     //     target: "shell"

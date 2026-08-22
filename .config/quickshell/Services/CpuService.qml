@@ -13,11 +13,11 @@ QtObject {
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
-                    var parts = text.trim().split(" ")
+                    var parts = text.trim().split(" ");
                     if (parts.length > 0) {
-                        var load = parseFloat(parts[0])
-                        root.label = parts[0]
-                        root.usage = Math.min(load / 4.0, 1.0) // Normalizing for 4 cores as before
+                        var load = parseFloat(parts[0]);
+                        root.label = parts[0];
+                        root.usage = Math.min(load / 4.0, 1.0); // Normalizing for 4 cores as before
                     }
                 }
             }
