@@ -8,7 +8,12 @@ ShellRoot {
     Provider { id: services }
     Bar { services: services }
     SimpleBar { workspaceStore: services.workspaces }
-    Dashboard { dashboardContext: services.dashboard }
+    Dashboard {
+        dashboardContext: services.dashboard
+        volumeService: services.volume
+        notificationStore: services.notifications
+    }
+    QrScanner { dashboardContext: services.dashboard }
     Notification { notificationStore: services.notifications }
     PowerMenu { powerContext: services.power }
     LockScreen { powerContext: services.power }

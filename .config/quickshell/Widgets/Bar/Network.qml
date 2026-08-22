@@ -21,13 +21,17 @@ Item {
 
         icon: {
             if (networkService.isConnected) {
-                if (!networkService.isWifi) return FontIcons.wifiHigh // Ethernet
+                if (networkService.isWired) return FontIcons.network
                 
-                var signal = networkService.signalStrength
-                if (signal > 80) return FontIcons.wifiHigh
-                if (signal > 50) return FontIcons.wifiMedium
-                if (signal > 20) return FontIcons.wifiLow
-                return FontIcons.wifiNone
+                if (networkService.isWifi) {
+                    var signal = networkService.signalStrength
+                    if (signal > 80) return FontIcons.wifiHigh
+                    if (signal > 50) return FontIcons.wifiMedium
+                    if (signal > 20) return FontIcons.wifiLow
+                    return FontIcons.wifiNone
+                }
+                
+                return FontIcons.network
             }
             
             if (!networkService.isWifiEnabled) return FontIcons.power

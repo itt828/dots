@@ -30,7 +30,7 @@ Rectangle {
                 Layout.fillWidth: true
             }
             AIcon {
-                icon: "edit-clear-all" // or trash
+                icon: FontIcons.x
                 size: 20
                 visible: notificationStore.history.count > 0
                 MouseArea {

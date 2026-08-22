@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell.Services.Pipewire
+import Quickshell.Io
 
 QtObject {
     id: root
@@ -47,5 +48,64 @@ QtObject {
         if (source && source.audio) {
             source.audio.muted = !source.audio.muted
         }
+    }
+
+    property string alsaCardName: ""
+    property string activeProfile: ""
+    property string headphoneProfile: ""
+    property string speakerProfile: ""
+
+    readonly property bool isHeadphones: activeProfile.includes("Headphones")
+    readonly property bool isSpeaker: activeProfile.includes("Speaker")
+
+    property Process getProfileProc: Process {
+        command: ["pactl", "-f", "json", "list", "cards"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    let cards = JSON.parse(text);
+                    let alsaCard = cards.find(card => card.name && card.name.startsWith("alsa_card."));
+                    if (alsaCard) {
+                        root.alsaCardName = alsaCard.name;
+                        root.activeProfile = alsaCard.active_profile;
+                        
+                        let profiles = Object.keys(alsaCard.profiles || {});
+                        root.headphoneProfile = profiles.find(p => p.includes("Headphones")) || "";
+                        root.speakerProfile = profiles.find(p => p.includes("Speaker")) || "";
+                    }
+                } catch(e) {
+                    console.log("Error parsing pactl cards:", e);
+                }
+            }
+        }
+    }
+
+    function refreshProfile() {
+        getProfileProc.running = true;
+    }
+
+    property Process setProfileProc: Process {
+        onRunningChanged: {
+            if (!running) {
+                root.refreshProfile();
+            }
+        }
+    }
+
+    function toggleProfile() {
+        if (!alsaCardName) return;
+        let newProfile = "";
+        if (isHeadphones) {
+            newProfile = speakerProfile;
+        } else {
+            newProfile = headphoneProfile;
+        }
+        if (!newProfile) return;
+        setProfileProc.command = ["pactl", "set-card-profile", root.alsaCardName, newProfile];
+        setProfileProc.running = true;
+    }
+
+    Component.onCompleted: {
+        refreshProfile();
     }
 }

@@ -39,6 +39,7 @@ Scope {
                     Workspaces {
                         workspaceStore: services.workspaces
                         outputName: barWindow.screen.name
+                        showOtherOutputs: true
                     }
                     WindowTitle {
                         windowService: services.windows

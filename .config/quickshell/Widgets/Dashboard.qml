@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
@@ -8,6 +9,8 @@ import "./Dashboard"
 Scope {
     id: root
     required property var dashboardContext
+    property var volumeService
+    property var notificationStore
 
     Variants {
         model: Quickshell.screens.filter(screen => Config.targetScreens.length === 0 || Config.targetScreens.includes(screen.name))
@@ -18,19 +21,23 @@ Scope {
             screen: modelData
 
             visible: dashboardContext.visible
+            // slurp uses the Wayland Overlay layer. Keep the dashboard on Top so
+            // its transparent fullscreen surface can never cover the selector.
+            WlrLayershell.layer: WlrLayer.Top
+            onVisibleChanged: {
+                if (visible && volumeService) {
+                    volumeService.refreshProfile();
+                }
+            }
 
             anchors {
                 top: true
-                bottom: true
-                left: true
-                right: true
             }
+            implicitWidth: 380
+            implicitHeight: dashboardContent.height + 20
+            exclusionMode: ExclusionMode.Ignore
             color: "transparent"
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: dashboardContext.visible = false
-            }
             Rectangle {
                 id: dashboardContent
 
@@ -74,7 +81,7 @@ Scope {
                         spacing: 8
                         
                         Repeater {
-                            model: ["Home", "Media"]
+                            model: ["Home", "Media", "Tools"]
                             Rectangle {
                                 Layout.fillWidth: true
                                 height: 32
@@ -92,6 +99,82 @@ Scope {
                                     anchors.fill: parent
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: layout.currentIndex = index
+                                }
+                            }
+                        }
+                    }
+
+                    // Audio Profile Switcher
+                    Rectangle {
+                        Layout.fillWidth: true
+                        height: 48
+                        radius: 8
+                        color: "#ffffff"
+                        visible: volumeService !== undefined && volumeService.alsaCardName !== ""
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.leftMargin: 12
+                            anchors.rightMargin: 12
+                            spacing: 12
+
+                            Text {
+                                text: "Audio Profile"
+                                font.bold: true
+                                color: "#37474f"
+                                Layout.alignment: Qt.AlignVCenter
+                            }
+
+                            Item { Layout.fillWidth: true } // Spacer
+
+                            RowLayout {
+                                spacing: 8
+                                Layout.alignment: Qt.AlignVCenter
+
+                                Text {
+                                    text: "🎧 Headphones"
+                                    font.pointSize: 9
+                                    color: volumeService.isHeadphones ? "#37474f" : "#90a4ae"
+                                    font.bold: volumeService.isHeadphones
+                                }
+
+                                // Toggle Switch
+                                Rectangle {
+                                    width: 40
+                                    height: 20
+                                    radius: 10
+                                    color: "#cfd8dc"
+                                    
+                                    Rectangle {
+                                        id: handle
+                                        width: 16
+                                        height: 16
+                                        radius: 8
+                                        color: "#455a64"
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        x: volumeService.isSpeaker ? 22 : 2
+                                        
+                                        Behavior on x {
+                                            NumberAnimation { duration: 150; easing.type: Easing.OutQuad }
+                                        }
+                                    }
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            if (volumeService) {
+                                                volumeService.toggleProfile();
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Text {
+                                    text: "🔊 Speaker"
+                                    font.pointSize: 9
+                                    color: volumeService.isSpeaker ? "#37474f" : "#90a4ae"
+                                    font.bold: volumeService.isSpeaker
                                 }
                             }
                         }
@@ -119,6 +202,11 @@ Scope {
                             spacing: 12
                             MediaControl {}
                             Item { Layout.fillHeight: true } // Spacer
+                        }
+
+                        // Tools Page
+                        ToolList {
+                            dashboardContext: root.dashboardContext
                         }
                     }
                 }
