@@ -1,7 +1,6 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Effects
 import Quickshell.Io
 import "../Services"
 import "../Components"
@@ -45,19 +44,11 @@ Scope {
                 height: contentCol.implicitHeight + 20
                 color: "#eeeeee"
                 radius: 12
-                border.color: "#cccccc"
-                border.width: 1
+                border.color: "#6f8792"
+                border.width: 2
 
                 MouseArea {
                     anchors.fill: parent
-                }
-
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowColor: "black"
-                    shadowOpacity: 0.3
-                    shadowBlur: 10
                 }
 
                 ColumnLayout {

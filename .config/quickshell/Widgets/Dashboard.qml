@@ -1,7 +1,6 @@
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
-import QtQuick.Effects
 import QtQuick.Layouts
 import "../Assets"
 import "./Dashboard"
@@ -32,36 +31,34 @@ Scope {
 
             anchors {
                 top: true
+                left: true
+                right: true
+                bottom: true
             }
-            implicitWidth: 380
-            implicitHeight: dashboardContent.height + 20
             exclusionMode: ExclusionMode.Ignore
             color: "transparent"
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: dashboardContext.visible = false
+            }
 
             Rectangle {
                 id: dashboardContent
 
                 anchors.top: parent.top
-                anchors.topMargin: 10
+                anchors.topMargin: 56
                 anchors.horizontalCenter: parent.horizontalCenter
 
                 width: 360
                 height: layout.implicitHeight + 32
                 color: "#c4d0d6"
                 radius: 8
+                border.color: "#6f8792"
+                border.width: 2
 
                 MouseArea {
                     anchors.fill: parent
-                }
-
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    shadowColor: "#ee7e9da8"
-                    shadowOpacity: 1
-                    shadowBlur: 0
-                    shadowHorizontalOffset: 8
-                    shadowVerticalOffset: 8
                 }
 
                 ColumnLayout {

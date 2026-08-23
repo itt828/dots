@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Effects
 import "../../Components"
 
 Rectangle {
@@ -12,13 +11,15 @@ Rectangle {
     property alias rightContent: rightLayout.data
 
     color: "#c4d0d6" // oklch(0.85 0.015 228)
+    border.color: "#6f8792"
+    border.width: 2
 
     anchors {
         top: parent.top
         left: parent.left
         right: parent.right
-        leftMargin: 16
-        rightMargin: 16
+        leftMargin: 8
+        rightMargin: 8
         topMargin: 8
     }
 
@@ -28,18 +29,6 @@ Rectangle {
     bottomRightRadius: 8
     topLeftRadius: 8
     topRightRadius: 8
-
-    layer {
-        enabled: true
-        effect: MultiEffect {
-            shadowEnabled: true
-            shadowColor: "#ee7e9da8"
-            shadowOpacity: 1
-            shadowBlur: 0
-            shadowHorizontalOffset: 8
-            shadowVerticalOffset: 8
-        }
-    }
 
     RowLayout {
         id: layout

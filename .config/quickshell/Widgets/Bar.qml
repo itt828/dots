@@ -28,7 +28,7 @@ Scope {
                 right: true
             }
             color: "transparent"
-            implicitHeight: bar.implicitHeight + 16
+            implicitHeight: bar.implicitHeight + 8
 
             Base {
                 id: bar
