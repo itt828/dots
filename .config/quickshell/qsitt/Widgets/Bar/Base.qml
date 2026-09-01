@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../../Components"
+import "../../Assets"
 
 Rectangle {
     id: root
@@ -10,36 +11,36 @@ Rectangle {
     property alias centerContent: centerLayout.data
     property alias rightContent: rightLayout.data
 
-    color: "#c4d0d6" // oklch(0.85 0.015 228)
-    border.color: "#6f8792"
-    border.width: 2
+    color: Theme.barBackground
+    border.color: Theme.barBorder
+    border.width: Theme.barBorderWidth
 
     anchors {
         top: parent.top
         left: parent.left
         right: parent.right
-        leftMargin: 8
-        rightMargin: 8
-        topMargin: 8
+        leftMargin: Theme.barOuterMargin
+        rightMargin: Theme.barOuterMargin
+        topMargin: Theme.barOuterMargin
     }
 
-    implicitHeight: layout.implicitHeight + 12
+    implicitHeight: layout.implicitHeight + Theme.barHorizontalPadding
 
-    bottomLeftRadius: 8
-    bottomRightRadius: 8
-    topLeftRadius: 8
-    topRightRadius: 8
+    bottomLeftRadius: Theme.radius
+    bottomRightRadius: Theme.radius
+    topLeftRadius: Theme.radius
+    topRightRadius: Theme.radius
 
     RowLayout {
         id: layout
         anchors {
             fill: parent
-            leftMargin: 12
-            rightMargin: 12
+            leftMargin: Theme.barHorizontalPadding
+            rightMargin: Theme.barHorizontalPadding
             topMargin: 0
             bottomMargin: 0
         }
-        spacing: 12
+        spacing: Theme.barSectionSpacing
 
         Item {
             Layout.fillWidth: true
@@ -48,14 +49,14 @@ Rectangle {
                 id: leftLayout
                 anchors.left: parent.left
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 12
+                spacing: Theme.barSectionSpacing
             }
         }
 
         RowLayout {
             id: centerLayout
             Layout.alignment: Qt.AlignCenter
-            spacing: 12
+            spacing: Theme.barSectionSpacing
         }
 
         Item {
@@ -65,7 +66,7 @@ Rectangle {
                 id: rightLayout
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 12
+                spacing: Theme.barSectionSpacing
             }
         }
     }

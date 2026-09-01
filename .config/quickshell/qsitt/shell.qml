@@ -3,12 +3,13 @@ import QtQuick
 import Quickshell
 import "Widgets"
 import "Services"
+import "Surfaces"
 
 ShellRoot {
     Provider {
         id: services
     }
-    Bar {
+    BarHost {
         services: services
     }
     SimpleBar {
