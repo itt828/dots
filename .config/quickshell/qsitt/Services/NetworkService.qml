@@ -6,6 +6,18 @@ QtObject {
 
     readonly property var devices: Networking.devices ? Networking.devices.values : []
 
+    readonly property var wifiAdapter: {
+        for (var i = 0; i < devices.length; i++) {
+            var dev = devices[i];
+            if (dev && (dev.type === 1 || isWifiName(dev.name)))
+                return dev;
+        }
+        return null;
+    }
+
+    readonly property var availableNetworks: wifiAdapter && wifiAdapter.networks
+        ? wifiAdapter.networks.values : []
+
     readonly property var wiredDevice: {
         for (var i = 0; i < 20; i++) {
             var dev = devices[i];
@@ -58,6 +70,10 @@ QtObject {
 
     readonly property bool isConnected: Networking.connectivity >= 4 || activeDevice !== null
     readonly property bool isWifiEnabled: Networking.wifiEnabled
+
+    function setWifiEnabled(enabled) {
+        Networking.wifiEnabled = enabled;
+    }
 
     readonly property string connectionName: {
         if (isWired)

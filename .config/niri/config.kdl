@@ -31,14 +31,6 @@ gestures {
 output "eDP-1" {
     scale 1
     position x=1920 y=0
-    layout {
-    struts {
-        left 0
-        right 0
-        top 0
-        bottom 0
-    }
-}
 }
 output "DP-2" {
     scale 1
@@ -66,12 +58,6 @@ layout {
         width 2
         active-color "#d9a3a3"
         inactive-color "#6f8792"
-    }
-    struts {
-        left 0
-        right 0
-        top 0
-        bottom 0
     }
 }
 
@@ -116,7 +102,7 @@ window-rule {
     }
 }
 
-spawn-at-startup "quickshell"
+spawn-at-startup "qs" "-c" "qsitt"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "awww-daemon"
 spawn-at-startup "fcitx5"
@@ -142,7 +128,7 @@ binds {
     Mod+P { spawn "clcnt"; }
     // Mod+Shift+B { spawn "qs" "-c"  "noctalia-shell"; }
     // Mod+Shift+B { spawn "sh" "-c" "astal -q; ags run --gtk 4"; }
-    Mod+Shift+B { spawn "quickshell"; }
+    Mod+Shift+B { spawn "qs" "-c" "qsitt"; }
     XF86AudioMute        allow-when-locked=true { spawn "pactl" "set-sink-mute" "@DEFAULT_SINK@" "toggle"; }
     XF86AudioRaiseVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "+5%"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "-5%"; }

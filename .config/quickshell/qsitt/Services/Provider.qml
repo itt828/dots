@@ -10,6 +10,7 @@ QtObject {
     readonly property MemService mem: MemService {}
     readonly property VolumeService volume: VolumeService {}
     readonly property NetworkService network: NetworkService {}
+    readonly property BluetoothService bluetooth: BluetoothService {}
     readonly property NotificationStore notifications: NotificationStore {}
     readonly property DashboardContext dashboard: DashboardContext {}
     readonly property PowerContext power: PowerContext {}

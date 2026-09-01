@@ -1,0 +1,61 @@
+{
+    "animations": {
+        "enable": true,
+        "slowdown": 1
+    },
+    "autostart": [
+    ],
+    "bindOverrides": [
+    ],
+    "cursor": {
+        "hideWhenTyping": false,
+        "size": 24,
+        "theme": ""
+    },
+    "decoration": {
+        "blur": {
+            "enable": true,
+            "noise": 0.02,
+            "offset": 3,
+            "passes": 3,
+            "saturation": 1.2
+        },
+        "border": {
+            "enable": true,
+            "width": 1
+        },
+        "focusRing": {
+            "enable": true,
+            "width": 2
+        },
+        "rounding": 12,
+        "shadow": {
+            "enable": false,
+            "softness": 30,
+            "spread": 5
+        }
+    },
+    "input": {
+        "focusFollowsMouse": true,
+        "kbLayout": "us",
+        "mouse": {
+            "accelSpeed": 0,
+            "naturalScroll": false
+        },
+        "numlock": false,
+        "repeatDelay": 600,
+        "repeatRate": 25,
+        "touchpad": {
+            "accelSpeed": 0,
+            "disableWhileTyping": false,
+            "naturalScroll": true,
+            "scrollFactor": 1,
+            "tap": true
+        }
+    },
+    "layout": {
+        "centerFocusedColumn": "on-overflow",
+        "defaultColumnWidth": 0.5,
+        "gaps": 3
+    }
+}

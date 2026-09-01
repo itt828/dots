@@ -17,6 +17,8 @@ ShellRoot {
     Dashboard {
         dashboardContext: services.dashboard
         volumeService: services.volume
+        networkService: services.network
+        bluetoothService: services.bluetooth
         notificationStore: services.notifications
     }
     QrScanner {

@@ -9,6 +9,8 @@ Scope {
     id: root
     required property var dashboardContext
     property var volumeService
+    property var networkService
+    property var bluetoothService
     property var notificationStore
 
     Variants {
@@ -50,7 +52,7 @@ Scope {
                 anchors.topMargin: 56
                 anchors.horizontalCenter: parent.horizontalCenter
 
-                width: 360
+                width: 640
                 height: layout.implicitHeight + 32
                 color: "#c4d0d6"
                 radius: 8
@@ -78,7 +80,7 @@ Scope {
                         spacing: 8
 
                         Repeater {
-                            model: ["Home", "Media", "Tools"]
+                            model: ["Home", "Notifications", "Media", "Tools", "Audio", "Network", "Bluetooth"]
                             Rectangle {
                                 Layout.fillWidth: true
                                 height: 32
@@ -101,87 +103,6 @@ Scope {
                         }
                     }
 
-                    // Audio Profile Switcher
-                    Rectangle {
-                        Layout.fillWidth: true
-                        height: 48
-                        radius: 8
-                        color: "#ffffff"
-                        visible: volumeService !== undefined && volumeService.alsaCardName !== ""
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.leftMargin: 12
-                            anchors.rightMargin: 12
-                            spacing: 12
-
-                            Text {
-                                text: "Audio Profile"
-                                font.bold: true
-                                color: "#37474f"
-                                Layout.alignment: Qt.AlignVCenter
-                            }
-
-                            Item {
-                                Layout.fillWidth: true
-                            } // Spacer
-
-                            RowLayout {
-                                spacing: 8
-                                Layout.alignment: Qt.AlignVCenter
-
-                                Text {
-                                    text: "🎧 Headphones"
-                                    font.pointSize: 9
-                                    color: volumeService.isHeadphones ? "#37474f" : "#90a4ae"
-                                    font.bold: volumeService.isHeadphones
-                                }
-
-                                // Toggle Switch
-                                Rectangle {
-                                    width: 40
-                                    height: 20
-                                    radius: 10
-                                    color: "#cfd8dc"
-
-                                    Rectangle {
-                                        id: handle
-                                        width: 16
-                                        height: 16
-                                        radius: 8
-                                        color: "#455a64"
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        x: volumeService.isSpeaker ? 22 : 2
-
-                                        Behavior on x {
-                                            NumberAnimation {
-                                                duration: 150
-                                                easing.type: Easing.OutQuad
-                                            }
-                                        }
-                                    }
-
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: {
-                                            if (volumeService) {
-                                                volumeService.toggleProfile();
-                                            }
-                                        }
-                                    }
-                                }
-
-                                Text {
-                                    text: "🔊 Speaker"
-                                    font.pointSize: 9
-                                    color: volumeService.isSpeaker ? "#37474f" : "#90a4ae"
-                                    font.bold: volumeService.isSpeaker
-                                }
-                            }
-                        }
-                    }
-
                     // Pages
                     StackLayout {
                         currentIndex: layout.currentIndex
@@ -192,6 +113,11 @@ Scope {
                         ColumnLayout {
                             spacing: 12
                             CalendarWidget {}
+                        }
+
+                        // Notifications Page
+                        ColumnLayout {
+                            spacing: 12
                             NotificationHistory {
                                 Layout.fillHeight: true
                                 Layout.minimumHeight: 240
@@ -211,6 +137,18 @@ Scope {
                         // Tools Page
                         ToolList {
                             dashboardContext: root.dashboardContext
+                        }
+
+                        AudioPage {
+                            volumeService: root.volumeService
+                        }
+
+                        NetworkPage {
+                            networkService: root.networkService
+                        }
+
+                        BluetoothPage {
+                            bluetoothService: root.bluetoothService
                         }
                     }
                 }

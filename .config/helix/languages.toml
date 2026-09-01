@@ -126,7 +126,7 @@ name = "moonbit"
 scope = "source.moonbit"
 injection-regex = "moonbit"
 file-types = ["mbt"]
-comment-token = "//"
+comment-tokens = ["//"]
 block-comment-tokens = []
 language-servers = ["moonbit-lsp"]
 indent = { tab-width = 2, unit = "  " }
@@ -135,4 +135,5 @@ indent = { tab-width = 2, unit = "  " }
 [[language]]
 name = "qml"
 language-servers = ["qmlls"]
+auto-format = true
 
