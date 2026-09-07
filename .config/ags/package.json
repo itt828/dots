@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "ags",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "gen:ags": "bash scripts/generate-ags-types.sh"
+  },
+  "dependencies": {
+    "ags": "file:/usr/share/ags/js",
+    "gnim": "file:/usr/share/ags/js/node_modules/gnim"
+  },
+  "devDependencies": {
+    "@itt/unocss-preset-gtk": "npm:@jsr/itt__unocss-preset-gtk@^0.0.1",
+    "@ts-for-gir/cli": "^4.6.0",
+    "@unocss/cli": "^66.9.2",
+    "unocss": "^66.9.2",
+    "vite-plus": "^0.3.0"
+  },
+  "packageManager": "pnpm@11.25.0"
+}

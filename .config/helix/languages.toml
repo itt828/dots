@@ -82,12 +82,13 @@ language-servers = ["vscode-css-language-server", "tailwindcss-ls", "biome"]
 [[language]]
 name = "jsx"
 auto-format = true
-language-servers = ["typescript-language-server", "tailwindcss-ls"]
+language-servers = ["vtsls", "unocss-language-server"]
 
 [[language]]
 name = "tsx"
 auto-format = true
-language-servers = ["typescript-language-server", "tailwindcss-ls"]
+# language-servers = ["vtsls","unocss-language-server"]
+language-servers = ["vtsls"]
 
 [[language]]
 name = "svelte"
