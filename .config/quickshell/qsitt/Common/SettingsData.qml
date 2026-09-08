@@ -15,7 +15,7 @@ QtObject {
     // Barの見た目と配置は独立して変更できる。
     readonly property string barDesign: "default"
     readonly property var barLayout: ({
-            "left": ["workspaces", "windowTitle"],
+            "left": ["search", "workspaces", "windowTitle"],
             "center": ["clock"],
             "right": ["tray", "notifications", "volume", "microphone", "brightness", "network", "battery", "power"]
         })

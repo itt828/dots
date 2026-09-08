@@ -3,10 +3,12 @@ pragma ComponentBehavior: Bound
 import QtQuick
 
 QtObject {
-    readonly property list<string> moduleNames: ["workspaces", "windowTitle", "clock", "tray", "notifications", "volume", "microphone", "brightness", "cpu", "memory", "network", "battery", "power"]
+    readonly property list<string> moduleNames: ["search", "workspaces", "windowTitle", "clock", "tray", "notifications", "volume", "microphone", "brightness", "cpu", "memory", "network", "battery", "power"]
 
     function sourceFor(name: string): url {
         switch (name) {
+        case "search":
+            return Qt.resolvedUrl("../Modules/Bar/Modules/Search.qml");
         case "workspaces":
             return Qt.resolvedUrl("../Modules/Bar/Modules/Workspaces.qml");
         case "windowTitle":

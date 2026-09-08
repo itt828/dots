@@ -24,7 +24,8 @@ qsitt/
 │   ├── ControlCenter/
 │   ├── Lock/
 │   ├── Notifications/
-│   └── QrScanner/
+│   ├── QrScanner/
+│   └── Search/
 ├── Modals/                   # 独立したモーダル UI
 │   └── PowerMenu/
 ├── Widgets/                  # 機能に依存しない再利用 UI
@@ -103,6 +104,7 @@ sequenceDiagram
 | `NiriService` | niri のイベントストリーム受信とイベント通知 |
 | `NotificationService` | 通知サーバー、通知履歴、DND 状態 |
 | `PowerService` | 電源メニューとセッションロックの状態 |
+| `SearchService` | 検索画面の表示状態と入力文字列 |
 | `VolumeService` | PipeWire の入出力音量、ミュート、プロファイル |
 | `WindowService` | フォーカス中のウィンドウタイトル |
 | `WorkspaceService` | ワークスペース一覧、選択状態、緊急状態 |
@@ -175,6 +177,10 @@ flowchart LR
 ### QrScanner
 
 `QrScanner.qml` は画面範囲の選択サーフェスと読み取りプロセスを所有する。コントロールセンターを閉じて範囲選択へ移るため、選択状態と結果メッセージは `ControlCenterService` を介して共有する。
+
+### Search
+
+`Search.qml` は対象モニターごとに検索サーフェスと画像範囲選択サーフェスを生成する。表示状態、入力文字列、範囲選択状態は `SearchService` で共有し、Web 検索と画像範囲検索を起動するプロセスは表示機能側が所有する。画像範囲検索は QML 上で選択した座標を `Scripts/google-lens-region.sh` へ渡し、画像取得と一時アップロードページの生成を実行する。バーの `Search` モジュールはサービスの表示切替だけを担当する。
 
 ### Lock
 

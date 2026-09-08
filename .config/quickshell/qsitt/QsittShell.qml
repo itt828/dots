@@ -6,6 +6,7 @@ import qs.Modules.ControlCenter
 import qs.Modules.Lock
 import qs.Modules.Notifications
 import qs.Modules.QrScanner
+import qs.Modules.Search
 
 Item {
     Bar {}
@@ -13,5 +14,6 @@ Item {
     Lock {}
     Notifications {}
     QrScanner {}
+    Search {}
     PowerMenu {}
 }

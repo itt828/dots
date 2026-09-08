@@ -39,6 +39,7 @@ QtObject {
     readonly property string ram: "\ue9c4"
 
     readonly property string clock: "\ue19a"
+    readonly property string search: "\ue30c"
 
     readonly property string bell: "\ue0ce"
     readonly property string bellRinging: "\ue5e8"
