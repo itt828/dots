@@ -1,45 +1,14 @@
 //@ pragma UseQApplication
+//@ pragma AppId qsitt
 import QtQuick
 import Quickshell
-import "Widgets"
-import "Services"
-import "Surfaces"
 
 ShellRoot {
-    Provider {
-        id: services
-    }
-    BarHost {
-        services: services
-    }
-    SimpleBar {
-        workspaceStore: services.workspaces
-    }
-    Dashboard {
-        dashboardContext: services.dashboard
-        volumeService: services.volume
-        networkService: services.network
-        bluetoothService: services.bluetooth
-        notificationStore: services.notifications
-    }
-    QrScanner {
-        dashboardContext: services.dashboard
-    }
-    Notification {
-        notificationStore: services.notifications
-    }
-    PowerMenu {
-        powerContext: services.power
-    }
-    LockScreen {
-        powerContext: services.power
-    }
+    id: entrypoint
 
-    // IpcHandler {
-    //     target: "shell"
-    //     function lock(): void {
-    //         console.log("IPC lock request received");
-    //         services.power.lock();
-    //     }
-    // }
+    Loader {
+        id: shellLoader
+        asynchronous: true
+        source: "QsittShell.qml"
+    }
 }

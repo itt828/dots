@@ -102,8 +102,8 @@ window-rule {
     }
 }
 
-// spawn-at-startup "qs" "-c" "qsitt"
-spawn-at-startup "sh" "-c" "ags run --gtk 4"
+spawn-at-startup "qs" "-c" "qsitt"
+// spawn-at-startup "sh" "-c" "ags run --gtk 4"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "awww-daemon"
 spawn-at-startup "fcitx5"
@@ -122,14 +122,12 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
     Mod+Return { spawn "ghostty"; }
     Mod+D { spawn "fuzzel"; }
-    Mod+Alt+L { spawn "swaylock"; }
     Mod+N { spawn "swaync-client" "-t";}
     XF86Display { spawn "niri-mirror"; }
     Mod+T { spawn "niri-tablet"; }
-    Mod+P { spawn "clcnt"; }
     // Mod+Shift+B { spawn "qs" "-c"  "noctalia-shell"; }
-    Mod+Shift+B { spawn "sh" "-c" "ags run --gtk 4"; }
-    // Mod+Shift+B { spawn "qs" "-c" "qsitt"; }
+    // Mod+Shift+B { spawn "sh" "-c" "ags run --gtk 4"; }
+    Mod+Shift+B { spawn "qs" "-c" "qsitt"; }
     XF86AudioMute        allow-when-locked=true { spawn "pactl" "set-sink-mute" "@DEFAULT_SINK@" "toggle"; }
     XF86AudioRaiseVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "+5%"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "-5%"; }
