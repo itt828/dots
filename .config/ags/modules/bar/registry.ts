@@ -3,6 +3,7 @@ import { Gdk } from "ags/gtk4"
 import { type BarModule } from "../common/config"
 import Battery from "./Battery"
 import Brightness from "./Brightness"
+import { ScreenRecording, Screenshot } from "./Capture"
 import Clock from "./Clock"
 import Cpu from "./Cpu"
 import Memory from "./Memory"
@@ -25,6 +26,8 @@ export const barModules = {
   clock: Clock,
   tray: Tray,
   notifications: Notifications,
+  screenshot: Screenshot,
+  screenRecording: ScreenRecording,
   volume: Volume,
   microphone: Microphone,
   brightness: Brightness,

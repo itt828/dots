@@ -90,6 +90,11 @@ export default defineConfig({
     "tool-badge": "min-w-10 min-h-10 rounded-8 bg-toolBadge text-accent font-bold",
     "tray-item":
       "min-w-4 min-h-4 p-0 rounded-none bg-transparent hover:bg-transparent active:bg-transparent",
+    "capture-menu": "min-w-38 p-2 text-text",
+    "capture-menu-title": "px-2 py-1 font-bold",
+    "capture-menu-item":
+      "min-h-8 px-2 border-0 rounded-7 bg-transparent text-text shadow-none hover:bg-buttonHover",
+    "capture-stop": "text-danger",
     "notification-history": "min-h-[210px]",
     "notification-card":
       "p-[10px] rounded-8 bg-notificationSurface border-1 border-solid border-notificationBorder",

@@ -5,6 +5,8 @@ export type BarModule =
   | "clock"
   | "tray"
   | "notifications"
+  | "screenshot"
+  | "screenRecording"
   | "volume"
   | "microphone"
   | "brightness"
@@ -24,6 +26,8 @@ export const config = {
     right: [
       "tray",
       "notifications",
+      "screenshot",
+      "screenRecording",
       "volume",
       "microphone",
       "brightness",
