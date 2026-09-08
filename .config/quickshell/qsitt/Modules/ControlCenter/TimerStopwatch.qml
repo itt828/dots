@@ -37,7 +37,7 @@ ColumnLayout {
         Layout.fillWidth: true
         implicitHeight: timerContent.implicitHeight + 24
         radius: 8
-        color: "#ffffff"
+        color: Theme.surface
 
         ColumnLayout {
             id: timerContent
@@ -54,7 +54,7 @@ ColumnLayout {
 
                 Text {
                     text: "タイマー"
-                    color: "#263238"
+                    color: Theme.text
                     font.bold: true
                 }
                 Item {
@@ -62,7 +62,7 @@ ColumnLayout {
                 }
                 Text {
                     text: root.formatTime(root.timerRemaining)
-                    color: root.timerRunning ? Theme.accent : "#37474f"
+                    color: root.timerRunning ? Theme.accent : Theme.text
                     font.bold: true
                     font.pointSize: 16
                 }
@@ -79,11 +79,11 @@ ColumnLayout {
                         Layout.fillWidth: true
                         height: 28
                         radius: 6
-                        color: !root.timerRunning && root.timerDuration === modelData * 60 ? "#bbdefb" : "#eceff1"
+                        color: !root.timerRunning && root.timerDuration === modelData * 60 ? Theme.primaryContainer : Theme.surfaceVariant
                         Text {
                             anchors.centerIn: parent
                             text: modelData + "分"
-                            color: "#37474f"
+                            color: Theme.text
                         }
                         MouseArea {
                             anchors.fill: parent
@@ -102,7 +102,7 @@ ColumnLayout {
                     Text {
                         anchors.centerIn: parent
                         text: root.timerRunning ? "停止" : (root.timerRemaining < root.timerDuration ? "再開" : "開始")
-                        color: "#37474f"
+                        color: Theme.text
                         font.bold: true
                     }
                     MouseArea {
@@ -128,7 +128,7 @@ ColumnLayout {
         Layout.fillWidth: true
         implicitHeight: stopwatchContent.implicitHeight + 24
         radius: 8
-        color: "#ffffff"
+        color: Theme.surface
 
         RowLayout {
             id: stopwatchContent
@@ -145,12 +145,12 @@ ColumnLayout {
                 spacing: 2
                 Text {
                     text: "ストップウォッチ"
-                    color: "#263238"
+                    color: Theme.text
                     font.bold: true
                 }
                 Text {
                     text: root.formatTime(root.stopwatchAccumulated / 1000)
-                    color: root.stopwatchRunning ? Theme.accent : "#37474f"
+                    color: root.stopwatchRunning ? Theme.accent : Theme.text
                     font.bold: true
                     font.pointSize: 16
                 }
@@ -164,7 +164,7 @@ ColumnLayout {
                 Text {
                     anchors.centerIn: parent
                     text: root.stopwatchRunning ? "停止" : "開始"
-                    color: "#37474f"
+                    color: Theme.text
                 }
                 MouseArea {
                     anchors.fill: parent
@@ -185,11 +185,11 @@ ColumnLayout {
                 width: 52
                 height: 30
                 radius: 6
-                color: "#eceff1"
+                color: Theme.surfaceVariant
                 Text {
                     anchors.centerIn: parent
                     text: "リセット"
-                    color: "#37474f"
+                    color: Theme.text
                     font.pointSize: 9
                 }
                 MouseArea {

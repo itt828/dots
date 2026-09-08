@@ -10,23 +10,27 @@ Rectangle {
     Layout.fillWidth: true
     Layout.fillHeight: true
     Layout.minimumHeight: 200
-    color: "#dddddd"
-    radius: 12
+    color: Theme.surface
+    radius: 14
+    border.color: Theme.outline
+    border.width: 1
     clip: true
 
     required property var notificationService
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 10
-        spacing: 5
+        anchors.margins: Theme.spacingLarge
+        spacing: Theme.spacing
 
         // Header
         RowLayout {
             Layout.fillWidth: true
             Text {
                 text: "Notifications"
-                font.bold: true
+                color: Theme.text
+                font.pixelSize: 16
+                font.weight: Font.DemiBold
                 Layout.fillWidth: true
             }
             QsIcon {

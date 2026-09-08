@@ -1,35 +1,58 @@
 pragma ComponentBehavior: Bound
-import Quickshell
-import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
+import Quickshell.Wayland
 import qs.Common
 import qs.Services
+import qs.Widgets
 
 Scope {
     id: root
+
     readonly property var controlCenterService: ControlCenterService
     readonly property var volumeService: VolumeService
     readonly property var networkService: NetworkService
     readonly property var bluetoothService: BluetoothService
     readonly property var notificationService: NotificationService
 
+    IpcHandler {
+        target: "control-center"
+
+        function toggle(): string {
+            ControlCenterService.toggle();
+            return ControlCenterService.visible ? "visible" : "hidden";
+        }
+
+        function open(): string {
+            ControlCenterService.visible = true;
+            return ControlCenterService.visible ? "visible" : "hidden";
+        }
+
+        function close(): string {
+            ControlCenterService.visible = false;
+            return ControlCenterService.visible ? "visible" : "hidden";
+        }
+    }
+
     Variants {
         model: Quickshell.screens.filter(screen => SettingsData.targetScreens.length === 0 || SettingsData.targetScreens.includes(screen.name))
 
         PanelWindow {
             id: controlCenterWindow
-            required property var modelData
-            screen: modelData
 
-            visible: controlCenterService.visible
-            // slurp uses the Wayland Overlay layer. Keep the control center on Top so
-            // its transparent fullscreen surface can never cover the selector.
+            required property var modelData
+            property int currentPage: 0
+
+            screen: modelData
+            visible: true
+            color: "transparent"
+            exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Top
-            onVisibleChanged: {
-                if (visible && volumeService) {
-                    volumeService.refreshProfile();
-                }
+
+            mask: Region {
+                item: ControlCenterService.visible ? dismissLayer : null
             }
 
             anchors {
@@ -38,121 +61,189 @@ Scope {
                 right: true
                 bottom: true
             }
-            exclusionMode: ExclusionMode.Ignore
-            color: "transparent"
 
-            MouseArea {
+            Rectangle {
+                id: dismissLayer
                 anchors.fill: parent
-                onClicked: controlCenterService.visible = false
+                visible: ControlCenterService.visible
+                color: Theme.withAlpha("#101820", 0.18)
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.controlCenterService.visible = false
+                }
             }
 
             Rectangle {
                 id: controlCenterContent
 
-                anchors.top: parent.top
-                anchors.topMargin: 56
-                anchors.horizontalCenter: parent.horizontalCenter
+                visible: ControlCenterService.visible
 
-                width: 640
-                height: layout.implicitHeight + 32
-                color: "#c4d0d6"
-                radius: 8
-                border.color: "#6f8792"
-                border.width: 2
+                anchors {
+                    top: parent.top
+                    topMargin: Theme.barHeight + Theme.barOuterMargin + 12
+                    horizontalCenter: parent.horizontalCenter
+                }
+
+                width: Math.min(720, parent.width - 32)
+                height: Math.min(560, parent.height - anchors.topMargin - 20)
+                color: Theme.surface
+                radius: Theme.radiusLarge
+                border.color: Theme.outline
+                border.width: 1
+                clip: true
 
                 MouseArea {
                     anchors.fill: parent
                 }
 
                 ColumnLayout {
-                    id: layout
-                    anchors {
-                        top: parent.top
-                        left: parent.left
-                        right: parent.right
-                        margins: 16
-                    }
-                    spacing: 12
-                    property int currentIndex: 0
+                    anchors.fill: parent
+                    anchors.margins: 20
+                    spacing: Theme.spacingLarge
 
-                    // Tab Switcher
                     RowLayout {
                         Layout.fillWidth: true
-                        spacing: 8
+                        spacing: Theme.spacing
 
-                        Repeater {
-                            model: ["Home", "Notifications", "Media", "Tools", "Audio", "Network", "Bluetooth"]
-                            Rectangle {
-                                required property int index
-                                required property string modelData
+                        ColumnLayout {
+                            spacing: 2
 
-                                Layout.fillWidth: true
-                                height: 32
-                                radius: 6
-                                color: layout.currentIndex === index ? "#ffffff" : "#b0bec5"
+                            Text {
+                                text: "Control Center"
+                                color: Theme.text
+                                font.pixelSize: Theme.fontSizeTitle
+                                font.weight: Font.DemiBold
+                            }
 
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: modelData
-                                    font.bold: layout.currentIndex === index
-                                    color: layout.currentIndex === index ? "black" : "#455a64"
+                            Text {
+                                id: dateLabel
+                                text: Qt.formatDateTime(new Date(), "dddd, MMMM d")
+                                color: Theme.textSecondary
+                                font.pixelSize: Theme.fontSizeSmall
+
+                                Timer {
+                                    interval: 60000
+                                    running: controlCenterWindow.visible
+                                    repeat: true
+                                    onTriggered: dateLabel.text = Qt.formatDateTime(new Date(), "dddd, MMMM d")
                                 }
+                            }
+                        }
 
-                                MouseArea {
-                                    anchors.fill: parent
-                                    cursorShape: Qt.PointingHandCursor
-                                    onClicked: layout.currentIndex = index
+                        Item { Layout.fillWidth: true }
+
+                        Rectangle {
+                            implicitWidth: 34
+                            implicitHeight: 34
+                            radius: 17
+                            color: closeArea.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+
+                            QsIcon {
+                                anchors.centerIn: parent
+                                icon: Icons.x
+                                size: 16
+                                color: Theme.textSecondary
+                            }
+
+                            MouseArea {
+                                id: closeArea
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.controlCenterService.visible = false
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.fillWidth: true
+                        implicitHeight: 44
+                        radius: 12
+                        color: Theme.surfaceContainer
+
+                        RowLayout {
+                            anchors.fill: parent
+                            anchors.margins: 5
+                            spacing: 4
+
+                            Repeater {
+                                model: ["Home", "Alerts", "Media", "Tools", "Audio", "Network", "Bluetooth"]
+
+                                delegate: Rectangle {
+                                    required property int index
+                                    required property string modelData
+
+                                    readonly property bool selected: controlCenterWindow.currentPage === index
+
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                    radius: Theme.radius
+                                    color: selected ? Theme.primary : (tabArea.containsMouse ? Theme.surfaceContainerHigh : "transparent")
+
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: modelData
+                                        color: parent.selected ? Theme.primaryText : Theme.textSecondary
+                                        font.pixelSize: Theme.fontSizeSmall
+                                        font.weight: parent.selected ? Font.DemiBold : Font.Medium
+                                    }
+
+                                    MouseArea {
+                                        id: tabArea
+                                        anchors.fill: parent
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: controlCenterWindow.currentPage = index
+                                    }
                                 }
                             }
                         }
                     }
 
-                    // Pages
-                    StackLayout {
-                        currentIndex: layout.currentIndex
+                    Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        radius: 14
+                        color: Theme.surfaceContainer
+                        clip: true
 
-                        // Home Page
-                        ColumnLayout {
-                            spacing: 12
-                            CalendarWidget {}
-                        }
+                        StackLayout {
+                            anchors.fill: parent
+                            anchors.margins: Theme.spacingLarge
+                            currentIndex: controlCenterWindow.currentPage
 
-                        // Notifications Page
-                        ColumnLayout {
-                            spacing: 12
+                            ColumnLayout {
+                                spacing: Theme.spacing
+                                CalendarWidget {}
+                                Item { Layout.fillHeight: true }
+                            }
+
                             NotificationHistory {
-                                Layout.fillHeight: true
-                                Layout.minimumHeight: 240
                                 notificationService: root.notificationService
                             }
-                        }
 
-                        // Media Page
-                        ColumnLayout {
-                            spacing: 12
-                            MediaControl {}
-                            Item {
-                                Layout.fillHeight: true
-                            } // Spacer
-                        }
+                            ColumnLayout {
+                                spacing: Theme.spacing
+                                MediaControl {}
+                                Item { Layout.fillHeight: true }
+                            }
 
-                        // Tools Page
-                        ToolList {
-                            controlCenterService: root.controlCenterService
-                        }
+                            ToolList {
+                                controlCenterService: root.controlCenterService
+                            }
 
-                        AudioPage {
-                            volumeService: root.volumeService
-                        }
+                            AudioPage {
+                                volumeService: root.volumeService
+                            }
 
-                        NetworkPage {
-                            networkService: root.networkService
-                        }
+                            NetworkPage {
+                                networkService: root.networkService
+                            }
 
-                        BluetoothPage {
-                            bluetoothService: root.bluetoothService
+                            BluetoothPage {
+                                bluetoothService: root.bluetoothService
+                            }
                         }
                     }
                 }

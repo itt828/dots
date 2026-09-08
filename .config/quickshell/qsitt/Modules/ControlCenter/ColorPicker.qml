@@ -16,7 +16,7 @@ Rectangle {
     Layout.fillWidth: true
     implicitHeight: content.implicitHeight + 24
     radius: 8
-    color: "#ffffff"
+    color: Theme.surface
 
     RowLayout {
         id: content
@@ -32,9 +32,9 @@ Rectangle {
             Layout.preferredWidth: 42
             Layout.preferredHeight: 42
             radius: 8
-            color: root.pickedColor !== "" ? root.pickedColor : "#e3f2fd"
+            color: root.pickedColor !== "" ? root.pickedColor : Theme.primaryContainer
             border.width: 1
-            border.color: "#cfd8dc"
+            border.color: Theme.outline
         }
 
         ColumnLayout {
@@ -44,14 +44,14 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: "カラーピッカー"
-                color: "#263238"
+                color: Theme.text
                 font.bold: true
             }
 
             Text {
                 Layout.fillWidth: true
                 text: root.status
-                color: root.busy ? Theme.accent : "#607d8b"
+                color: root.busy ? Theme.accent : Theme.textSecondary
                 font.pointSize: 9
                 wrapMode: Text.Wrap
             }

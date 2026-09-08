@@ -10,7 +10,7 @@ ColumnLayout {
 
     Text {
         text: "Tools"
-        color: "#37474f"
+        color: Theme.text
         font.bold: true
         font.pointSize: 12
     }
@@ -19,7 +19,7 @@ ColumnLayout {
         Layout.fillWidth: true
         implicitHeight: toolContent.implicitHeight + 24
         radius: 8
-        color: "#ffffff"
+        color: Theme.surface
 
         RowLayout {
             id: toolContent
@@ -35,7 +35,7 @@ ColumnLayout {
                 Layout.preferredWidth: 42
                 Layout.preferredHeight: 42
                 radius: 8
-                color: "#e3f2fd"
+                color: Theme.primaryContainer
 
                 Text {
                     anchors.centerIn: parent
@@ -53,14 +53,14 @@ ColumnLayout {
                 Text {
                     Layout.fillWidth: true
                     text: "QRコードを範囲から読み取る"
-                    color: "#263238"
+                    color: Theme.text
                     font.bold: true
                 }
 
                 Text {
                     Layout.fillWidth: true
                     text: root.controlCenterService.qrStatus
-                    color: root.controlCenterService.qrBusy ? Theme.accent : "#607d8b"
+                    color: root.controlCenterService.qrBusy ? Theme.accent : Theme.textSecondary
                     font.pointSize: 9
                     wrapMode: Text.Wrap
                 }
@@ -92,7 +92,7 @@ ColumnLayout {
     Text {
         Layout.fillWidth: true
         text: "範囲・色の選択をキャンセルするには Esc キーを押します。"
-        color: "#607d8b"
+        color: Theme.textSecondary
         font.pointSize: 9
         wrapMode: Text.Wrap
     }

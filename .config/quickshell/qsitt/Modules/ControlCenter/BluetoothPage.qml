@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import qs.Common
 
 ColumnLayout {
     id: root
@@ -10,16 +11,18 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         implicitHeight: 52
-        radius: 8
-        color: "#ffffff"
+        radius: 12
+        color: Theme.surface
+        border.color: Theme.outline
+        border.width: 1
 
         RowLayout {
             anchors.fill: parent
             anchors.margins: 12
-            Text { text: "Bluetooth"; font.bold: true; color: "#37474f" }
+            Text { text: "Bluetooth"; font.bold: true; color: Theme.text }
             Text {
                 text: root.bluetoothService.available ? (root.bluetoothService.discovering ? "Scanning…" : "Ready") : "No adapter"
-                color: "#607d8b"
+                color: Theme.textSecondary
                 Layout.fillWidth: true
             }
             Button {
@@ -46,22 +49,24 @@ ColumnLayout {
             required property var modelData
             width: ListView.view.width
             height: 48
-            radius: 8
-            color: modelData.connected ? "#e3f2fd" : "#ffffff"
+            radius: 10
+            color: modelData.connected ? Theme.primaryContainer : Theme.surface
+            border.color: modelData.connected ? Theme.primary : Theme.outline
+            border.width: 1
 
             RowLayout {
                 anchors.fill: parent
                 anchors.margins: 10
                 Text {
                     text: modelData.name || modelData.deviceName || modelData.address
-                    color: "#37474f"
+                    color: Theme.text
                     font.bold: modelData.connected
                     Layout.fillWidth: true
                 }
                 Text {
                     visible: modelData.batteryAvailable
                     text: Math.round(modelData.battery * 100) + "%"
-                    color: "#607d8b"
+                    color: Theme.textSecondary
                 }
                 Button {
                     text: modelData.connected ? "Disconnect" : (modelData.paired ? "Connect" : "Pair")
@@ -82,7 +87,7 @@ ColumnLayout {
             anchors.centerIn: parent
             visible: root.bluetoothService.devices.length === 0
             text: root.bluetoothService.enabled ? "No Bluetooth devices found" : "Bluetooth is disabled"
-            color: "#607d8b"
+            color: Theme.textSecondary
         }
     }
 }

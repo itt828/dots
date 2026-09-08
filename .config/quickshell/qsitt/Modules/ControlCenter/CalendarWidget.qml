@@ -1,94 +1,153 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
-import qs.Widgets
 import qs.Common
-import qs.Services
 
 Rectangle {
     id: root
-    color: "#dddddd"
-    radius: 12
-    Layout.fillWidth: true
-    Layout.preferredHeight: childrenRect.height + 20
 
     property date currentDate: new Date()
-    property int year: currentDate.getFullYear()
-    property int month: currentDate.getMonth()
+    readonly property int year: currentDate.getFullYear()
+    readonly property int month: currentDate.getMonth()
 
-    function getDaysInMonth(y, m) {
-        return new Date(y, m + 1, 0).getDate();
+    function getDaysInMonth(year, month) {
+        return new Date(year, month + 1, 0).getDate();
     }
 
-    function getFirstDayOffset(y, m) {
-        return new Date(y, m, 1).getDay(); // 0 is Sunday
+    function getFirstDayOffset(year, month) {
+        return new Date(year, month, 1).getDay();
     }
+
+    Layout.fillWidth: true
+    implicitHeight: 350
+    color: Theme.surface
+    radius: 14
+    border.color: Theme.outline
+    border.width: 1
 
     ColumnLayout {
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: 10
-        spacing: 10
+        anchors.fill: parent
+        anchors.margins: Theme.spacingLarge
+        spacing: 14
 
-        // Header
-        Text {
-            text: Qt.formatDateTime(root.currentDate, "MMMM yyyy")
-            font.bold: true
-            font.pixelSize: 16
-            Layout.alignment: Qt.AlignHCenter
+        RowLayout {
+            Layout.fillWidth: true
+
+            ColumnLayout {
+                spacing: 1
+
+                Text {
+                    text: Qt.formatDate(root.currentDate, "dddd")
+                    color: Theme.textSecondary
+                    font.pixelSize: Theme.fontSizeSmall
+                    font.weight: Font.Medium
+                }
+
+                Text {
+                    text: Qt.formatDate(root.currentDate, "MMMM d")
+                    color: Theme.text
+                    font.pixelSize: 26
+                    font.weight: Font.DemiBold
+                }
+            }
+
+            Item { Layout.fillWidth: true }
+
+            Rectangle {
+                implicitWidth: monthLabel.implicitWidth + 24
+                implicitHeight: 32
+                radius: 16
+                color: Theme.primaryContainer
+
+                Text {
+                    id: monthLabel
+                    anchors.centerIn: parent
+                    text: Qt.formatDate(root.currentDate, "MMMM yyyy")
+                    color: Theme.primary
+                    font.pixelSize: Theme.fontSizeSmall
+                    font.weight: Font.DemiBold
+                }
+            }
         }
 
-        // Days of week
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 5
+        Grid {
+            id: weekGrid
+
+            Layout.fillWidth: true
+            columns: 7
+            columnSpacing: 6
+
             Repeater {
                 model: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-                Text {
+
+                delegate: Text {
+                    required property string modelData
+
+                    width: (weekGrid.width - weekGrid.columnSpacing * 6) / 7
+                    height: 22
                     text: modelData
-                    Layout.preferredWidth: 30
-                    horizontalAlignment: Text.AlignHCenter
-                    opacity: 0.6
+                    color: Theme.textSecondary
                     font.pixelSize: 10
+                    font.weight: Font.Medium
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }
 
-        // Calendar Grid
-        GridLayout {
-            columns: 7
-            rowSpacing: 5
-            columnSpacing: 5
-            Layout.alignment: Qt.AlignHCenter
+        Grid {
+            id: calendarGrid
 
-            // Empty slots for start offset
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            columns: 7
+            columnSpacing: 6
+            rowSpacing: 5
+
             Repeater {
                 model: root.getFirstDayOffset(root.year, root.month)
-                Item {
-                    Layout.preferredWidth: 30
-                    Layout.preferredHeight: 30
+
+                delegate: Item {
+                    width: (calendarGrid.width - calendarGrid.columnSpacing * 6) / 7
+                    height: 34
                 }
             }
 
-            // Days
             Repeater {
                 model: root.getDaysInMonth(root.year, root.month)
 
-                Rectangle {
-                    Layout.preferredWidth: 30
-                    Layout.preferredHeight: 30
-                    radius: 15
+                delegate: Rectangle {
+                    required property int index
 
-                    property bool isToday: (index + 1) === root.currentDate.getDate()
-                    color: isToday ? "black" : "transparent"
+                    readonly property bool isToday: index + 1 === root.currentDate.getDate()
+
+                    width: (calendarGrid.width - calendarGrid.columnSpacing * 6) / 7
+                    height: 34
+                    radius: 10
+                    color: isToday ? Theme.primary : dayArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
 
                     Text {
                         anchors.centerIn: parent
-                        text: index + 1
-                        color: parent.isToday ? "white" : "black"
+                        text: parent.index + 1
+                        color: parent.isToday ? Theme.primaryText : Theme.text
+                        font.pixelSize: Theme.fontSizeBody
+                        font.weight: parent.isToday ? Font.DemiBold : Font.Normal
+                    }
+
+                    MouseArea {
+                        id: dayArea
+                        anchors.fill: parent
+                        hoverEnabled: true
                     }
                 }
             }
         }
+    }
+
+    Timer {
+        interval: 60000
+        running: true
+        repeat: true
+        onTriggered: root.currentDate = new Date()
     }
 }

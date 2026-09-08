@@ -6,9 +6,12 @@ import qs.Common
 
 Rectangle {
     id: root
-    color: "#dddddd"
-    radius: 12
-    height: 100
+
+    color: Theme.surface
+    radius: 14
+    border.color: Theme.outline
+    border.width: 1
+    implicitHeight: 136
     Layout.fillWidth: true
 
     ListView {
@@ -21,8 +24,8 @@ Rectangle {
         delegate: RowLayout {
             width: playerList.width
             height: playerList.height
-            anchors.margins: 10
-            spacing: 10
+            anchors.margins: 14
+            spacing: 14
 
             // Only show the first player for now (or could be improved to show active)
             visible: index === 0
@@ -31,11 +34,11 @@ Rectangle {
 
             // Album Art
             Rectangle {
-                Layout.leftMargin: 10
-                Layout.preferredWidth: 80
-                Layout.preferredHeight: 80
-                radius: 8
-                color: "#bbbbbb"
+                Layout.leftMargin: 14
+                Layout.preferredWidth: 108
+                Layout.preferredHeight: 108
+                radius: 12
+                color: Theme.surfaceVariant
                 clip: true
 
                 Image {
@@ -63,7 +66,8 @@ Rectangle {
                 Text {
                     text: (player && player.metadata) ? (player.metadata["xesam:title"] || "No Title") : "No Media"
                     font.bold: true
-                    font.pixelSize: 14
+                    font.pixelSize: 16
+                    color: Theme.text
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
@@ -71,15 +75,15 @@ Rectangle {
                 Text {
                     text: (player && player.metadata) ? (player.metadata["xesam:artist"] || "Unknown Artist") : "-"
                     font.pixelSize: 12
-                    opacity: 0.7
+                    color: Theme.textSecondary
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                 }
 
                 // Controls
                 RowLayout {
-                    spacing: 15
-                    Layout.topMargin: 5
+                    spacing: 18
+                    Layout.topMargin: 8
 
                     QsIcon {
                         icon: Icons.mediaPrev
