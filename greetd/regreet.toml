@@ -1,0 +1,22 @@
+skip_selection = false
+
+[GTK]
+application_prefer_dark_theme = false
+cursor_theme_name = "Adwaita"
+cursor_blink = true
+font_name = "Sans 14"
+icon_theme_name = "Adwaita"
+theme_name = "Adwaita"
+
+[appearance]
+greeting_msg = "Welcome back"
+
+[widget.clock]
+format = "%H:%M"
+resolution = "1s"
+timezone = "Asia/Tokyo"
+locale = "ja_JP"
+
+[commands]
+reboot = ["systemctl", "reboot"]
+poweroff = ["systemctl", "poweroff"]

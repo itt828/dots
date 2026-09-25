@@ -1,0 +1,13 @@
+window {
+    font-family: "Noto Sans";
+}
+
+button,
+entry,
+combobox {
+    border-radius: 12px;
+}
+
+button {
+    padding: 8px 16px;
+}
