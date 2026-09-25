@@ -70,12 +70,13 @@ Rectangle {
             }
         }
 
-        Grid {
+        GridLayout {
             id: weekGrid
 
             Layout.fillWidth: true
             columns: 7
             columnSpacing: 6
+            uniformCellWidths: true
 
             Repeater {
                 model: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -83,8 +84,8 @@ Rectangle {
                 delegate: Text {
                     required property string modelData
 
-                    width: (weekGrid.width - weekGrid.columnSpacing * 6) / 7
-                    height: 22
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 22
                     text: modelData
                     color: Theme.textSecondary
                     font.pixelSize: 10
@@ -95,7 +96,7 @@ Rectangle {
             }
         }
 
-        Grid {
+        GridLayout {
             id: calendarGrid
 
             Layout.fillWidth: true
@@ -103,13 +104,14 @@ Rectangle {
             columns: 7
             columnSpacing: 6
             rowSpacing: 5
+            uniformCellWidths: true
 
             Repeater {
                 model: root.getFirstDayOffset(root.year, root.month)
 
                 delegate: Item {
-                    width: (calendarGrid.width - calendarGrid.columnSpacing * 6) / 7
-                    height: 34
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 34
                 }
             }
 
@@ -121,8 +123,8 @@ Rectangle {
 
                     readonly property bool isToday: index + 1 === root.currentDate.getDate()
 
-                    width: (calendarGrid.width - calendarGrid.columnSpacing * 6) / 7
-                    height: 34
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 34
                     radius: 10
                     color: isToday ? Theme.primary : dayArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
 

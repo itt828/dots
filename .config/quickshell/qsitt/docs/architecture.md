@@ -15,8 +15,7 @@ qsitt は、システム状態の取得、画面への表示、再利用可能�
 
 ```text
 qsitt/
-├── shell.qml                 # Quickshell エントリーポイント
-├── QsittShell.qml            # 表示機能の構成ルート
+├── shell.qml                 # エントリーポイントと表示機能の構成ルート
 ├── Common/                   # 設定、テーマ、アイコン、レジストリ
 ├── Services/                 # システム連携と共有状態
 ├── Modules/                  # 常設またはオーバーレイ表示される機能
@@ -36,9 +35,8 @@ qsitt/
 
 ```mermaid
 flowchart TD
-    Entry[shell.qml] --> Composition[QsittShell.qml]
-    Composition --> Modules[Modules]
-    Composition --> Modals[Modals]
+    Entry[shell.qml] --> Modules[Modules]
+    Entry --> Modals[Modals]
     Modules --> Widgets[Widgets]
     Modals --> Widgets
     Modules --> Services[Services]
@@ -54,24 +52,22 @@ flowchart TD
 
 ## 起動フロー
 
-[`shell.qml`](../shell.qml) は `ShellRoot`、アプリケーション ID、ルートローダーだけを持つ。実際の UI は非同期 `Loader` から [`QsittShell.qml`](../QsittShell.qml) を読み込む。
+[`shell.qml`](../shell.qml) は `ShellRoot` とアプリケーション ID を定義し、各表示機能のルートコンポーネントを直接生成する。
 
 ```mermaid
 sequenceDiagram
     participant Q as Quickshell
     participant E as shell.qml
-    participant C as QsittShell.qml
     participant M as Modules / Modals
     participant S as Services
 
     Q->>E: 設定をロード
-    E->>C: 非同期ロード
-    C->>M: 表示機能を宣言
+    E->>M: 表示機能を宣言
     M->>S: シングルトンを参照
     S-->>M: リアクティブな状態を公開
 ```
 
-`QsittShell.qml` は機能を組み合わせるだけで、システム状態や画面固有のレイアウトを保持しない。
+`shell.qml` は機能を組み合わせるだけで、システム状態や画面固有のレイアウトを保持しない。
 
 ## Common
 
@@ -264,7 +260,7 @@ OS コマンドとの連携には `Quickshell.Io.Process` を使用する。
 1. `Modules/<FeatureName>/` または `Modals/<FeatureName>/` を作成する。
 2. 共有状態やシステム連携が必要なら `Services/<FeatureName>Service.qml` を追加する。
 3. 複数機能で再利用する UI だけを `Widgets/` に追加する。
-4. `QsittShell.qml` からルートコンポーネントを生成する。
+4. `shell.qml` からルートコンポーネントを生成する。
 
 ## 設計上の制約
 
