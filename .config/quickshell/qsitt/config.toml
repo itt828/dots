@@ -5,5 +5,5 @@ animation_duration = 200
 debug = false
 
 [theme]
-palette = "qsitt" # qsitt | catppuccin
+palette = "icon-v4" # qsitt | catppuccin | icon-v4
 mode = "light" # light | dark

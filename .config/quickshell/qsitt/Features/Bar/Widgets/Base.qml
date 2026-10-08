@@ -11,8 +11,8 @@ Rectangle {
     property alias centerContent: centerLayout.data
     property alias rightContent: rightLayout.data
 
-    color: Theme.barBackground
-    border.color: Theme.barBorder
+    color: Theme.surfaceContainerLow
+    border.color: Theme.outlineVariant
     border.width: Theme.barBorderWidth
 
     anchors {
