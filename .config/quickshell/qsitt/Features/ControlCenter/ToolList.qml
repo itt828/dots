@@ -9,12 +9,14 @@ ColumnLayout {
     spacing: 10
 
     Text {
-            font.family: Theme.fontFamily
+        font.family: Theme.fontFamily
         text: "Tools"
         color: Theme.text
         font.bold: true
         font.pointSize: 12
     }
+
+    ThemeSwitcher {}
 
     Rectangle {
         Layout.fillWidth: true

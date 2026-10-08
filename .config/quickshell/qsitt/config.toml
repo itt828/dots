@@ -1,0 +1,9 @@
+[settings]
+# Empty means all connected screens.
+target_screens = ["eDP-1"]
+animation_duration = 200
+debug = false
+
+[theme]
+palette = "qsitt" # qsitt | catppuccin
+mode = "light" # light | dark

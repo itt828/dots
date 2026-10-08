@@ -37,6 +37,34 @@ Scope {
         }
     }
 
+    IpcHandler {
+        target: "theme"
+
+        function current(): string {
+            return Theme.currentPalette + " " + Theme.currentMode;
+        }
+
+        function list(): string {
+            return Theme.availablePalettes.map(entry => entry.name).join("\n");
+        }
+
+        function set(name: string): string {
+            return Theme.setPalette(name) ? Theme.currentPalette : "unknown palette: " + name;
+        }
+
+        function setPalette(name: string): string {
+            return Theme.setPalette(name) ? Theme.currentPalette : "unknown palette: " + name;
+        }
+
+        function setMode(mode: string): string {
+            return Theme.setMode(mode) ? Theme.currentMode : "unknown mode: " + mode;
+        }
+
+        function toggle(): string {
+            return Theme.toggleTheme();
+        }
+    }
+
     Variants {
         model: Quickshell.screens.filter(screen => SettingsData.targetScreens.length === 0 || SettingsData.targetScreens.includes(screen.name))
 
@@ -233,8 +261,17 @@ Scope {
                                 Item { Layout.fillHeight: true }
                             }
 
-                            ToolList {
-                                controlCenterService: root.controlCenterService
+                            Flickable {
+                                clip: true
+                                contentWidth: width
+                                contentHeight: tools.implicitHeight
+                                boundsBehavior: Flickable.StopAtBounds
+
+                                ToolList {
+                                    id: tools
+                                    width: parent.width
+                                    controlCenterService: root.controlCenterService
+                                }
                             }
 
                             AudioPage {

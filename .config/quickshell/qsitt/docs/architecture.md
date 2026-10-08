@@ -49,9 +49,13 @@ shell.qml -> Features -> Services
 
 ### Theme
 
-`Theme/Theme.qml` はUIが参照する窓口で、実値は `Theme/DefaultTheme.qml` に置く。色やフォントを変更するときは `DefaultTheme.qml` を差し替える。別テーマ型を作る場合は、`Theme.current` にそのインスタンスを指定する。
+`Theme/Theme.qml` はUIが参照する窓口で、`config.toml` の `[theme]` と `Theme/Palettes/<palette>.toml` を監視する。`palette` は現在の配色ファイル、`mode` はその中の `[light]` / `[dark]` を選ぶ。Control CenterやIPCからの変更は `config.toml` に書き戻す。利用可能なパレットは `Theme/Palettes/*.toml` から自動検出する。
 
 UIでは色と通常フォントを直接記述せず、`Theme` の値を使う。アイコンだけは `Theme/Phosphor.ttf` を利用する。
+
+### Config
+
+`Config/SettingsData.qml` は `config.toml` の `[settings]` を監視し、画面、アニメーション速度、デバッグ設定を公開する。設定値はQMLへ直書きせず、TOMLを編集する。
 
 ## 機能を追加する
 
