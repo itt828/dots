@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Theme
 import QtQuick.Layouts
 import "."
 
@@ -26,6 +27,7 @@ Rectangle {
         }
 
         Text {
+            font.family: Theme.fontFamily
             text: root.text
             Layout.fillWidth: true
         }

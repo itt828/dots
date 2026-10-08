@@ -40,6 +40,11 @@ Item {
         });
     }
 
+    function focus(output: string, index: int): void {
+        focusProcess.command = ["bash", "-c", `niri msg action focus-monitor "${output}"; niri msg action focus-workspace ${index}`];
+        focusProcess.running = true;
+    }
+
     Connections {
         target: NiriService
 
@@ -157,4 +162,6 @@ Item {
             }
         }
     }
+
+    Process { id: focusProcess }
 }

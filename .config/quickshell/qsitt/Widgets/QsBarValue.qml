@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Theme
 import QtQuick.Layouts
 
 Item {
@@ -11,7 +12,7 @@ Item {
     property bool showLabel: false
 
     property color progressColor: "black"
-    property color trackColor: "#aaaaaa"
+    property color trackColor: Theme.outline
 
     // Internal style
     property real iconSize: 16
@@ -42,6 +43,7 @@ Item {
             }
 
             Text {
+            font.family: Theme.fontFamily
                 visible: root.showLabel
                 text: root.labelText
                 Layout.alignment: Qt.AlignVCenter

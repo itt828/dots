@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Theme
 import QtQuick.Shapes
 import QtQuick.Layouts
 
@@ -12,9 +13,9 @@ Item {
     property bool showLabel: false
 
     // Style
-    property color color: "#333333"
-    property color progressColor: "#ffffff"
-    property color trackColor: "#555555"
+    property color color: Theme.text
+    property color progressColor: Theme.surface
+    property color trackColor: Theme.textSecondary
     property real strokeWidth: 3
 
     width: showLabel ? row.width : size
@@ -84,6 +85,7 @@ Item {
         }
 
         Text {
+            font.family: Theme.fontFamily
             visible: root.showLabel
             text: root.labelText
             Layout.alignment: Qt.AlignVCenter

@@ -18,6 +18,6 @@ Text {
 
     FontLoader {
         id: fontLoader
-        source: "../Common/Phosphor.ttf"
+        source: "../Theme/Phosphor.ttf"
     }
 }

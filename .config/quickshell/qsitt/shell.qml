@@ -2,14 +2,13 @@
 //@ pragma AppId qsitt
 import QtQuick
 import Quickshell
-import qs.Modals.PowerMenu
-import qs.Modules.Bar
-import qs.Modules.Bar.Widgets as BarWidgets
-import qs.Modules.ControlCenter
-import qs.Modules.Lock
-import qs.Modules.Notifications
-import qs.Modules.QrScanner
-import qs.Modules.Search
+import qs.Features.Bar
+import qs.Features.ControlCenter
+import qs.Features.Lock
+import qs.Features.Notifications
+import qs.Features.PowerMenu
+import qs.Features.QrScanner
+import qs.Features.Search
 
 ShellRoot {
     Bar {}

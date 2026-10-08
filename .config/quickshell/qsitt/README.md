@@ -4,15 +4,14 @@
 https://phosphoricons.com/
 からDownload all
 
-Fonts/Regular/Phosphor.ttfをCommon/Assetsにコピー
+Fonts/Regular/Phosphor.ttfをTheme/Phosphor.ttfとしてコピー
 
-## ダッシュボードのQRコード読取ツール
+## 構成
 
-範囲選択、画面取得、QRコード読取、クリップボードへのコピーに以下のコマンドを使用します。
+- `Features/`: 画面に現れる機能
+- `Services/`: OS連携と共有状態（UIを置かない）
+- `Widgets/`: 機能に依存しないUI部品
+- `Config/`: モニターなどの動作設定
+- `Theme/DefaultTheme.qml`: 色と通常フォント
 
-- `slurp`
-- `grim`
-- `zbarimg`（多くのディストリビューションでは `zbar` パッケージに収録）
-- `wl-copy`（`wl-clipboard` パッケージに収録）
-
-カラーピッカーは上記の `slurp`、`grim`、`wl-copy` に加えてImageMagickの `magick` コマンドを使用します。タイマー終了通知には、利用可能な場合のみ `notify-send` を使用します。
+詳しくは [docs/architecture.md](docs/architecture.md) を参照してください。

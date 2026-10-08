@@ -1,6 +1,8 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 import QtQuick
+import Quickshell
+import Quickshell.Io
 
 QtObject {
     property bool visible: false
@@ -8,6 +10,16 @@ QtObject {
     property bool lensSelecting: false
     property bool lensBusy: false
     property string lensGeometry: ""
+
+    function submit(): void {
+        const value = query.trim();
+        if (value.length === 0)
+            return;
+
+        _openUrlProcess.command = ["xdg-open", "https://www.google.com/search?q=" + encodeURIComponent(value)];
+        _openUrlProcess.running = true;
+        close();
+    }
 
     function open(): void {
         visible = true;
@@ -41,5 +53,13 @@ QtObject {
 
     function cancelLensSelection(): void {
         lensSelecting = false;
+    }
+
+    readonly property Process _openUrlProcess: Process {}
+
+    readonly property Process _lensProcess: Process {
+        running: lensBusy
+        command: ["bash", Quickshell.shellDir + "/Scripts/google-lens-region.sh", lensGeometry]
+        onExited: (exitCode, exitStatus) => lensBusy = false
     }
 }

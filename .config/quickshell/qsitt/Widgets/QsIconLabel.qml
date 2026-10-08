@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import qs.Theme
 import qs.Widgets
 
 Item {
@@ -9,7 +10,7 @@ Item {
     property alias text: textItem.text
     property alias spacing: layout.spacing
     property alias iconSize: iconItem.size
-    property color color: "black"
+    property color color: Theme.text
 
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight
@@ -30,6 +31,8 @@ Item {
         Text {
             id: textItem
             color: root.color
+            font.family: Theme.fontFamily
+            font.pixelSize: Theme.fontSizeBody
             visible: text !== ""
             Layout.alignment: Qt.AlignVCenter
         }
