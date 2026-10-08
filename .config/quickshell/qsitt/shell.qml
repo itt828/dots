@@ -9,8 +9,11 @@ import qs.Features.Notifications
 import qs.Features.PowerMenu
 import qs.Features.QrScanner
 import qs.Features.Search
+import qs.Services
 
 ShellRoot {
+    Component.onCompleted: DesktopThemeService.sync()
+
     Bar {}
     ControlCenter {}
     Lock {}

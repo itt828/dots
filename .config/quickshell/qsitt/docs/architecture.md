@@ -51,6 +51,8 @@ shell.qml -> Features -> Services
 
 `Theme/Theme.qml` はUIが参照する窓口で、`config.toml` の `[theme]` と `Theme/Palettes/<palette>.toml` を監視する。`palette` は現在の配色ファイル、`mode` はその中の `[light]` / `[dark]` を選ぶ。Control CenterやIPCからの変更は `config.toml` に書き戻す。利用可能なパレットは `Theme/Palettes/*.toml` から自動検出する。
 
+`Services/DesktopThemeService.qml` は `mode` の変更をデスクトップのカラースキームへ同期する。`light` は `prefer-light`、`dark` は `prefer-dark` として `org.gnome.desktop.interface color-scheme` に設定する。
+
 UIでは色と通常フォントを直接記述せず、`Theme` の値を使う。アイコンだけは `Theme/Phosphor.ttf` を利用する。
 
 ### Config
