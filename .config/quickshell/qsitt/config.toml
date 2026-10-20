@@ -3,6 +3,8 @@
 target_screens = ["eDP-1"]
 animation_duration = 200
 debug = false
+# When an external monitor is active, keep the session usable with the lid closed.
+lid_clamshell_mode = false
 
 [theme]
 palette = "qsitt" # qsitt | catppuccin | icon-v4

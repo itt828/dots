@@ -15,8 +15,6 @@ input {
     trackpoint {
     }
     tablet {
-        map-to-output "eDP-1"
-        // map-to-output "DP-2"
     }
     warp-mouse-to-focus
     focus-follows-mouse max-scroll-amount="0%"
