@@ -18,12 +18,22 @@ Scope {
     // Clear the failure text once the user starts typing.
     onCurrentTextChanged: showFailure = false
 
-    function tryUnlock() {
-        if (currentText === "")
+    function reset(): void {
+        currentText = "";
+        showFailure = false;
+    }
+
+    function tryUnlock(password: string): void {
+        if (unlockInProgress || password === "")
             return;
 
+        currentText = password;
         root.unlockInProgress = true;
-        pam.start();
+        if (!pam.start()) {
+            root.unlockInProgress = false;
+            reset();
+            root.showFailure = true;
+        }
     }
 
     PamContext {
@@ -45,6 +55,7 @@ Scope {
         // pam_unix won't send any important messages so all we need is the completion status.
         onCompleted: result => {
             if (result == PamResult.Success) {
+                root.currentText = "";
                 root.unlocked();
             } else {
                 root.currentText = "";

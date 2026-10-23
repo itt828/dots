@@ -6,6 +6,14 @@ import qs.services
 
 Scope {
     Connections {
+        target: PowerService
+        function onLockedChanged() {
+            if (PowerService.locked)
+                LockService.reset();
+        }
+    }
+
+    Connections {
         target: LockService
         function onUnlocked() {
             console.log("Unlock requested");
