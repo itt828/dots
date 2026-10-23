@@ -7,6 +7,7 @@ QtObject {
     id: root
 
     property bool visible: false
+    property int requestedPage: 0
     property bool qrSelecting: false
     property bool qrBusy: false
     property string qrGeometry: ""

@@ -27,6 +27,13 @@ Scope {
 
             required property var modelData
             property int currentPage: 0
+            Connections {
+                target: ControlCenterService
+                function onRequestedPageChanged(): void { controlCenterWindow.currentPage = ControlCenterService.requestedPage; }
+                function onVisibleChanged(): void {
+                    if (ControlCenterService.visible) controlCenterWindow.currentPage = ControlCenterService.requestedPage;
+                }
+            }
 
             screen: modelData
             visible: true

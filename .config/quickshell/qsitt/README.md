@@ -49,3 +49,9 @@ sudo reboot
 ```
 
 蓋の検出には UPower と `gdbus`、クラムシェル時の画面制御には Niri、サスペンドには `systemctl suspend` を使います。画面のオフは Niri の一時的な出力設定なので、作業領域の配置が一時的に変わることがあります。
+
+## 統合検索
+
+バーの虫眼鏡、または `qs -c qsitt ipc call search toggle` で開きます。Niri の `Mod+D` にこの IPC を割り当てると、Fuzzel のアプリ検索も同じ窓に統合できます。アプリ、Google 検索、Google Lens、ファイル、ツール、クリップボード履歴を検索できます。ローカルの候補は fuzzy find に対応し、`frfx` で Firefox のように途中の文字を省略して探せます。名前の先頭や連続した文字が一致する候補を優先します。`↑/↓` で候補を選び、`Enter` で実行します。`Ctrl+1` から `Ctrl+6` でカテゴリを切り替えます。
+
+ファイル名の索引は起動時と10分ごとに、ホーム内の通常のフォルダから作ります。隠しフォルダ、ビルド生成物などは除外し、最大15万件を `${XDG_CACHE_HOME:-~/.cache}/qsitt/files.sqlite3` に保存します。クリップボードのテキスト履歴は最大100件、1件64 KiBまでを `${XDG_STATE_HOME:-~/.local/state}/qsitt/clipboard.sqlite3` に保存します。検索画面の「クリップボード」から履歴を消去できます。`python3`、`wl-paste`、`wl-copy`、`gio` が必要です。

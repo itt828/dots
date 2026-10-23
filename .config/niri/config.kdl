@@ -104,6 +104,7 @@ spawn-at-startup "qs" "-c" "qsitt"
 // spawn-at-startup "sh" "-c" "ags run --gtk 4"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "awww-daemon"
+spawn-at-startup "awww" "clear" "fff8f1" "--all"
 spawn-at-startup "fcitx5"
 
 environment {
@@ -119,7 +120,7 @@ debug {
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
     Mod+Return { spawn "ghostty"; }
-    Mod+D { spawn "fuzzel"; }
+    Mod+D { spawn "qs" "-c" "qsitt" "ipc" "call" "search" "toggle"; }
     Mod+N { spawn "swaync-client" "-t";}
     XF86Display { spawn "niri-mirror"; }
     Mod+T { spawn "niri-tablet"; }

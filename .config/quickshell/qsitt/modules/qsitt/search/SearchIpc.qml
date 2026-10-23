@@ -7,7 +7,7 @@ Scope {
         target: "search"
 
         function open(): string {
-            SearchService.visible = true;
+            SearchService.open();
             return SearchService.visible ? "visible" : "hidden";
         }
 
