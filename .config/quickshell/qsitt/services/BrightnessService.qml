@@ -7,6 +7,7 @@ QtObject {
     id: root
 
     property real brightness: 0.0
+    property bool initialized: false
 
     function update() {
         updateProc.running = true;
@@ -23,6 +24,7 @@ QtObject {
                     var max = parseInt(parts[4]);
                     if (!isNaN(current) && !isNaN(max) && max !== 0) {
                         root.brightness = current / max;
+                        root.initialized = true;
                     }
                 }
             }
