@@ -235,7 +235,7 @@ Scope {
                             required property var modelData
                             required property int index
                             width: resultsView.width
-                            height: 54
+                            height: modelData.preview ? 88 : 54
                             radius: Theme.radiusSmall
                             color: root.searchService.selectedIndex === index ? Theme.primaryContainer : resultArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
 
@@ -247,6 +247,7 @@ Scope {
                                 Rectangle {
                                     Layout.preferredWidth: 34
                                     Layout.preferredHeight: 34
+                                    visible: !modelData.preview
                                     radius: Theme.radiusSmall
                                     color: Theme.surfaceContainerHigh
                                     Image {
@@ -262,10 +263,24 @@ Scope {
                                     Text {
                                         anchors.centerIn: parent
                                         visible: modelData.kind !== "app" || appIcon.status === Image.Error
-                                        text: modelData.kind === "app" ? "A" : modelData.kind === "file" ? "F" : modelData.kind === "clipboard" ? "C" : modelData.kind === "tool" ? "T" : "W"
+                                        text: modelData.kind === "app" ? "A" : modelData.kind === "file" ? "F" : modelData.kind === "clipboard" ? "C" : modelData.kind === "clipboard-file" ? (modelData.mime && modelData.mime.startsWith("video/") ? "▶" : modelData.mime && modelData.mime.startsWith("image/") ? "▣" : "♫") : modelData.kind === "tool" ? "T" : "W"
                                         color: Theme.primary
                                         font.family: Theme.fontFamily
                                         font.bold: true
+                                    }
+                                }
+                                Rectangle {
+                                    Layout.preferredWidth: 100
+                                    Layout.preferredHeight: 70
+                                    visible: !!modelData.preview
+                                    radius: Theme.radiusSmall
+                                    color: Theme.surfaceContainerHigh
+                                    clip: true
+                                    Image {
+                                        anchors.fill: parent
+                                        source: modelData.preview || ""
+                                        fillMode: Image.PreserveAspectCrop
+                                        asynchronous: true
                                     }
                                 }
                                 ColumnLayout {
@@ -274,7 +289,7 @@ Scope {
                                     Text { Layout.fillWidth: true; text: modelData.title; color: Theme.text; elide: Text.ElideRight; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSizeBody }
                                     Text { Layout.fillWidth: true; text: modelData.subtitle; color: Theme.textSecondary; elide: Text.ElideMiddle; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSizeSmall }
                                 }
-                                Text { text: modelData.kind === "app" ? "アプリ" : modelData.kind === "file" ? "ファイル" : modelData.kind === "clipboard" ? "履歴" : modelData.kind === "tool" ? "ツール" : "Web"; color: Theme.textSecondary; font.pixelSize: Theme.fontSizeSmall }
+                                Text { text: modelData.kind === "app" ? "アプリ" : modelData.kind === "file" ? "ファイル" : modelData.kind === "clipboard" ? "履歴" : modelData.kind === "clipboard-image" ? "画像" : modelData.kind === "clipboard-file" ? "メディア" : modelData.kind === "tool" ? "ツール" : "Web"; color: Theme.textSecondary; font.pixelSize: Theme.fontSizeSmall }
                             }
                             MouseArea {
                                 id: resultArea

@@ -61,7 +61,7 @@ QtObject {
         if (item.kind === "lens") { startLensSelection(); return; }
         if (item.kind === "app") _actionProcess.command = ["gio", "launch", item.value];
         else if (item.kind === "file") _actionProcess.command = ["xdg-open", item.value];
-        else if (item.kind === "clipboard") _actionProcess.command = ["python3", _helper, "clipboard-copy", item.value];
+        else if (item.kind === "clipboard" || item.kind === "clipboard-image" || item.kind === "clipboard-file") _actionProcess.command = ["python3", _helper, "clipboard-copy", item.value];
         else if (item.kind === "tool") {
             if (item.value === "lens") { startLensSelection(); return; }
             if (item.value === "control-center" || item.value === "notifications") {
@@ -146,13 +146,29 @@ QtObject {
 
     readonly property Process _clipboardWatcher: Process {
         running: true
-        command: ["wl-paste", "--type", "text/plain", "--watch", "python3", root._helper, "clipboard-add"]
+        command: ["wl-paste", "--type", "text", "--watch", "python3", root._helper, "clipboard-add"]
+        onExited: root._watchRestart.start()
+    }
+
+    readonly property Process _imageWatcher: Process {
+        running: true
+        command: ["wl-paste", "--type", "image", "--watch", "python3", root._helper, "clipboard-add-image"]
+        onExited: root._watchRestart.start()
+    }
+
+    readonly property Process _fileWatcher: Process {
+        running: true
+        command: ["wl-paste", "--type", "text/uri-list", "--watch", "python3", root._helper, "clipboard-add-files"]
         onExited: root._watchRestart.start()
     }
 
     readonly property Timer _watchRestart: Timer {
         interval: 3000
-        onTriggered: root._clipboardWatcher.running = true
+        onTriggered: {
+            if (!root._clipboardWatcher.running) root._clipboardWatcher.running = true;
+            if (!root._imageWatcher.running) root._imageWatcher.running = true;
+            if (!root._fileWatcher.running) root._fileWatcher.running = true;
+        }
     }
 
     readonly property Process _clearClipboardProcess: Process {

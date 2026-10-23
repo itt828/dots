@@ -3,7 +3,10 @@
 
 import argparse
 import configparser
+from io import BytesIO
+import hashlib
 import json
+import mimetypes
 import os
 from pathlib import Path
 import shutil
@@ -11,6 +14,7 @@ import sqlite3
 import subprocess
 import sys
 import time
+from urllib.parse import unquote, urlsplit
 
 
 HOME = Path.home()
@@ -18,6 +22,9 @@ STATE = Path(os.environ.get("XDG_STATE_HOME", HOME / ".local/state")) / "qsitt"
 CACHE = Path(os.environ.get("XDG_CACHE_HOME", HOME / ".cache")) / "qsitt"
 CLIP_DB = STATE / "clipboard.sqlite3"
 FILE_DB = CACHE / "files.sqlite3"
+MEDIA_DIR = STATE / "clipboard-media"
+MAX_IMAGE_BYTES = 8 * 1024 * 1024
+IMAGE_FORMATS = {"PNG": ("image/png", "png"), "JPEG": ("image/jpeg", "jpg"), "WEBP": ("image/webp", "webp"), "GIF": ("image/gif", "gif"), "BMP": ("image/bmp", "bmp")}
 PREFERRED_ROOTS = [HOME / name for name in ("Desktop", "Documents", "Downloads", "Pictures", "Music", "Videos", "dev", "Projects")]
 SEARCH_ROOTS = list(dict.fromkeys(PREFERRED_ROOTS + [p for p in HOME.iterdir() if p.is_dir() and not p.name.startswith(".")]))
 SKIP_DIRS = {".git", "node_modules", "target", "build", "dist", ".venv", "venv", "__pycache__"}
@@ -45,10 +52,13 @@ def connect(path):
 def clipboard_db():
     db = connect(CLIP_DB)
     db.execute("CREATE TABLE IF NOT EXISTS clips (id INTEGER PRIMARY KEY, text TEXT NOT NULL UNIQUE, copied_at INTEGER NOT NULL)")
+    db.execute("CREATE TABLE IF NOT EXISTS media (id INTEGER PRIMARY KEY, digest TEXT NOT NULL UNIQUE, kind TEXT NOT NULL, mime TEXT NOT NULL, source TEXT NOT NULL, preview TEXT NOT NULL, title TEXT NOT NULL, copied_at INTEGER NOT NULL)")
     return db
 
 
 def add_clipboard():
+    if os.environ.get("CLIPBOARD_STATE") in ("nil", "clear", "sensitive"):
+        return
     raw = sys.stdin.buffer.read(65537)
     if len(raw) > 65536:
         return
@@ -61,9 +71,103 @@ def add_clipboard():
         db.execute("DELETE FROM clips WHERE id NOT IN (SELECT id FROM clips ORDER BY copied_at DESC, id DESC LIMIT 100)")
 
 
-def copy_clipboard(clip_id):
+def delete_owned_media(paths):
+    for path in paths:
+        candidate = Path(path)
+        if candidate.parent == MEDIA_DIR:
+            candidate.unlink(missing_ok=True)
+
+
+def save_media(digest, kind, mime, source, preview, title):
     with clipboard_db() as db:
-        row = db.execute("SELECT text FROM clips WHERE id = ?", (clip_id,)).fetchone()
+        old = db.execute("SELECT source, preview FROM media WHERE digest = ?", (digest,)).fetchone()
+        db.execute("DELETE FROM media WHERE digest = ?", (digest,))
+        db.execute("INSERT INTO media (digest, kind, mime, source, preview, title, copied_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                   (digest, kind, mime, source, preview, title, int(time.time())))
+        expired = db.execute("SELECT source, preview FROM media ORDER BY copied_at DESC, id DESC LIMIT -1 OFFSET 30").fetchall()
+        db.execute("DELETE FROM media WHERE id NOT IN (SELECT id FROM media ORDER BY copied_at DESC, id DESC LIMIT 30)")
+        active = {path for row in db.execute("SELECT source, preview FROM media") for path in row}
+    obsolete = [path for row in expired for path in row if path not in active]
+    if old:
+        obsolete += [path for path in old if path not in active]
+    delete_owned_media(obsolete)
+
+
+def add_clipboard_image():
+    if os.environ.get("CLIPBOARD_STATE") in ("nil", "clear", "sensitive"):
+        return
+    raw = sys.stdin.buffer.read(MAX_IMAGE_BYTES + 1)
+    if not raw or len(raw) > MAX_IMAGE_BYTES:
+        return
+    try:
+        from PIL import Image, ImageOps, UnidentifiedImageError
+        with Image.open(BytesIO(raw)) as image:
+            if image.format not in IMAGE_FORMATS or image.width * image.height > 50_000_000:
+                return
+            mime, extension = IMAGE_FORMATS[image.format]
+            size = (image.width, image.height)
+            thumb = ImageOps.exif_transpose(image)
+            thumb.thumbnail((320, 240))
+            if thumb.mode not in ("RGB", "RGBA"):
+                thumb = thumb.convert("RGBA")
+            digest = hashlib.sha256(raw).hexdigest()
+            MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+            source = MEDIA_DIR / (digest + "." + extension)
+            preview = MEDIA_DIR / (digest + "-preview.png")
+            source.write_bytes(raw)
+            thumb.save(preview, format="PNG")
+    except (OSError, ValueError, UnidentifiedImageError, Image.DecompressionBombError):
+        return
+    save_media(digest, "image", mime, str(source), str(preview), f"画像 / Image {size[0]}×{size[1]} • {extension.upper()}")
+
+
+def add_clipboard_files():
+    if os.environ.get("CLIPBOARD_STATE") in ("nil", "clear", "sensitive"):
+        return
+    raw = sys.stdin.buffer.read(65537)
+    if len(raw) > 65536:
+        return
+    for line in raw.decode("utf-8", "replace").splitlines()[:10]:
+        if line.startswith("#"):
+            continue
+        uri = urlsplit(line.strip())
+        if uri.scheme != "file" or uri.netloc not in ("", "localhost"):
+            continue
+        path = Path(unquote(uri.path))
+        if not path.is_file():
+            continue
+        mime = mimetypes.guess_type(path.name)[0] or ""
+        if not mime.startswith(("image/", "video/", "audio/")):
+            continue
+        digest = hashlib.sha256(str(path).encode()).hexdigest()
+        preview = str(path) if mime.startswith("image/") else ""
+        if mime.startswith("video/") and shutil.which("ffmpeg"):
+            MEDIA_DIR.mkdir(parents=True, exist_ok=True)
+            thumbnail = MEDIA_DIR / (digest + "-video.png")
+            if not thumbnail.exists():
+                subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "1", "-i", str(path), "-frames:v", "1", "-vf", "scale=320:-1", str(thumbnail)],
+                               timeout=8, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=False)
+            if thumbnail.exists():
+                preview = str(thumbnail)
+        title = ("画像" if mime.startswith("image/") else "動画" if mime.startswith("video/") else "音声") + " / " + path.name
+        save_media(digest, "file", mime, str(path), preview, title)
+
+
+def copy_clipboard(clip_id):
+    if clip_id.startswith("image:") or clip_id.startswith("file:"):
+        kind, _, row_id = clip_id.partition(":")
+        with clipboard_db() as db:
+            row = db.execute("SELECT kind, mime, source FROM media WHERE id = ?", (int(row_id),)).fetchone()
+        if not row or row[0] != kind or not Path(row[2]).is_file():
+            return
+        if kind == "image":
+            with Path(row[2]).open("rb") as source:
+                subprocess.run(["wl-copy", "--type", row[1]], stdin=source, check=False)
+        else:
+            subprocess.run(["wl-copy", "--type", "text/uri-list"], input=Path(row[2]).as_uri() + "\r\n", text=True, check=False)
+        return
+    with clipboard_db() as db:
+        row = db.execute("SELECT text FROM clips WHERE id = ?", (int(clip_id),)).fetchone()
     if row:
         subprocess.run(["wl-copy", "--type", "text/plain;charset=utf-8"], input=row[0], text=True, check=False)
 
@@ -165,14 +269,22 @@ def file_results(query, limit=12):
 def clipboard_results(query, limit=8):
     try:
         with clipboard_db() as db:
-            rows = db.execute("SELECT id, text FROM clips ORDER BY copied_at DESC, id DESC LIMIT 100").fetchall()
+            text_rows = db.execute("SELECT id, text, copied_at FROM clips ORDER BY copied_at DESC, id DESC LIMIT 100").fetchall()
+            media_rows = db.execute("SELECT id, kind, mime, source, preview, title, copied_at FROM media ORDER BY copied_at DESC, id DESC LIMIT 30").fetchall()
         ranked = []
-        for recent, (clip_id, value) in enumerate(rows):
+        for clip_id, value, copied_at in text_rows:
             score = fuzzy_score(value[:2000], query)
             if score is not None:
-                ranked.append((score + recent * 0.1, clip_id, value))
-        ranked.sort()
-        return [{"kind": "clipboard", "title": value.replace("\n", " ⏎ ")[:100], "subtitle": "クリップボードにコピー", "value": str(clip_id)} for _, clip_id, value in ranked[:limit]]
+                ranked.append((score, -copied_at, -clip_id, {"kind": "clipboard", "title": value.replace("\n", " ⏎ ")[:100], "subtitle": "クリップボードにコピー", "value": str(clip_id)}))
+        for clip_id, kind, mime, source, preview, title, copied_at in media_rows:
+            if not Path(source).is_file():
+                continue
+            keywords = "picture photo 画像" if mime.startswith("image/") else "video movie 動画" if mime.startswith("video/") else "audio music 音声" if mime.startswith("audio/") else "media"
+            score = ranked_match(title, mime + " " + keywords, query)
+            if score is not None:
+                ranked.append((score, -copied_at, -clip_id, {"kind": "clipboard-" + kind, "title": title, "subtitle": "クリックで再コピー", "value": kind + ":" + str(clip_id), "preview": Path(preview).as_uri() if preview and Path(preview).is_file() else "", "mime": mime}))
+        ranked.sort(key=lambda entry: entry[:3])
+        return [item for _, _, _, item in ranked[:limit]]
     except sqlite3.Error:
         return []
 
@@ -264,8 +376,10 @@ def main():
     sub.add_parser("index")
     sub.add_parser("clipboard-add")
     copy = sub.add_parser("clipboard-copy")
-    copy.add_argument("id", type=int)
+    copy.add_argument("id")
     sub.add_parser("clipboard-clear")
+    sub.add_parser("clipboard-add-image")
+    sub.add_parser("clipboard-add-files")
     args = parser.parse_args()
     if args.command == "query":
         print(json.dumps(query_results(args.query, args.category), ensure_ascii=False))
@@ -273,11 +387,18 @@ def main():
         index_files()
     elif args.command == "clipboard-add":
         add_clipboard()
+    elif args.command == "clipboard-add-image":
+        add_clipboard_image()
+    elif args.command == "clipboard-add-files":
+        add_clipboard_files()
     elif args.command == "clipboard-copy":
         copy_clipboard(args.id)
     elif args.command == "clipboard-clear":
         with clipboard_db() as db:
             db.execute("DELETE FROM clips")
+            old = db.execute("SELECT source, preview FROM media").fetchall()
+            db.execute("DELETE FROM media")
+        delete_owned_media(path for row in old for path in row)
 
 
 if __name__ == "__main__":

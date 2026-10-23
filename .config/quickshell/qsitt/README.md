@@ -54,4 +54,4 @@ sudo reboot
 
 バーの虫眼鏡、または `qs -c qsitt ipc call search toggle` で開きます。Niri の `Mod+D` にこの IPC を割り当てると、Fuzzel のアプリ検索も同じ窓に統合できます。アプリ、Google 検索、Google Lens、ファイル、ツール、クリップボード履歴を検索できます。ローカルの候補は fuzzy find に対応し、`frfx` で Firefox のように途中の文字を省略して探せます。名前の先頭や連続した文字が一致する候補を優先します。`↑/↓` で候補を選び、`Enter` で実行します。`Ctrl+1` から `Ctrl+6` でカテゴリを切り替えます。
 
-ファイル名の索引は起動時と10分ごとに、ホーム内の通常のフォルダから作ります。隠しフォルダ、ビルド生成物などは除外し、最大15万件を `${XDG_CACHE_HOME:-~/.cache}/qsitt/files.sqlite3` に保存します。クリップボードのテキスト履歴は最大100件、1件64 KiBまでを `${XDG_STATE_HOME:-~/.local/state}/qsitt/clipboard.sqlite3` に保存します。検索画面の「クリップボード」から履歴を消去できます。`python3`、`wl-paste`、`wl-copy`、`gio` が必要です。
+ファイル名の索引は起動時と10分ごとに、ホーム内の通常のフォルダから作ります。隠しフォルダ、ビルド生成物などは除外し、最大15万件を `${XDG_CACHE_HOME:-~/.cache}/qsitt/files.sqlite3` に保存します。クリップボードのテキスト履歴は最大100件、1件64 KiBまでを `${XDG_STATE_HOME:-~/.local/state}/qsitt/clipboard.sqlite3` に保存します。画像はサムネイル付きで最大30件まで保存し、1件8 MiBまで対応します。コピーされた画像・動画・音声ファイルも候補に表示し、画像と動画はプレビューできます。画像データと動画のサムネイルは `${XDG_STATE_HOME:-~/.local/state}/qsitt/clipboard-media/` に保存します。検索画面の「クリップボード」から履歴と保存画像を消去できます。`python3`、`python3-pillow`、`wl-paste`、`wl-copy`、`gio` が必要です。動画のサムネイルには `ffmpeg` を使います。
