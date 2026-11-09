@@ -8,6 +8,8 @@ QtObject {
     id: root
 
     property bool visible: false
+    property string focusedOutputName: ""
+    property bool _opening: false
     property string query: ""
     property string category: "all"
     property var results: []
@@ -24,18 +26,24 @@ QtObject {
     function refresh(): void { refreshTimer.restart(); }
 
     function open(): void {
-        visible = true;
-        refresh();
+        visible = false;
+        _opening = true;
+        focusedOutputName = "";
+        if (!_focusedOutputProcess.running)
+            _focusedOutputProcess.running = true;
     }
 
     function close(): void {
+        _opening = false;
         visible = false;
         query = "";
         category = "all";
+        results = [];
+        selectedIndex = 0;
     }
 
     function toggle(): void {
-        if (visible) close(); else open();
+        if (visible || _opening) close(); else open();
     }
 
     function setCategory(value: string): void {
@@ -59,8 +67,12 @@ QtObject {
         if (!item) return;
         if (item.kind === "web") { searchWeb(item.value); return; }
         if (item.kind === "lens") { startLensSelection(); return; }
-        if (item.kind === "app") _actionProcess.command = ["gio", "launch", item.value];
-        else if (item.kind === "file") _actionProcess.command = ["xdg-open", item.value];
+        if (item.kind === "app") {
+            Quickshell.execDetached(["gio", "launch", item.value]);
+            close();
+            return;
+        }
+        if (item.kind === "file") _actionProcess.command = ["xdg-open", item.value];
         else if (item.kind === "clipboard" || item.kind === "clipboard-image" || item.kind === "clipboard-file") _actionProcess.command = ["python3", _helper, "clipboard-copy", item.value];
         else if (item.kind === "tool") {
             if (item.value === "lens") { startLensSelection(); return; }
@@ -98,6 +110,28 @@ QtObject {
 
     function cancelLensSelection(): void { lensSelecting = false; }
 
+    readonly property Process _focusedOutputProcess: Process {
+        command: ["niri", "msg", "-j", "focused-output"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const output = JSON.parse(text);
+                    root.focusedOutputName = output?.name || "";
+                } catch (e) {
+                    root.focusedOutputName = "";
+                }
+            }
+        }
+        onExited: {
+            if (!root._opening) return;
+            if (!root.focusedOutputName && Quickshell.screens.length > 0)
+                root.focusedOutputName = Quickshell.screens[0].name;
+            root._opening = false;
+            root.visible = true;
+            root.refresh();
+        }
+    }
+
     readonly property Timer refreshTimer: Timer {
         interval: 100
         onTriggered: {
@@ -115,6 +149,7 @@ QtObject {
             onStreamFinished: root._response = text
         }
         onExited: {
+            if (!root.visible) return;
             if (root._activeQuery !== root.query || root._activeCategory !== root.category) {
                 root.refresh();
                 return;

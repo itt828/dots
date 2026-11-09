@@ -18,7 +18,7 @@ Scope {
     ]
 
     Variants {
-        model: Quickshell.screens.filter(screen => SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(screen.name))
+        model: Quickshell.screens
 
         PanelWindow {
             id: lensSelector
@@ -88,19 +88,19 @@ Scope {
     }
 
     Variants {
-        model: Quickshell.screens.filter(screen => SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(screen.name))
+        model: Quickshell.screens
 
         PanelWindow {
             id: searchWindow
             required property var modelData
             screen: modelData
-            visible: root.searchService.visible
+            visible: root.searchService.visible && modelData.name === root.searchService.focusedOutputName
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Top
-            WlrLayershell.keyboardFocus: root.searchService.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: searchWindow.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             anchors { top: true; left: true; right: true; bottom: true }
-            mask: Region { item: root.searchService.visible ? dismissLayer : null }
+            mask: Region { item: searchWindow.visible ? dismissLayer : null }
 
             Rectangle {
                 id: dismissLayer
@@ -226,7 +226,7 @@ Scope {
                         Text {
                             anchors.centerIn: parent
                             visible: root.searchService.results.length === 0
-                            text: root.searchService.query.length > 0 ? "候補が見つかりません" : "検索語を入力してください"
+                            text: root.searchService.query.length > 0 ? "候補が見つかりません" : "登録済みのアプリ・ツールがありません"
                             color: Theme.textSecondary
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSizeBody

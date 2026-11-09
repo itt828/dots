@@ -10,7 +10,7 @@ Scope {
     readonly property var controlCenterService: ControlCenterService
 
     Variants {
-        model: Quickshell.screens.filter(screen => SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(screen.name))
+        model: Quickshell.screens
 
         PanelWindow {
             id: selector

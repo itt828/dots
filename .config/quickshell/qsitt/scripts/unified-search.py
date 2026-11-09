@@ -23,6 +23,7 @@ CACHE = Path(os.environ.get("XDG_CACHE_HOME", HOME / ".cache")) / "qsitt"
 CLIP_DB = STATE / "clipboard.sqlite3"
 FILE_DB = CACHE / "files.sqlite3"
 MEDIA_DIR = STATE / "clipboard-media"
+SHORTCUTS_FILE = Path(__file__).resolve().parent.parent / "config/search-shortcuts.json"
 MAX_IMAGE_BYTES = 8 * 1024 * 1024
 IMAGE_FORMATS = {"PNG": ("image/png", "png"), "JPEG": ("image/jpeg", "jpg"), "WEBP": ("image/webp", "webp"), "GIF": ("image/gif", "gif"), "BMP": ("image/bmp", "bmp")}
 PREFERRED_ROOTS = [HOME / name for name in ("Desktop", "Documents", "Downloads", "Pictures", "Music", "Videos", "dev", "Projects")]
@@ -201,7 +202,7 @@ def applications():
                 if check and not (shutil.which(check) or Path(check).is_file()):
                     continue
                 name = entry.get("Name[ja]", entry.get("Name", desktop_id))
-                apps.append({"kind": "app", "title": name, "subtitle": entry.get("GenericName[ja]", entry.get("GenericName", "アプリを起動")), "value": str(path), "icon": entry.get("Icon", "")})
+                apps.append({"kind": "app", "desktop_id": desktop_id, "title": name, "subtitle": entry.get("GenericName[ja]", entry.get("GenericName", "アプリを起動")), "value": str(path), "icon": entry.get("Icon", "")})
             except (OSError, configparser.Error, KeyError):
                 continue
     return apps
@@ -346,6 +347,17 @@ def ranked_match(primary, secondary, query, secondary_penalty=35):
 
 def query_results(query, category):
     query = query.strip()
+    if not query and category == "all":
+        try:
+            shortcuts = json.loads(SHORTCUTS_FILE.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            shortcuts = {}
+        apps_by_id = {app["desktop_id"]: app for app in applications()}
+        tools_by_id = {key: (title, description) for key, title, description in TOOLS}
+        result = [apps_by_id[desktop_id] for desktop_id in shortcuts.get("apps", []) if desktop_id in apps_by_id]
+        result += [{"kind": "tool", "title": tools_by_id[key][0], "subtitle": tools_by_id[key][1], "value": key}
+                   for key in shortcuts.get("tools", []) if key in tools_by_id]
+        return result
     result = []
     if category in ("all", "apps"):
         apps = [(ranked_match(a["title"], a["subtitle"], query), a) for a in applications()]
