@@ -24,3 +24,4 @@
 "~/.config/quickshell" = { source = "../quickshell" }
 "~/.zshrc" = { source = "../zsh/.zshrc" }
 "~/.zshenv" = { source = "../zsh/.zshenv" }
+"~/.local/bin/niri-mirror" = {source = "../../scripts/niri-mirror"}
