@@ -10,11 +10,16 @@
 "dnf:uv" = "latest"
 "dnf:firefox" = "latest"
 
+[bootstrap.repos]
+"~/repos/helix" = { url = "https://github.com/helix-editor/helix.git" }
+
 [dotfiles]
 "~/.config/mise" = { source = "." }
 "~/.config/niri" = { source = "../niri" }
 "~/.config/fish" = { source = "../fish" }
-"~/.config/helix" = { source = "../helix" }
+"~/.config/helix" = { source = "../helix", mode = "symlink-each", exclude = ["runtime", ".gitignore"] }
+"~/.config/helix/runtime/queries" = { source = "~/repos/helix/runtime/queries" }
+"~/.config/helix/runtime/themes" = { source = "~/repos/helix/runtime/themes" }
 "~/.config/starship.toml" = { source = "../starship/starship.toml" }
 "~/.config/quickshell" = { source = "../quickshell" }
 "~/.zshrc" = { source = "../zsh/.zshrc" }
