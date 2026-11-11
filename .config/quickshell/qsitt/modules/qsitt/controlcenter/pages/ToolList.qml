@@ -21,6 +21,8 @@ ColumnLayout {
 
     LidSettings {}
 
+    KeyboardBacklight {}
+
     Rectangle {
         Layout.fillWidth: true
         implicitHeight: toolContent.implicitHeight + 24

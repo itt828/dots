@@ -1,13 +1,10 @@
 if status is-interactive
 end
 
-# opam configuration
-source /home/itt/.opam/opam-init/init.fish >/dev/null 2>/dev/null; or true
-
 abbr -a -- l eza --color=always --icons=always
 abbr -a -- ls eza --color=always --icons=always -a
 abbr -a -- ll eza --color=always --icons=always -al
-abbr -a -- lt eza --color=always --icons=always -T --git-ignore
+abbr -a -- lt eza --color=always --icons=always -Ta --git-ignore
 abbr -a -- zj zellij
 
 set -x EDITOR hx

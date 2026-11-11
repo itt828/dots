@@ -1,0 +1,53 @@
+
+[bootstrap.mise_shell_activate]
+fish = "auto"
+
+[bootstrap.packages]
+"dnf:git" = "latest"
+"dnf:fish" = "latest"
+"dnf:eza" = "latest"
+"dnf:starship" = "latest"
+"dnf:niri" = "latest"
+"dnf:quickshell" = "latest"
+"dnf:fcitx5" = "latest"
+"dnf:fcitx5-mozc" = "latest"
+"dnf:uv" = "latest"
+"dnf:firefox" = "latest"
+
+[tools]
+node = "lts"
+"npm:@vtsls/language-server" = "latest"
+"npm:unocss-language-server" = "latest"
+"npm:@vue/language-server" = "latest"
+pnpm = "latest"
+"cargo:https://github.com/helix-editor/helix" = {version ="branch:master", crate = "helix-term", install_env = {HELIX_DISABLE_AUTO_GRAMMAR_BUILD = "true"} }
+"cargo:https://github.com/Myriad-Dreamin/tinymist" = {version="branch:main", crate = "tinymist-cli", locked=true }
+"cargo:https://github.com/latex-lsp/texlab" = {version="branch:master", crate = "texlab", locked=true }
+ghq = "latest"
+cargo-binstall = "latest"
+"pipx:py-spy" = "latest"
+"pipx:pytest" = "latest"
+"npm:track-cli" = "latest"
+go = "latest"
+"go:github.com/darkhz/bluetuith" = "latest"
+"go:github.com/kayrus/gof5/cmd/gof5" = "latest"
+usage = "latest"
+"npm:@openai/codex" = "latest"
+ruby = "latest"
+"gem:rails" = "latest"
+"gem:ruby-lsp" = "latest"
+"gem:solargraph" = "latest"
+"npm:sass" = "latest"
+"npm:wrangler" = "latest"
+cf = "latest"
+cloudflared = "latest"
+
+
+[tasks.update-git-tools]
+description = "Gitベースのcargoツールを強制更新"
+run = """
+mise uninstall --all 'cargo:https://github.com/helix-editor/helix' || true
+mise uninstall --all 'cargo:https://github.com/Myriad-Dreamin/tinymist' || true
+mise uninstall --all 'cargo:https://github.com/latex-lsp/texlab' || true
+mise install
+"""
