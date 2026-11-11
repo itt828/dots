@@ -1,0 +1,14 @@
+[bootstrap.packages]
+"dnf:rEFInd" = "latest"
+"dnf:rEFInd-tools" = "latest"
+
+# Mount the ESP at /boot/efi and install rEFInd there before applying.
+# Theme assets must be installed as described in ../rEFInd/README.md.
+# The ESP uses FAT; leave ownership and permissions to its mount options.
+[bootstrap.directories."/boot/efi/EFI/refind/themes/catppuccin"]
+
+[bootstrap.files."/boot/efi/EFI/refind/refind.conf"]
+source = "../rEFInd/refind.conf"
+
+[bootstrap.files."/boot/efi/EFI/refind/themes/catppuccin/latte-custom.conf"]
+source = "../rEFInd/themes/catppuccin/latte-custom.conf"

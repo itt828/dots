@@ -15,5 +15,7 @@
 "~/.config/niri" = { source = "../niri" }
 "~/.config/fish" = { source = "../fish" }
 "~/.config/helix" = { source = "../helix" }
-"~/.config/starship.toml" = { source = "../starship.toml" }
+"~/.config/starship.toml" = { source = "../starship/starship.toml" }
 "~/.config/quickshell" = { source = "../quickshell" }
+"~/.zshrc" = { source = "../zsh/.zshrc" }
+"~/.zshenv" = { source = "../zsh/.zshenv" }

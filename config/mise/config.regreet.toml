@@ -1,0 +1,33 @@
+[bootstrap.packages]
+"dnf:greetd" = "latest"
+"dnf:greetd-selinux" = "latest"
+"dnf:cage" = "latest"
+
+# ReGreet must be installed at /usr/local/bin/regreet (see ../greetd/config.toml).
+[bootstrap.directories."/etc/greetd"]
+owner = "root"
+group = "root"
+mode = "0755"
+
+[bootstrap.files."/etc/greetd/config.toml"]
+source = "../greetd/config.toml"
+owner = "root"
+group = "root"
+mode = "0644"
+
+[bootstrap.files."/etc/greetd/regreet.toml"]
+source = "../greetd/regreet.toml"
+owner = "root"
+group = "root"
+mode = "0644"
+
+[bootstrap.files."/etc/greetd/regreet.css"]
+source = "../greetd/regreet.css"
+owner = "root"
+group = "root"
+mode = "0644"
+
+[bootstrap.services.greetd]
+scope = "system"
+state = "running"
+enabled = true
