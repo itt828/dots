@@ -22,3 +22,10 @@ fish_add_path $HOME/.local/bin
 
 starship init fish | source
 mise activate fish | source
+# >>> mise:activate >>> managed by mise — do not edit between markers
+if status is-interactive
+    mise activate fish | source
+else
+    mise activate fish --shims | source
+end
+# <<< mise:activate <<<

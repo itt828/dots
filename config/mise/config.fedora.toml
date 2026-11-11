@@ -1,0 +1,19 @@
+[bootstrap.packages]
+"dnf:git" = "latest"
+"dnf:fish" = "latest"
+"dnf:eza" = "latest"
+"dnf:starship" = "latest"
+"dnf:niri" = "latest"
+"dnf:quickshell" = "latest"
+"dnf:fcitx5" = "latest"
+"dnf:fcitx5-mozc" = "latest"
+"dnf:uv" = "latest"
+"dnf:firefox" = "latest"
+
+[dotfiles]
+"~/.config/mise" = { source = "." }
+"~/.config/niri" = { source = "../niri" }
+"~/.config/fish" = { source = "../fish" }
+"~/.config/helix" = { source = "../helix" }
+"~/.config/starship.toml" = { source = "../starship.toml" }
+"~/.config/quickshell" = { source = "../quickshell" }
