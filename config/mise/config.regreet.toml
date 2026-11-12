@@ -2,11 +2,39 @@
 "dnf:greetd" = "latest"
 "dnf:greetd-selinux" = "latest"
 "dnf:cage" = "latest"
+"dnf:gcc" = "latest"
+"dnf:pkgconf-pkg-config" = "latest"
+"dnf:gtk4-devel" = "latest"
+"dnf:accountsservice" = "latest"
+"dnf:glycin-loaders" = "latest"
+"dnf:gstreamer1-plugins-base" = "latest"
 
-# ReGreet must be installed at /usr/local/bin/regreet (see ../greetd/config.toml).
+[bootstrap.hooks.post-packages]
+description = "Build and install ReGreet"
+run = '''
+set -eu
+export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$PATH"
+if [ ! -x /usr/local/bin/regreet ]; then
+  build_dir=$(mktemp -d)
+  trap 'rm -rf "$build_dir"' EXIT
+  cargo install --git https://github.com/rharish101/ReGreet.git --locked --root "$build_dir" regreet
+  sudo install -Dm755 -o root -g root "$build_dir/bin/regreet" /usr/local/bin/regreet
+fi
+'''
+
 [bootstrap.directories."/etc/greetd"]
 owner = "root"
 group = "root"
+mode = "0755"
+
+[bootstrap.directories."/var/lib/regreet"]
+owner = "greeter"
+group = "greeter"
+mode = "0755"
+
+[bootstrap.directories."/var/log/regreet"]
+owner = "greeter"
+group = "greeter"
 mode = "0755"
 
 [bootstrap.files."/etc/greetd/config.toml"]
