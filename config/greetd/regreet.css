@@ -1,13 +1,170 @@
+/* Catppuccin Latte — keep the greeter in tune with the boot screen. */
+@define-color base #eff1f5;
+@define-color surface #ffffff;
+@define-color text #4c4f69;
+@define-color muted #6c6f85;
+@define-color border #ccd0da;
+@define-color accent #1e66f5;
+@define-color accent_hover #1758d6;
+@define-color danger #d20f39;
+
 window {
-    font-family: "Noto Sans";
+    color: @text;
+    background-color: @base;
+    background-image: radial-gradient(ellipse at top left, #e4ddf8, transparent 65%),
+                      radial-gradient(ellipse at bottom right, #f8e7df, transparent 65%);
 }
 
-button,
+/* ReGreet's centered login frame; the clock has its own treatment below. */
+frame.background:not(.widget-clock) {
+    background-color: @surface;
+    background-image: none;
+    border: 1px solid alpha(@border, 0.65);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 16px 48px alpha(@text, 0.10);
+}
+
+frame.background > border {
+    border: none;
+}
+
+frame.background > grid > label {
+    color: @muted;
+}
+
+frame.background > grid > label:first-child {
+    color: @text;
+    font-size: 26px;
+    font-weight: 700;
+    margin-top: 4px;
+    margin-bottom: 12px;
+}
+
+/* Keep the date and time clear without another floating card. */
+frame.widget-clock {
+    background-color: transparent;
+    background-image: none;
+    border: none;
+    box-shadow: none;
+    margin-top: 36px;
+    padding: 12px 24px;
+}
+
+.widget-clock label {
+    color: @muted;
+    font-size: 24px;
+    font-weight: 500;
+    font-feature-settings: "tnum";
+}
+
 entry,
-combobox {
+combobox > box > button {
+    color: @text;
+    background-color: @base;
+    background-image: none;
+    border: 1px solid @border;
     border-radius: 12px;
+    min-height: 28px;
+    padding: 8px 12px;
+    box-shadow: none;
+    caret-color: @accent;
+}
+
+entry:focus-within,
+combobox > box > button:focus-visible {
+    border-color: @accent;
+    outline: 2px solid alpha(@accent, 0.18);
+    outline-offset: 2px;
+}
+
+entry selection {
+    color: white;
+    background-color: @accent;
 }
 
 button {
+    color: @text;
+    background-color: @base;
+    background-image: none;
+    border: 1px solid @border;
+    border-radius: 12px;
+    min-height: 28px;
     padding: 8px 16px;
+    font-weight: 500;
+    box-shadow: none;
+    text-shadow: none;
+    transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+button:hover {
+    background-color: #e6e9ef;
+    border-color: #acb0be;
+}
+
+button:active,
+button:checked {
+    background-color: #dce0e8;
+}
+
+button:focus-visible {
+    outline: 2px solid alpha(@accent, 0.5);
+    outline-offset: 3px;
+}
+
+button.suggested-action {
+    color: white;
+    background-color: @accent;
+    border-color: @accent;
+    padding-left: 24px;
+    padding-right: 24px;
+    font-weight: 700;
+}
+
+button.suggested-action:hover {
+    background-color: @accent_hover;
+    border-color: @accent_hover;
+}
+
+button.suggested-action:active {
+    background-color: #144cb9;
+}
+
+/* Power actions stay quiet until hovered or reached with the keyboard. */
+button.destructive-action {
+    color: @muted;
+    background-color: alpha(@surface, 0.75);
+    border-color: alpha(@border, 0.65);
+}
+
+button.destructive-action:hover {
+    color: @danger;
+    background-color: #fce8ed;
+    border-color: alpha(@danger, 0.3);
+}
+
+button:disabled {
+    color: #9ca0b0;
+    background-color: #e6e9ef;
+    border-color: @border;
+}
+
+popover > contents {
+    color: @text;
+    background-color: @surface;
+    border: 1px solid @border;
+    border-radius: 12px;
+    padding: 6px;
+    box-shadow: 0 8px 24px alpha(@text, 0.12);
+}
+
+popover row:selected {
+    color: white;
+    background-color: @accent;
+    border-radius: 6px;
+}
+
+infobar {
+    color: @text;
+    border-radius: 12px;
 }

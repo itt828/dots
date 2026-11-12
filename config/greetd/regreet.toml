@@ -4,7 +4,7 @@ skip_selection = false
 application_prefer_dark_theme = false
 cursor_theme_name = "Adwaita"
 cursor_blink = true
-font_name = "Sans 14"
+font_name = "Sans 12"
 icon_theme_name = "Adwaita"
 theme_name = "Adwaita"
 
@@ -12,7 +12,7 @@ theme_name = "Adwaita"
 greeting_msg = "Welcome back"
 
 [widget.clock]
-format = "%H:%M"
+format = "%m月%d日 (%a)  ·  %H:%M"
 resolution = "1s"
 timezone = "Asia/Tokyo"
 locale = "ja_JP"
