@@ -8,8 +8,8 @@ Fonts/Regular/Phosphor.ttfをassets/fonts/Phosphor.ttfとしてコピー
 
 ## 構成
 
-- `modules/qsitt/`: 画面に現れる機能
-- `modules/common/`: 共有 UI と表示用 Theme
+- `modules/`: 画面に現れる機能
+- `ui/`: 共有 UI と表示用 Theme
 - `services/`: OS連携と共有状態（UIを置かない）
 - `config.toml`: 旧設定の初回読み込み用
 - `config/`: 配布用の静的設定
@@ -25,7 +25,7 @@ Fonts/Regular/Phosphor.ttfをassets/fonts/Phosphor.ttfとしてコピー
 ./scripts/generate-palette.sh ~/Pictures/wallpaper.png
 ```
 
-画像名から `modules/common/theme/palettes/wallpaper.toml` が生成されます。名前を指定する場合は第2引数へ渡します。
+画像名から `ui/theme/palettes/wallpaper.toml` が生成されます。名前を指定する場合は第2引数へ渡します。
 
 ```sh
 ./scripts/generate-palette.sh ~/Pictures/wallpaper.png my-palette

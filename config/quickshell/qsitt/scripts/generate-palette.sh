@@ -5,7 +5,7 @@ usage() {
     cat <<'EOF'
 Usage: generate-palette.sh [options] IMAGE [PALETTE_NAME]
 
-Generate modules/common/theme/palettes/<name>.toml from an image with matugen.
+Generate ui/theme/palettes/<name>.toml from an image with matugen.
 
 Options:
   -f, --force               Overwrite an existing palette
@@ -72,7 +72,7 @@ command -v jq >/dev/null 2>&1 || fail "jq is not installed"
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 project_dir=$(CDPATH= cd -- "$script_dir/.." && pwd)
-palette_dir="$project_dir/modules/common/theme/palettes"
+palette_dir="$project_dir/ui/theme/palettes"
 
 if [[ -z "$palette_name" ]]; then
     image_name=$(basename -- "$image_path")

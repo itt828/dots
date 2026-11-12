@@ -51,7 +51,7 @@ QtObject {
     readonly property var current: paletteData[currentMode] ?? fallbackPalette[currentMode]
 
     readonly property FolderListModel paletteDirectory: FolderListModel {
-        folder: Qt.resolvedUrl("../modules/common/theme/palettes")
+        folder: Qt.resolvedUrl("../ui/theme/palettes")
         nameFilters: ["*.toml"]
         showDirs: false
         showDotAndDotDot: false
@@ -65,7 +65,7 @@ QtObject {
     }
 
     readonly property FileView paletteFile: FileView {
-        path: Quickshell.shellPath("modules/common/theme/palettes/" + root.currentPalette + ".toml")
+        path: Quickshell.shellPath("ui/theme/palettes/" + root.currentPalette + ".toml")
         blockLoading: true
         watchChanges: true
 

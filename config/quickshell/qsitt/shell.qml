@@ -2,14 +2,14 @@
 //@ pragma AppId qsitt
 import QtQuick
 import Quickshell
-import qs.modules.qsitt.bar
-import qs.modules.qsitt.controlcenter
-import qs.modules.qsitt.lock
-import qs.modules.qsitt.notifications
-import qs.modules.qsitt.osd
-import qs.modules.qsitt.powermenu
-import qs.modules.qsitt.qrscanner
-import qs.modules.qsitt.search
+import qs.modules.bar
+import qs.modules.controlcenter
+import qs.modules.lock
+import qs.modules.notifications
+import qs.modules.osd
+import qs.modules.powermenu
+import qs.modules.qrscanner
+import qs.modules.search
 import qs.services
 
 ShellRoot {
