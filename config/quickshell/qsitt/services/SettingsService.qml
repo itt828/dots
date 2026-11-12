@@ -18,7 +18,6 @@ QtObject {
     property bool loaded: false
     property bool loadFinished: false
     property string savedText: ""
-    readonly property string script: Quickshell.shellDir + "/scripts/state/settings-state.sh"
 
     readonly property var targetScreens: get("targetScreens")
     readonly property int animationDuration: get("animationDuration")
@@ -145,9 +144,9 @@ QtObject {
         function onReadyChanged(): void { root.finishLoad(); }
     }
 
-    readonly property Process loader: Process {
+    readonly property BackendProcess loader: BackendProcess {
         running: true
-        command: ["sh", root.script, "load"]
+        arguments: ["state", "load", "settings"]
         stdout: StdioCollector {
             onStreamFinished: root.savedText = text
         }
@@ -162,7 +161,7 @@ QtObject {
         onTriggered: root.saver.save(JSON.stringify(root.values))
     }
 
-    readonly property Process saver: Process {
+    readonly property BackendProcess saver: BackendProcess {
         property string pending: ""
         function save(json: string): void {
             if (running) {
@@ -170,13 +169,13 @@ QtObject {
                 return;
             }
             pending = "";
-            exec(["sh", root.script, "save", json]);
+            execute(["state", "save", "settings", json]);
         }
         onExited: {
             if (pending !== "") {
                 const next = pending;
                 pending = "";
-                exec(["sh", root.script, "save", next]);
+                execute(["state", "save", "settings", next]);
             }
         }
     }

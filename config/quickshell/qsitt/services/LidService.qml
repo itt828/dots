@@ -51,7 +51,7 @@ QtObject {
     }
 
     function enqueueOutput(name: string, action: string): void {
-        enqueueCommand(["niri", "msg", "output", name, action]);
+        enqueueCommand(["niri", "output", name, action]);
     }
 
     function enqueueCommand(command: var): void {
@@ -62,7 +62,7 @@ QtObject {
     function runNextCommand(): void {
         if (outputProcess.running || pendingCommands.length === 0)
             return;
-        outputProcess.command = pendingCommands[0];
+        outputProcess.arguments = pendingCommands[0];
         pendingCommands = pendingCommands.slice(1);
         outputProcess.running = true;
     }
@@ -87,7 +87,7 @@ QtObject {
             root.switchedOffScreens = screens;
             for (const name of screens)
                 root.enqueueOutput(name, "off");
-            root.enqueueCommand(["niri", "msg", "action", "power-on-monitors"]);
+            root.enqueueCommand(["niri", "power-on-monitors"]);
         }
     }
 
@@ -111,12 +111,12 @@ QtObject {
             } else if (root.suspendDelay.running && SettingsService.lidClamshellMode && root.hasExternalScreen()) {
                 root.suspendDelay.stop();
                 root.clamshellActive = true;
-                root.enqueueCommand(["niri", "msg", "action", "power-on-monitors"]);
+                root.enqueueCommand(["niri", "power-on-monitors"]);
             }
         }
     }
 
-    readonly property Process outputProcess: Process {
+    readonly property BackendProcess outputProcess: BackendProcess {
         onExited: (exitCode, exitStatus) => {
             if (exitCode !== 0)
                 console.warn("Niri output command failed:", command.join(" "), exitCode);
@@ -124,15 +124,16 @@ QtObject {
         }
     }
 
-    readonly property Process initialState: Process {
-        command: ["gdbus", "call", "--system", "--dest", "org.freedesktop.UPower",
-                  "--object-path", "/org/freedesktop/UPower", "--method",
-                  "org.freedesktop.DBus.Properties.Get", "org.freedesktop.UPower", "LidIsClosed"]
+    readonly property BackendProcess initialState: BackendProcess {
+        arguments: ["lid", "get"]
         stdout: StdioCollector {
             onStreamFinished: {
-                const match = text.match(/<\s*(true|false)\s*>/);
-                if (match && !root.stateKnown)
-                    root.updateLidState(match[1] === "true");
+                if (!text.trim() || root.stateKnown) return;
+                try {
+                    root.updateLidState(JSON.parse(text).closed);
+                } catch (error) {
+                    console.warn("Invalid backend lid state:", error);
+                }
             }
         }
         onExited: (exitCode, exitStatus) => {
@@ -141,15 +142,16 @@ QtObject {
         }
     }
 
-    readonly property Process monitor: Process {
-        command: ["gdbus", "monitor", "--system", "--dest", "org.freedesktop.UPower",
-                  "--object-path", "/org/freedesktop/UPower"]
+    readonly property BackendProcess monitor: BackendProcess {
+        arguments: ["lid", "watch"]
         running: true
         stdout: SplitParser {
             onRead: data => {
-                const match = data.toString().match(/['"]LidIsClosed['"]:\s*<\s*(true|false)\s*>/);
-                if (match)
-                    root.updateLidState(match[1] === "true");
+                try {
+                    root.updateLidState(JSON.parse(data.toString()).closed);
+                } catch (error) {
+                    console.warn("Invalid backend lid event:", error);
+                }
             }
         }
         onExited: root.restartMonitor.start()

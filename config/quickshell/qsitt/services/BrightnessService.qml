@@ -13,33 +13,40 @@ QtObject {
         updateProc.running = true;
     }
 
-    readonly property Process updateProc: Process {
-        command: ["brightnessctl", "-m", "i"]
+    readonly property BackendProcess updateProc: BackendProcess {
+        arguments: ["backlight", "get", "display"]
         stdout: StdioCollector {
             onStreamFinished: {
-                // Output format: intel_backlight,backlight,2910,15%,19393
-                var parts = text.split(",");
-                if (parts.length >= 5) {
-                    var current = parseInt(parts[2]);
-                    var max = parseInt(parts[4]);
-                    if (!isNaN(current) && !isNaN(max) && max !== 0) {
-                        root.brightness = current / max;
-                        root.initialized = true;
-                    }
+                if (!text.trim()) return;
+                try {
+                    const state = JSON.parse(text);
+                    root.brightness = state.brightness;
+                    root.initialized = true;
+                } catch (error) {
+                    console.warn("Invalid backend brightness:", error);
                 }
             }
         }
     }
 
-    readonly property Process monitorProc: Process {
-        command: ["udevadm", "monitor", "-s", "backlight"]
+    readonly property BackendProcess monitorProc: BackendProcess {
+        arguments: ["backlight", "watch"]
         running: true
+        onExited: restartMonitor.restart()
         stdout: SplitParser {
             onRead: function (line) {
                 if (line.includes("change")) {
                     root.update();
                 }
             }
+        }
+    }
+
+    readonly property Timer restartMonitor: Timer {
+        interval: 1000
+        onTriggered: {
+            root.update();
+            root.monitorProc.running = true;
         }
     }
 

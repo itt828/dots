@@ -62,21 +62,16 @@ QtObject {
     readonly property bool isHeadphones: activeProfile.includes("Headphones")
     readonly property bool isSpeaker: activeProfile.includes("Speaker")
 
-    property Process getProfileProc: Process {
-        command: ["pactl", "-f", "json", "list", "cards"]
+    property BackendProcess getProfileProc: BackendProcess {
+        arguments: ["audio", "profiles"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
-                    let cards = JSON.parse(text);
-                    let alsaCard = cards.find(card => card.name && card.name.startsWith("alsa_card."));
-                    if (alsaCard) {
-                        root.alsaCardName = alsaCard.name;
-                        root.activeProfile = alsaCard.active_profile;
-
-                        let profiles = Object.keys(alsaCard.profiles || {});
-                        root.headphoneProfile = profiles.find(p => p.includes("Headphones")) || "";
-                        root.speakerProfile = profiles.find(p => p.includes("Speaker")) || "";
-                    }
+                    const profile = JSON.parse(text);
+                    root.alsaCardName = profile.card;
+                    root.activeProfile = profile.active;
+                    root.headphoneProfile = profile.headphones;
+                    root.speakerProfile = profile.speaker;
                 } catch (e) {
                     console.log("Error parsing pactl cards:", e);
                 }
@@ -88,7 +83,7 @@ QtObject {
         getProfileProc.running = true;
     }
 
-    property Process setProfileProc: Process {
+    property BackendProcess setProfileProc: BackendProcess {
         onRunningChanged: {
             if (!running) {
                 root.refreshProfile();
@@ -107,7 +102,7 @@ QtObject {
         }
         if (!newProfile)
             return;
-        setProfileProc.command = ["pactl", "set-card-profile", root.alsaCardName, newProfile];
+        setProfileProc.arguments = ["audio", "set-profile", root.alsaCardName, newProfile];
         setProfileProc.running = true;
     }
 

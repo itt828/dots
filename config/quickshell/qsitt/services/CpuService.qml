@@ -10,17 +10,17 @@ QtObject {
     property real usage: 0.0
     property string label: "-"
 
-    readonly property Process _loadProc: Process {
-        command: ["cat", "/proc/loadavg"]
+    readonly property BackendProcess _loadProc: BackendProcess {
+        arguments: ["metrics", "cpu"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (text) {
-                    var parts = text.trim().split(" ");
-                    if (parts.length > 0) {
-                        var load = parseFloat(parts[0]);
-                        root.label = parts[0];
-                        root.usage = Math.min(load / 4.0, 1.0); // Normalizing for 4 cores as before
-                    }
+                if (!text.trim()) return;
+                try {
+                    const state = JSON.parse(text);
+                    root.usage = state.usage;
+                    root.label = state.label;
+                } catch (error) {
+                    console.warn("Invalid backend metric:", error);
                 }
             }
         }

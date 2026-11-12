@@ -15,9 +15,9 @@ Item {
     signal windowOpenedOrChanged(var window)
     signal windowUrgencyChanged(var data)
 
-    Process {
+    BackendProcess {
         id: niriEventStream
-        command: ["stdbuf", "-oL", "niri", "msg", "-j", "event-stream"]
+        arguments: ["niri", "event-stream"]
         running: true
         stdout: SplitParser {
             onRead: data => {

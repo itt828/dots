@@ -24,7 +24,7 @@ QtObject {
 
         _runningScheme = scheme;
         _queuedScheme = "";
-        _syncProcess.command = ["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", scheme];
+        _syncProcess.arguments = ["desktop-theme", scheme];
         _syncProcess.running = true;
     }
 
@@ -40,7 +40,7 @@ QtObject {
         }
     }
 
-    readonly property Process _syncProcess: Process {
+    readonly property BackendProcess _syncProcess: BackendProcess {
         onExited: (exitCode, exitStatus) => {
             if (exitCode !== 0)
                 console.warn("Failed to synchronize desktop color scheme:", root._runningScheme);

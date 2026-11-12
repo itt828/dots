@@ -21,8 +21,6 @@ QtObject {
     property string _activeCategory: ""
     property string _response: ""
 
-    readonly property string _helper: Quickshell.shellDir + "/scripts/unified-search.py"
-
     function refresh(): void { refreshTimer.restart(); }
 
     function open(): void {
@@ -58,7 +56,7 @@ QtObject {
     }
 
     function searchWeb(value: string): void {
-        _actionProcess.command = ["xdg-open", "https://www.google.com/search?q=" + encodeURIComponent(value)];
+        _actionProcess.arguments = ["open", "https://www.google.com/search?q=" + encodeURIComponent(value)];
         _actionProcess.running = true;
         close();
     }
@@ -68,12 +66,13 @@ QtObject {
         if (item.kind === "web") { searchWeb(item.value); return; }
         if (item.kind === "lens") { startLensSelection(); return; }
         if (item.kind === "app") {
-            Quickshell.execDetached(["gio", "launch", item.value]);
+            _actionProcess.arguments = ["launch", item.value];
+            _actionProcess.running = true;
             close();
             return;
         }
-        if (item.kind === "file") _actionProcess.command = ["xdg-open", item.value];
-        else if (item.kind === "clipboard" || item.kind === "clipboard-image" || item.kind === "clipboard-file") _actionProcess.command = ["python3", _helper, "clipboard-copy", item.value];
+        if (item.kind === "file") _actionProcess.arguments = ["open", item.value];
+        else if (item.kind === "clipboard" || item.kind === "clipboard-image" || item.kind === "clipboard-file") _actionProcess.arguments = ["clipboard", "copy", item.value];
         else if (item.kind === "tool") {
             if (item.value === "lens") { startLensSelection(); return; }
             if (item.value === "control-center" || item.value === "notifications") {
@@ -84,7 +83,7 @@ QtObject {
             else if (item.value === "color") ControlCenterService.pickColor();
             else if (item.value === "lock") PowerService.lock();
             else if (item.value === "suspend") PowerService.suspend();
-            else if (item.value === "screenshot") _actionProcess.command = ["niri", "msg", "action", "screenshot"];
+            else if (item.value === "screenshot") _actionProcess.arguments = ["niri", "screenshot"];
             else return;
             if (item.value !== "screenshot") { close(); return; }
         } else return;
@@ -110,8 +109,8 @@ QtObject {
 
     function cancelLensSelection(): void { lensSelecting = false; }
 
-    readonly property Process _focusedOutputProcess: Process {
-        command: ["niri", "msg", "-j", "focused-output"]
+    readonly property BackendProcess _focusedOutputProcess: BackendProcess {
+        arguments: ["niri", "focused-output"]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
@@ -139,12 +138,12 @@ QtObject {
             root._activeQuery = root.query;
             root._activeCategory = root.category;
             root._response = "";
-            root._queryProcess.command = ["python3", root._helper, "query", root._activeQuery, root._activeCategory];
+            root._queryProcess.arguments = ["search", "query", root._activeQuery, root._activeCategory];
             root._queryProcess.running = true;
         }
     }
 
-    readonly property Process _queryProcess: Process {
+    readonly property BackendProcess _queryProcess: BackendProcess {
         stdout: StdioCollector {
             onStreamFinished: root._response = text
         }
@@ -164,9 +163,9 @@ QtObject {
         }
     }
 
-    readonly property Process _indexProcess: Process {
+    readonly property BackendProcess _indexProcess: BackendProcess {
         running: true
-        command: ["python3", root._helper, "index"]
+        arguments: ["search", "index"]
         onExited: root.refresh()
     }
 
@@ -179,21 +178,21 @@ QtObject {
         }
     }
 
-    readonly property Process _clipboardWatcher: Process {
+    readonly property BackendProcess _clipboardWatcher: BackendProcess {
         running: true
-        command: ["wl-paste", "--type", "text", "--watch", "python3", root._helper, "clipboard-add"]
+        arguments: ["clipboard", "watch", "text"]
         onExited: root._watchRestart.start()
     }
 
-    readonly property Process _imageWatcher: Process {
+    readonly property BackendProcess _imageWatcher: BackendProcess {
         running: true
-        command: ["wl-paste", "--type", "image", "--watch", "python3", root._helper, "clipboard-add-image"]
+        arguments: ["clipboard", "watch", "image"]
         onExited: root._watchRestart.start()
     }
 
-    readonly property Process _fileWatcher: Process {
+    readonly property BackendProcess _fileWatcher: BackendProcess {
         running: true
-        command: ["wl-paste", "--type", "text/uri-list", "--watch", "python3", root._helper, "clipboard-add-files"]
+        arguments: ["clipboard", "watch", "text/uri-list"]
         onExited: root._watchRestart.start()
     }
 
@@ -206,16 +205,16 @@ QtObject {
         }
     }
 
-    readonly property Process _clearClipboardProcess: Process {
-        command: ["python3", root._helper, "clipboard-clear"]
+    readonly property BackendProcess _clearClipboardProcess: BackendProcess {
+        arguments: ["clipboard", "clear"]
         onExited: root.refresh()
     }
 
-    readonly property Process _actionProcess: Process {}
+    readonly property BackendProcess _actionProcess: BackendProcess {}
 
-    readonly property Process _lensProcess: Process {
+    readonly property BackendProcess _lensProcess: BackendProcess {
         running: root.lensBusy
-        command: ["bash", Quickshell.shellDir + "/scripts/google-lens-region.sh", root.lensGeometry]
+        arguments: ["tool", "lens", root.lensGeometry]
         onExited: root.lensBusy = false
     }
 }

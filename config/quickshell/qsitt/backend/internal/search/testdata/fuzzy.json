@@ -1,0 +1,122 @@
+[
+  {
+    "text": "Firefox",
+    "query": "frfx",
+    "score": 0.7000000000000001
+  },
+  {
+    "text": "Firefox",
+    "query": "firefox",
+    "score": -1000.0
+  },
+  {
+    "text": "Firefox",
+    "query": "fire",
+    "score": -499.3
+  },
+  {
+    "text": "Firefox",
+    "query": "fox",
+    "score": -191.3
+  },
+  {
+    "text": "FooBar",
+    "query": "fb",
+    "score": -7.4
+  },
+  {
+    "text": "foo-bar",
+    "query": "fb",
+    "score": -5.3
+  },
+  {
+    "text": "foo bar baz",
+    "query": "fbb",
+    "score": -4.9
+  },
+  {
+    "text": "Documents/Research notes.txt",
+    "query": "rs nt",
+    "score": -171.39999999999998
+  },
+  {
+    "text": "日本語の検索",
+    "query": "日本 検",
+    "score": -690.8
+  },
+  {
+    "text": "Straße",
+    "query": "strasse",
+    "score": -1000.0
+  },
+  {
+    "text": "STRASSE",
+    "query": "straße",
+    "score": -1000.0
+  },
+  {
+    "text": "Résumé",
+    "query": "rés",
+    "score": -499.4
+  },
+  {
+    "text": "hello world",
+    "query": "xyz",
+    "score": null
+  },
+  {
+    "text": "abc",
+    "query": "ca",
+    "score": null
+  },
+  {
+    "text": "abc",
+    "query": "aa",
+    "score": null
+  },
+  {
+    "text": "",
+    "query": "a",
+    "score": null
+  },
+  {
+    "text": "anything",
+    "query": "",
+    "score": 0.0
+  },
+  {
+    "text": "αβγδε",
+    "query": "αγε",
+    "score": -1.5
+  },
+  {
+    "text": "Wi-Fi settings",
+    "query": "wfs",
+    "score": -8.6
+  },
+  {
+    "text": "snake_case",
+    "query": "sc",
+    "score": -1.0
+  },
+  {
+    "text": "a---b",
+    "query": "ab",
+    "score": -5.5
+  },
+  {
+    "text": "a---b",
+    "query": "a b",
+    "score": -691.0
+  },
+  {
+    "text": "foobar",
+    "query": "obr",
+    "score": 2.6
+  },
+  {
+    "text": "Discord",
+    "query": "dscrd",
+    "score": -7.3
+  }
+]

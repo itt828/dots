@@ -38,9 +38,9 @@ Item {
         }
     }
 
-    Process {
+    BackendProcess {
         id: focusedWindowFetch
-        command: ["niri", "msg", "-j", "focused-window"]
+        arguments: ["niri", "focused-window"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {

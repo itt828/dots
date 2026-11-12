@@ -41,7 +41,7 @@ Item {
     }
 
     function focus(output: string, index: int): void {
-        focusProcess.command = ["bash", "-c", `niri msg action focus-monitor "${output}"; niri msg action focus-workspace ${index}`];
+        focusProcess.arguments = ["niri", "focus", output, String(index)];
         focusProcess.running = true;
     }
 
@@ -115,9 +115,9 @@ Item {
         }
     }
 
-    Process {
+    BackendProcess {
         id: refreshWorkspaces
-        command: ["niri", "msg", "-j", "workspaces"]
+        arguments: ["niri", "workspaces"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (text) {
@@ -129,9 +129,9 @@ Item {
         }
     }
 
-    Process {
+    BackendProcess {
         id: initialFetch
-        command: ["niri", "msg", "-j", "workspaces"]
+        arguments: ["niri", "workspaces"]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
@@ -145,9 +145,9 @@ Item {
     }
 
     // Periodically sync window titles to handle initial state or missed events
-    Process {
+    BackendProcess {
         id: syncWindows
-        command: ["niri", "msg", "-j", "windows"]
+        arguments: ["niri", "windows"]
         running: true
         stdout: StdioCollector {
             onStreamFinished: {
@@ -163,5 +163,5 @@ Item {
         }
     }
 
-    Process { id: focusProcess }
+    BackendProcess { id: focusProcess }
 }

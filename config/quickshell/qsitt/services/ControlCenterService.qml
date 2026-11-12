@@ -33,6 +33,7 @@ QtObject {
     function finishQrSelection(geometry) {
         qrGeometry = geometry;
         qrSelecting = false;
+        _qrError = "";
         qrBusy = true;
     }
 
@@ -55,14 +56,9 @@ QtObject {
         _timerNotificationProcess.running = true;
     }
 
-    readonly property Process _qrProcess: Process {
+    readonly property BackendProcess _qrProcess: BackendProcess {
         running: root.qrBusy
-        command: ["bash", "-c", `
-            value="$(grim -g "$1" -t png - | zbarimg --quiet --raw - 2>/dev/null)"
-            [ -n "$value" ] || exit 30
-            printf %s "$value" | wl-copy || exit 40
-            command -v notify-send >/dev/null && notify-send 'QRコード' 'クリップボードにコピーしました'
-        `, "qr-reader", root.qrGeometry]
+        arguments: ["tool", "qr", root.qrGeometry]
 
         stderr: StdioCollector {
             onStreamFinished: root._qrError = text.trim().slice(0, 160)
@@ -84,20 +80,9 @@ QtObject {
         }
     }
 
-    readonly property Process _pickerProcess: Process {
+    readonly property BackendProcess _pickerProcess: BackendProcess {
         running: root.pickerBusy
-        command: ["bash", "-c", `
-            sleep 0.25
-            for tool in slurp grim magick wl-copy; do
-                command -v "$tool" >/dev/null || exit 20
-            done
-            geometry="$(slurp -p -f '%x,%y 1x1')" || exit 10
-            [ -n "$geometry" ] || exit 10
-            value="$(grim -g "$geometry" -t png - | magick png:- -alpha off -depth 8 -format '#%[hex:p{0,0}]' info:-)"
-            [ -n "$value" ] || exit 30
-            printf %s "$value" | wl-copy || exit 40
-            printf %s "$value"
-        `]
+        arguments: ["tool", "color"]
 
         stdout: StdioCollector {
             onStreamFinished: root._pickerResult = text.trim()
@@ -117,7 +102,7 @@ QtObject {
         }
     }
 
-    readonly property Process _timerNotificationProcess: Process {
-        command: ["bash", "-c", "command -v notify-send >/dev/null && notify-send 'タイマー' '設定した時間になりました' -u critical"]
+    readonly property BackendProcess _timerNotificationProcess: BackendProcess {
+        arguments: ["tool", "timer-notify"]
     }
 }

@@ -26,24 +26,23 @@ Rectangle {
         if (!available || busy)
             return;
         busy = true;
-        setProcess.command = ["brightnessctl", "-d", "tpacpi::kbd_backlight", "set",
-                              String((level + 1) % (maxLevel + 1))];
+        setProcess.arguments = ["backlight", "keyboard-set",
+                                String((level + 1) % (maxLevel + 1))];
         setProcess.running = true;
     }
 
-    readonly property Process readProcess: Process {
-        command: ["brightnessctl", "-m", "-d", "tpacpi::kbd_backlight", "info"]
+    readonly property BackendProcess readProcess: BackendProcess {
+        arguments: ["backlight", "get", "keyboard"]
         stdout: StdioCollector {
             onStreamFinished: {
-                const parts = text.trim().split(",");
-                if (parts.length < 5)
-                    return;
-                const current = parseInt(parts[2], 10);
-                const maximum = parseInt(parts[4], 10);
-                if (!isNaN(current) && !isNaN(maximum) && maximum > 0) {
-                    root.level = current;
-                    root.maxLevel = maximum;
+                if (!text.trim()) return;
+                try {
+                    const state = JSON.parse(text);
+                    root.level = state.current;
+                    root.maxLevel = state.maximum;
                     root.available = true;
+                } catch (error) {
+                    root.available = false;
                 }
             }
         }
@@ -53,7 +52,7 @@ Rectangle {
         }
     }
 
-    readonly property Process setProcess: Process {
+    readonly property BackendProcess setProcess: BackendProcess {
         onExited: (exitCode, exitStatus) => {
             root.busy = false;
             if (exitCode !== 0)

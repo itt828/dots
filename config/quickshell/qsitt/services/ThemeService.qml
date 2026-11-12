@@ -43,7 +43,6 @@ QtObject {
     property bool modeTouched: false
     property string savedPalette: ""
     property string savedMode: ""
-    readonly property string stateScript: Quickshell.shellDir + "/scripts/state/theme-state.sh"
 
     readonly property string currentPalette: hasPalette(configuredPalette) ? configuredPalette : (detectedPalettes.length > 0 ? detectedPalettes[0] : "qsitt")
     readonly property string currentMode: availableModes.includes(configuredMode) ? configuredMode : "light"
@@ -198,9 +197,9 @@ QtObject {
         function onReadyChanged(): void { root.finishLoad(); }
     }
 
-    readonly property Process paletteLoader: Process {
+    readonly property BackendProcess paletteLoader: BackendProcess {
         running: true
-        command: ["sh", root.stateScript, "load-theme"]
+        arguments: ["state", "load", "theme"]
         stdout: StdioCollector {
             onStreamFinished: root.savedPalette = text.trim()
         }
@@ -210,9 +209,9 @@ QtObject {
         }
     }
 
-    readonly property Process modeLoader: Process {
+    readonly property BackendProcess modeLoader: BackendProcess {
         running: true
-        command: ["sh", root.stateScript, "load-mode"]
+        arguments: ["state", "load", "mode"]
         stdout: StdioCollector {
             onStreamFinished: root.savedMode = text.trim()
         }
@@ -222,7 +221,7 @@ QtObject {
         }
     }
 
-    readonly property Process paletteSaver: Process {
+    readonly property BackendProcess paletteSaver: BackendProcess {
         property string pending: ""
         function save(name: string): void {
             if (running) {
@@ -230,18 +229,18 @@ QtObject {
                 return;
             }
             pending = "";
-            exec(["sh", root.stateScript, "save-theme", name]);
+            execute(["state", "save", "theme", name]);
         }
         onExited: {
             if (pending !== "") {
                 const next = pending;
                 pending = "";
-                exec(["sh", root.stateScript, "save-theme", next]);
+                execute(["state", "save", "theme", next]);
             }
         }
     }
 
-    readonly property Process modeSaver: Process {
+    readonly property BackendProcess modeSaver: BackendProcess {
         property string pending: ""
         function save(name: string): void {
             if (running) {
@@ -249,13 +248,13 @@ QtObject {
                 return;
             }
             pending = "";
-            exec(["sh", root.stateScript, "save-mode", name]);
+            execute(["state", "save", "mode", name]);
         }
         onExited: {
             if (pending !== "") {
                 const next = pending;
                 pending = "";
-                exec(["sh", root.stateScript, "save-mode", next]);
+                execute(["state", "save", "mode", next]);
             }
         }
     }

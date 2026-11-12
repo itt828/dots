@@ -36,8 +36,8 @@ QtObject {
         _logoutProcess.running = true;
     }
 
-    readonly property Process _shutdownProcess: Process { command: ["systemctl", "poweroff"] }
-    readonly property Process _rebootProcess: Process { command: ["systemctl", "reboot"] }
-    readonly property Process _suspendProcess: Process { command: ["systemctl", "suspend"] }
-    readonly property Process _logoutProcess: Process { command: ["loginctl", "terminate-user", ""] }
+    readonly property BackendProcess _shutdownProcess: BackendProcess { arguments: ["power", "poweroff"] }
+    readonly property BackendProcess _rebootProcess: BackendProcess { arguments: ["power", "reboot"] }
+    readonly property BackendProcess _suspendProcess: BackendProcess { arguments: ["power", "suspend"] }
+    readonly property BackendProcess _logoutProcess: BackendProcess { arguments: ["power", "logout"] }
 }
