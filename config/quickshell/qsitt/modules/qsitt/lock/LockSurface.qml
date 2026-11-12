@@ -123,7 +123,7 @@ Rectangle {
                 focus: true
                 enabled: !root.context.unlockInProgress
                 echoMode: TextInput.Password
-                inputMethodHints: Qt.ImhSensitiveData
+                inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
 
                 placeholderText: "Password"
                 placeholderTextColor: "#88ffffff"
