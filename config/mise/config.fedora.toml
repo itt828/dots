@@ -17,6 +17,7 @@
 "~/.config/mise" = { source = "." }
 "~/.config/niri" = { source = "../niri" }
 "~/.config/fish" = { source = "../fish" }
+"~/.config/ghostty/config.ghostty" = { source = "../ghostty/config.ghostty" }
 "~/.config/helix" = { source = "../helix", mode = "symlink-each", exclude = ["runtime", ".gitignore"] }
 "~/.config/helix/runtime/queries" = { source = "~/repos/helix/runtime/queries" }
 "~/.config/helix/runtime/themes" = { source = "~/repos/helix/runtime/themes" }
