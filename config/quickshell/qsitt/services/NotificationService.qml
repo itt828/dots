@@ -8,6 +8,7 @@ Item {
 
     property ListModel history: ListModel {}
     property bool dnd: false
+    property bool panelVisible: false
     readonly property alias server: serverInstance
 
     NotificationServer {
@@ -17,6 +18,7 @@ Item {
         actionsSupported: true
 
         onNotification: notification => {
+            notification.tracked = true;
             console.log("Notification received:", notification.appName, notification.summary, "Icon:", notification.icon, "Image:", notification.image);
             // Add to beginning of history
             root.history.insert(0, {
@@ -37,8 +39,8 @@ Item {
     function dismiss(index) {
         if (index >= 0 && index < history.count) {
             var n = history.get(index).notificationObj;
-            if (n && n.close)
-                n.close();
+            if (n && n.dismiss)
+                n.dismiss();
             history.remove(index);
         }
     }
@@ -46,8 +48,8 @@ Item {
     function clearAll() {
         for (var i = 0; i < history.count; i++) {
             var n = history.get(i).notificationObj;
-            if (n && n.close)
-                n.close();
+            if (n && n.dismiss)
+                n.dismiss();
         }
         history.clear();
     }

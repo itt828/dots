@@ -12,9 +12,30 @@ Scope {
 
     readonly property var searchService: SearchService
     readonly property var categories: [
-        { key: "all", label: "すべて" }, { key: "apps", label: "アプリ" },
-        { key: "web", label: "Web / Lens" }, { key: "files", label: "ファイル" },
-        { key: "tools", label: "ツール" }, { key: "clipboard", label: "クリップボード" }
+        {
+            key: "all",
+            label: "すべて"
+        },
+        {
+            key: "apps",
+            label: "アプリ"
+        },
+        {
+            key: "web",
+            label: "Web / Lens"
+        },
+        {
+            key: "files",
+            label: "ファイル"
+        },
+        {
+            key: "tools",
+            label: "ツール"
+        },
+        {
+            key: "clipboard",
+            label: "クリップボード"
+        }
     ]
 
     Variants {
@@ -33,7 +54,12 @@ Scope {
             color: Theme.withAlpha(Theme.text, 0.4)
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
-            anchors { top: true; left: true; right: true; bottom: true }
+            anchors {
+                top: true
+                left: true
+                right: true
+                bottom: true
+            }
 
             Rectangle {
                 x: Math.min(lensSelector.startX, lensSelector.currentX)
@@ -47,7 +73,11 @@ Scope {
             }
 
             Text {
-                anchors { top: parent.top; topMargin: 32; horizontalCenter: parent.horizontalCenter }
+                anchors {
+                    top: parent.top
+                    topMargin: 32
+                    horizontalCenter: parent.horizontalCenter
+                }
                 text: "Google Lens: 範囲をドラッグ • 右クリックでキャンセル"
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSizeBody
@@ -62,7 +92,10 @@ Scope {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 cursorShape: Qt.CrossCursor
                 onPressed: mouse => {
-                    if (mouse.button === Qt.RightButton) { root.searchService.cancelLensSelection(); return; }
+                    if (mouse.button === Qt.RightButton) {
+                        root.searchService.cancelLensSelection();
+                        return;
+                    }
                     lensSelector.startX = mouse.x;
                     lensSelector.startY = mouse.y;
                     lensSelector.currentX = mouse.x;
@@ -75,12 +108,16 @@ Scope {
                     }
                 }
                 onReleased: mouse => {
-                    if (mouse.button !== Qt.LeftButton) return;
+                    if (mouse.button !== Qt.LeftButton)
+                        return;
                     const x = Math.round(Math.min(lensSelector.startX, mouse.x) + (lensSelector.modelData.x || 0));
                     const y = Math.round(Math.min(lensSelector.startY, mouse.y) + (lensSelector.modelData.y || 0));
                     const width = Math.round(Math.abs(mouse.x - lensSelector.startX));
                     const height = Math.round(Math.abs(mouse.y - lensSelector.startY));
-                    if (width < 4 || height < 4) { root.searchService.cancelLensSelection(); return; }
+                    if (width < 4 || height < 4) {
+                        root.searchService.cancelLensSelection();
+                        return;
+                    }
                     root.searchService.finishLensSelection(x + "," + y + " " + width + "x" + height);
                 }
             }
@@ -99,37 +136,62 @@ Scope {
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.keyboardFocus: searchWindow.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-            anchors { top: true; left: true; right: true; bottom: true }
-            mask: Region { item: searchWindow.visible ? dismissLayer : null }
+            anchors {
+                top: true
+                left: true
+                right: true
+                bottom: true
+            }
+            mask: Region {
+                item: searchWindow.visible ? dismissLayer : null
+            }
 
             Rectangle {
                 id: dismissLayer
                 anchors.fill: parent
                 color: Theme.withAlpha("#101820", 0.25)
-                MouseArea { anchors.fill: parent; onClicked: root.searchService.close() }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: root.searchService.close()
+                }
             }
 
             Rectangle {
                 id: panel
-                anchors { top: parent.top; topMargin: Theme.barHeight + Theme.barOuterMargin + 12; horizontalCenter: parent.horizontalCenter }
-                width: Math.min(720, parent.width - 32)
-                height: Math.min(630, parent.height - anchors.topMargin - 24)
+                anchors {
+                    top: parent.top
+                    topMargin: Theme.barHeight + Theme.barOuterMargin + 12
+                    horizontalCenter: parent.horizontalCenter
+                }
+                width: Math.min(780, parent.width - 32)
+                height: Math.min(680, parent.height - anchors.topMargin - 24)
                 radius: Theme.radiusLarge
                 color: Theme.surface
                 border.color: Theme.outline
                 border.width: 1
                 clip: true
 
-                MouseArea { anchors.fill: parent; onClicked: searchInput.forceActiveFocus() }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: searchInput.forceActiveFocus()
+                }
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 14
+                    anchors.margins: 22
                     spacing: 10
+
+                    Text {
+                        text: "検索"
+                        color: Theme.text
+                        font.family: Theme.fontFamily
+                        font.pixelSize: 22
+                        font.bold: true
+                    }
 
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 52
+                        Layout.preferredHeight: 64
                         radius: Theme.radius
                         color: Theme.surfaceContainer
                         border.color: searchInput.activeFocus ? Theme.primary : Theme.outline
@@ -139,7 +201,11 @@ Scope {
                             anchors.fill: parent
                             anchors.margins: 12
                             spacing: 10
-                            QsIcon { icon: Icons.search; size: 20; color: Theme.textSecondary }
+                            QsIcon {
+                                icon: Icons.search
+                                size: 20
+                                color: Theme.textSecondary
+                            }
                             TextInput {
                                 id: searchInput
                                 Layout.fillWidth: true
@@ -152,11 +218,16 @@ Scope {
                                 selectedTextColor: Theme.primaryText
                                 text: root.searchService.query
                                 focus: true
-                                onTextChanged: { root.searchService.query = text; root.searchService.refresh(); }
+                                onTextChanged: {
+                                    root.searchService.query = text;
+                                    root.searchService.refresh();
+                                }
                                 onAccepted: root.searchService.submit()
                                 Keys.onPressed: event => {
-                                    if (event.key === Qt.Key_Escape) { root.searchService.close(); event.accepted = true; }
-                                    else if (event.key === Qt.Key_Down) {
+                                    if (event.key === Qt.Key_Escape) {
+                                        root.searchService.close();
+                                        event.accepted = true;
+                                    } else if (event.key === Qt.Key_Down) {
                                         if (root.searchService.results.length > 0) {
                                             root.searchService.selectedIndex = Math.min(root.searchService.selectedIndex + 1, root.searchService.results.length - 1);
                                             resultsView.positionViewAtIndex(root.searchService.selectedIndex, ListView.Contain);
@@ -174,7 +245,11 @@ Scope {
                             }
                         }
                         Text {
-                            anchors { left: parent.left; leftMargin: 45; verticalCenter: parent.verticalCenter }
+                            anchors {
+                                left: parent.left
+                                leftMargin: 45
+                                verticalCenter: parent.verticalCenter
+                            }
                             visible: searchInput.text.length === 0
                             text: "アプリ・ファイル・Web・ツールを検索"
                             color: Theme.textSecondary
@@ -194,7 +269,7 @@ Scope {
                                 required property int index
                                 implicitWidth: categoryText.implicitWidth + 20
                                 implicitHeight: 30
-                                radius: Theme.radiusSmall
+                                radius: 12
                                 color: root.searchService.category === modelData.key ? Theme.primaryContainer : categoryArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
                                 Text {
                                     id: categoryText
@@ -209,11 +284,16 @@ Scope {
                                     anchors.fill: parent
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
-                                    onClicked: { root.searchService.setCategory(parent.modelData.key); searchInput.forceActiveFocus(); }
+                                    onClicked: {
+                                        root.searchService.setCategory(parent.modelData.key);
+                                        searchInput.forceActiveFocus();
+                                    }
                                 }
                             }
                         }
-                        Item { Layout.fillWidth: true }
+                        Item {
+                            Layout.fillWidth: true
+                        }
                     }
 
                     ListView {
@@ -221,7 +301,7 @@ Scope {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         clip: true
-                        spacing: 3
+                        spacing: 6
                         model: root.searchService.results
                         Text {
                             anchors.centerIn: parent
@@ -235,8 +315,8 @@ Scope {
                             required property var modelData
                             required property int index
                             width: resultsView.width
-                            height: modelData.preview ? 88 : 54
-                            radius: Theme.radiusSmall
+                            height: modelData.preview ? 96 : 66
+                            radius: 12
                             color: root.searchService.selectedIndex === index ? Theme.primaryContainer : resultArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
 
                             RowLayout {
@@ -248,7 +328,7 @@ Scope {
                                     Layout.preferredWidth: 34
                                     Layout.preferredHeight: 34
                                     visible: !modelData.preview
-                                    radius: Theme.radiusSmall
+                                    radius: 12
                                     color: Theme.surfaceContainerHigh
                                     Image {
                                         id: appIcon
@@ -273,7 +353,7 @@ Scope {
                                     Layout.preferredWidth: 100
                                     Layout.preferredHeight: 70
                                     visible: !!modelData.preview
-                                    radius: Theme.radiusSmall
+                                    radius: 12
                                     color: Theme.surfaceContainerHigh
                                     clip: true
                                     Image {
@@ -286,32 +366,64 @@ Scope {
                                 ColumnLayout {
                                     Layout.fillWidth: true
                                     spacing: 1
-                                    Text { Layout.fillWidth: true; text: modelData.title; color: Theme.text; elide: Text.ElideRight; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSizeBody }
-                                    Text { Layout.fillWidth: true; text: modelData.subtitle; color: Theme.textSecondary; elide: Text.ElideMiddle; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSizeSmall }
+                                    Text {
+                                        Layout.fillWidth: true
+                                        text: modelData.title
+                                        color: Theme.text
+                                        elide: Text.ElideRight
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: Theme.fontSizeBody
+                                    }
+                                    Text {
+                                        Layout.fillWidth: true
+                                        text: modelData.subtitle
+                                        color: Theme.textSecondary
+                                        elide: Text.ElideMiddle
+                                        font.family: Theme.fontFamily
+                                        font.pixelSize: Theme.fontSizeSmall
+                                    }
                                 }
-                                Text { text: modelData.kind === "app" ? "アプリ" : modelData.kind === "file" ? "ファイル" : modelData.kind === "clipboard" ? "履歴" : modelData.kind === "clipboard-image" ? "画像" : modelData.kind === "clipboard-file" ? "メディア" : modelData.kind === "tool" ? "ツール" : "Web"; color: Theme.textSecondary; font.pixelSize: Theme.fontSizeSmall }
+                                Text {
+                                    text: modelData.kind === "app" ? "アプリ" : modelData.kind === "file" ? "ファイル" : modelData.kind === "clipboard" ? "履歴" : modelData.kind === "clipboard-image" ? "画像" : modelData.kind === "clipboard-file" ? "メディア" : modelData.kind === "tool" ? "ツール" : "Web"
+                                    color: Theme.textSecondary
+                                    font.pixelSize: Theme.fontSizeSmall
+                                }
                             }
                             MouseArea {
                                 id: resultArea
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: { root.searchService.selectedIndex = parent.index; root.searchService.activate(parent.modelData); }
+                                onClicked: {
+                                    root.searchService.selectedIndex = parent.index;
+                                    root.searchService.activate(parent.modelData);
+                                }
                             }
                         }
                     }
 
                     RowLayout {
                         Layout.fillWidth: true
-                        Text { text: "↑↓ 選択  •  Enter 実行  •  Ctrl+1〜6 カテゴリ  •  Esc 閉じる"; color: Theme.textSecondary; font.family: Theme.fontFamily; font.pixelSize: Theme.fontSizeSmall }
-                        Item { Layout.fillWidth: true }
+                        Text {
+                            text: "↑↓ 選択  •  Enter 実行  •  Ctrl+1〜6 カテゴリ  •  Esc 閉じる"
+                            color: Theme.textSecondary
+                            font.family: Theme.fontFamily
+                            font.pixelSize: Theme.fontSizeSmall
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
                         Text {
                             visible: root.searchService.category === "clipboard"
                             text: "履歴を消去"
                             color: Theme.primary
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSizeSmall
-                            MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: root.searchService.clearClipboard() }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: root.searchService.clearClipboard()
+                            }
                         }
                     }
                 }
@@ -320,7 +432,8 @@ Scope {
             Connections {
                 target: root.searchService
                 function onVisibleChanged(): void {
-                    if (root.searchService.visible) Qt.callLater(() => searchInput.forceActiveFocus());
+                    if (root.searchService.visible)
+                        Qt.callLater(() => searchInput.forceActiveFocus());
                 }
             }
         }

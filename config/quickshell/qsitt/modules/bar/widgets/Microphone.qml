@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import qs.ui.widgets
 import qs.ui.theme
 import qs.services
@@ -31,8 +30,6 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onClicked: volumeService.toggleSourceMute()
         hoverEnabled: true
-        ToolTip.visible: containsMouse
-        ToolTip.text: volumeService.sourceName
-        ToolTip.delay: 500
+        QsToolTip { hovered: parent.containsMouse; text: root.volumeService.sourceName }
     }
 }

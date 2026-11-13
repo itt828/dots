@@ -29,9 +29,12 @@ Scope {
             property int currentPage: 0
             Connections {
                 target: ControlCenterService
-                function onRequestedPageChanged(): void { controlCenterWindow.currentPage = ControlCenterService.requestedPage; }
+                function onRequestedPageChanged(): void {
+                    controlCenterWindow.currentPage = ControlCenterService.requestedPage;
+                }
                 function onVisibleChanged(): void {
-                    if (ControlCenterService.visible) controlCenterWindow.currentPage = ControlCenterService.requestedPage;
+                    if (ControlCenterService.visible)
+                        controlCenterWindow.currentPage = ControlCenterService.requestedPage;
                 }
             }
 
@@ -39,7 +42,8 @@ Scope {
             visible: true
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.keyboardFocus: ControlCenterService.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
             mask: Region {
                 item: ControlCenterService.visible ? dismissLayer : null
@@ -72,16 +76,19 @@ Scope {
                 anchors {
                     top: parent.top
                     topMargin: Theme.barHeight + Theme.barOuterMargin + 12
-                    horizontalCenter: parent.horizontalCenter
+                    right: parent.right
+                    rightMargin: 16
                 }
 
-                width: Math.min(720, parent.width - 32)
-                height: Math.min(560, parent.height - anchors.topMargin - 20)
+                width: Math.min(660, parent.width - 32)
+                height: Math.min(740, parent.height - anchors.topMargin - 20)
                 color: Theme.surface
                 radius: Theme.radiusLarge
                 border.color: Theme.outline
                 border.width: 1
                 clip: true
+                focus: ControlCenterService.visible
+                Keys.onEscapePressed: root.controlCenterService.visible = false
 
                 MouseArea {
                     anchors.fill: parent
@@ -100,7 +107,7 @@ Scope {
                             spacing: 2
 
                             Text {
-            font.family: Theme.fontFamily
+                                font.family: Theme.fontFamily
                                 text: "Control Center"
                                 color: Theme.text
                                 font.pixelSize: Theme.fontSizeTitle
@@ -108,8 +115,8 @@ Scope {
                             }
 
                             Text {
-            font.family: Theme.fontFamily
                                 id: dateLabel
+                                font.family: Theme.fontFamily
                                 text: Qt.formatDateTime(new Date(), "dddd, MMMM d")
                                 color: Theme.textSecondary
                                 font.pixelSize: Theme.fontSizeSmall
@@ -123,7 +130,9 @@ Scope {
                             }
                         }
 
-                        Item { Layout.fillWidth: true }
+                        Item {
+                            Layout.fillWidth: true
+                        }
 
                         Rectangle {
                             implicitWidth: 34
@@ -148,104 +157,145 @@ Scope {
                         }
                     }
 
-                    Rectangle {
+                    RowLayout {
+                        visible: controlCenterWindow.currentPage !== 0
                         Layout.fillWidth: true
-                        implicitHeight: 44
-                        radius: 12
-                        color: Theme.surfaceContainer
-
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: 5
-                            spacing: 4
-
-                            Repeater {
-                                model: ["Home", "Alerts", "Media", "Tools", "Audio", "Network", "Bluetooth"]
-
-                                delegate: Rectangle {
-                                    required property int index
-                                    required property string modelData
-
-                                    readonly property bool selected: controlCenterWindow.currentPage === index
-
+                        QsButton {
+                            text: "‹  Home"
+                            onClicked: controlCenterWindow.currentPage = 0
+                        }
+                        Text {
+                            text: ({
+                                    4: "Audio",
+                                    5: "Network",
+                                    6: "Bluetooth"
+                                })[controlCenterWindow.currentPage] || ""
+                            color: Theme.text
+                            font.family: Theme.fontFamily
+                            font.pixelSize: 18
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                        }
+                    }
+                    StackLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        currentIndex: controlCenterWindow.currentPage === 0 ? 0 : controlCenterWindow.currentPage - 3
+                        Flickable {
+                            clip: true
+                            contentWidth: width
+                            contentHeight: home.implicitHeight
+                            boundsBehavior: Flickable.StopAtBounds
+                            ColumnLayout {
+                                id: home
+                                width: parent.width
+                                spacing: 16
+                                Text {
+                                    text: "QUICK SETTINGS"
+                                    color: Theme.textSecondary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.letterSpacing: 2
+                                }
+                                RowLayout {
                                     Layout.fillWidth: true
-                                    Layout.fillHeight: true
-                                    radius: Theme.radius
-                                    color: selected ? Theme.primary : (tabArea.containsMouse ? Theme.surfaceContainerHigh : "transparent")
-
-                                    Text {
-            font.family: Theme.fontFamily
-                                        anchors.centerIn: parent
-                                        text: modelData
-                                        color: parent.selected ? Theme.primaryText : Theme.textSecondary
-                                        font.pixelSize: Theme.fontSizeSmall
-                                        font.weight: parent.selected ? Font.DemiBold : Font.Medium
+                                    spacing: 10
+                                    QsSummaryCard {
+                                        title: "Network"
+                                        icon: Icons.wifiHigh
+                                        subtitle: root.networkService.connectionName
+                                        active: root.networkService.isConnected
+                                        onClicked: controlCenterWindow.currentPage = 5
                                     }
-
-                                    MouseArea {
-                                        id: tabArea
+                                    QsSummaryCard {
+                                        title: "Bluetooth"
+                                        icon: "\ue0da"
+                                        subtitle: root.bluetoothService.enabled ? "接続済み " + root.bluetoothService.devices.filter(d => d.connected).length + " 台" : "オフ"
+                                        active: root.bluetoothService.enabled
+                                        onClicked: controlCenterWindow.currentPage = 6
+                                    }
+                                    QsSummaryCard {
+                                        title: "Audio"
+                                        icon: Icons.volumeHigh
+                                        subtitle: root.volumeService.muted ? "ミュート" : Math.round(root.volumeService.volume * 100) + "% · " + root.volumeService.sinkName
+                                        active: !root.volumeService.muted
+                                        onClicked: controlCenterWindow.currentPage = 4
+                                    }
+                                }
+                                Rectangle {
+                                    Layout.fillWidth: true
+                                    implicitHeight: 78
+                                    radius: 16
+                                    color: Theme.surfaceContainer
+                                    RowLayout {
                                         anchors.fill: parent
-                                        hoverEnabled: true
-                                        cursorShape: Qt.PointingHandCursor
-                                        onClicked: controlCenterWindow.currentPage = index
+                                        anchors.margins: 16
+                                        spacing: 14
+                                        QsButton {
+                                            text: root.volumeService.muted ? "消音中" : "音量"
+                                            onClicked: root.volumeService.toggleMute()
+                                        }
+                                        QsSlider {
+                                            Layout.fillWidth: true
+                                            from: 0
+                                            to: 1
+                                            value: root.volumeService.volume
+                                            onMoved: value => root.volumeService.setVolume(value)
+                                        }
+                                        Text {
+                                            text: Math.round(root.volumeService.volume * 100) + "%"
+                                            color: Theme.text
+                                            font.family: Theme.fontFamily
+                                            Layout.preferredWidth: 40
+                                        }
                                     }
+                                }
+                                Text {
+                                    text: "NOW PLAYING"
+                                    color: Theme.textSecondary
+                                    font.family: Theme.fontFamily
+                                    font.pixelSize: 11
+                                    font.letterSpacing: 2
+                                }
+                                MediaControl {}
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    QsButton {
+                                        text: root.notificationService.dnd ? "通知を再開" : "応答不可"
+                                        onClicked: root.notificationService.dnd = !root.notificationService.dnd
+                                    }
+                                    QsButton {
+                                        text: "通知  " + root.notificationService.history.count + "  ›"
+                                        onClicked: {
+                                            root.controlCenterService.visible = false;
+                                            root.notificationService.panelVisible = true;
+                                        }
+                                    }
+                                    Item {
+                                        Layout.fillWidth: true
+                                    }
+                                    QsButton {
+                                        text: "ロック"
+                                        onClicked: {
+                                            root.controlCenterService.visible = false;
+                                            PowerService.lock();
+                                        }
+                                    }
+                                }
+                                ThemeSwitcher {
+                                    Layout.fillWidth: true
                                 }
                             }
                         }
-                    }
-
-                    Rectangle {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        radius: 14
-                        color: Theme.surfaceContainer
-                        clip: true
-
-                        StackLayout {
-                            anchors.fill: parent
-                            anchors.margins: Theme.spacingLarge
-                            currentIndex: controlCenterWindow.currentPage
-
-                            ColumnLayout {
-                                spacing: Theme.spacing
-                                CalendarWidget {}
-                                Item { Layout.fillHeight: true }
-                            }
-
-                            NotificationHistory {
-                                notificationService: root.notificationService
-                            }
-
-                            ColumnLayout {
-                                spacing: Theme.spacing
-                                MediaControl {}
-                                Item { Layout.fillHeight: true }
-                            }
-
-                            Flickable {
-                                clip: true
-                                contentWidth: width
-                                contentHeight: tools.implicitHeight
-                                boundsBehavior: Flickable.StopAtBounds
-
-                                ToolList {
-                                    id: tools
-                                    width: parent.width
-                                    controlCenterService: root.controlCenterService
-                                }
-                            }
-
-                            AudioPage {
-                                volumeService: root.volumeService
-                            }
-
-                            NetworkPage {
-                                networkService: root.networkService
-                            }
-
-                            BluetoothPage {
-                                bluetoothService: root.bluetoothService
-                            }
+                        AudioPage {
+                            volumeService: root.volumeService
+                        }
+                        NetworkPage {
+                            networkService: root.networkService
+                        }
+                        BluetoothPage {
+                            bluetoothService: root.bluetoothService
                         }
                     }
                 }

@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Services.Notifications
@@ -22,9 +21,12 @@ Rectangle {
     property string imageSource: ""
 
     width: 300
-    height: Math.min(layout.implicitHeight + 20, 350) // Max height cap
-    color: Theme.background
-    radius: 8
+    implicitHeight: Math.min(layout.implicitHeight + 32, 440)
+    height: implicitHeight // Max height cap
+    color: Theme.surfaceContainer
+    radius: 16
+    border.color: Theme.outlineVariant
+    border.width: 1
     clip: true
 
     signal closed
@@ -39,7 +41,7 @@ Rectangle {
 
     Timer {
         interval: 5000
-        running: root.isPopup
+        running: root.isPopup && !hoverArea.containsMouse
         repeat: false
         onTriggered: root.closed()
     }
@@ -47,7 +49,7 @@ Rectangle {
     RowLayout {
         id: layout
         anchors.fill: parent
-        anchors.margins: 10
+        anchors.margins: 16
         spacing: 10
 
         // Icon (Left side - strictly for App Identity)
@@ -62,14 +64,7 @@ Rectangle {
                 id: iconImage
                 anchors.fill: parent
                 // Prioritize App Icon, then App Name, then generic notification icon
-                source: {
-                    var src = resolveIcon(root.appIconSource);
-                    if (!src)
-                        src = resolveIcon(root.appName.toLowerCase());
-                    if (!src)
-                        src = resolveIcon(root.iconSource);
-                    return src || Quickshell.iconPath("dialog-information");
-                }
+                source: root.appIconSource ? resolveIcon(root.appIconSource) : root.iconSource ? resolveIcon(root.iconSource) : ""
                 fillMode: Image.PreserveAspectFit
                 onStatusChanged: if (status == Image.Error)
                     visible = false
@@ -77,8 +72,9 @@ Rectangle {
 
             QsIcon {
                 anchors.centerIn: parent
-                icon: "dialog-information" // Fallback
-                size: 32
+                icon: Icons.bell
+                size: 26
+                color: Theme.primary
                 visible: iconImage.status == Image.Error || iconImage.source == "" || iconImage.status == Image.Null
             }
         }
@@ -92,7 +88,9 @@ Rectangle {
             RowLayout {
                 Layout.fillWidth: true
                 Text {
-            font.family: Theme.fontFamily
+                    color: Theme.text
+                    textFormat: Text.PlainText
+                    font.family: Theme.fontFamily
                     text: root.appName
                     font.pixelSize: 10
                     opacity: 0.7
@@ -101,15 +99,13 @@ Rectangle {
 
                 // Close button for popups
                 QsIcon {
-                    visible: root.isPopup
+                    visible: true
                     icon: Icons.x
                     size: 16
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (root.notification && root.notification.close)
-                                root.notification.close();
                             root.closed();
                         }
                     }
@@ -117,7 +113,9 @@ Rectangle {
             }
 
             Text {
-            font.family: Theme.fontFamily
+                color: Theme.text
+                textFormat: Text.PlainText
+                font.family: Theme.fontFamily
                 text: root.summary
                 font.bold: true
                 font.pixelSize: 13
@@ -126,14 +124,33 @@ Rectangle {
             }
 
             Text {
-            font.family: Theme.fontFamily
+                color: Theme.text
+                textFormat: Text.PlainText
+                font.family: Theme.fontFamily
                 text: root.body
                 font.pixelSize: 12
                 wrapMode: Text.Wrap
-                maximumLineCount: 3
+                maximumLineCount: root.isPopup ? 4 : 12
                 elide: Text.ElideRight
                 Layout.fillWidth: true
                 opacity: 0.9
+            }
+
+            Flow {
+                Layout.fillWidth: true
+                Layout.preferredHeight: implicitHeight
+                spacing: 6
+                Repeater {
+                    model: root.notification ? root.notification.actions : []
+                    delegate: QsButton {
+                        required property var modelData
+                        text: modelData.text
+                        onClicked: {
+                            modelData.invoke();
+                            root.closed();
+                        }
+                    }
+                }
             }
 
             Rectangle {
@@ -154,15 +171,10 @@ Rectangle {
         }
     }
 
-    // Popup timeout visualization (optional)
-    Rectangle {
-        visible: root.isPopup
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        height: 2
-        width: parent.width
-        color: Theme.primary
-
-        // Animation could be added here
+    MouseArea {
+        id: hoverArea
+        anchors.fill: parent
+        hoverEnabled: true
+        acceptedButtons: Qt.NoButton
     }
 }

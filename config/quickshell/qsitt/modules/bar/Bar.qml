@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import qs.services
+import qs.ui.widgets
 import qs.ui.theme
 import qs.modules.bar.widgets as BarUi
 
@@ -73,6 +74,12 @@ Scope {
                         networkService: NetworkService
                     }
                     BarUi.Battery {}
+                    QsButton {
+                        text: "設定"
+                        highlighted: ControlCenterService.visible
+                        implicitHeight: 28
+                        onClicked: ControlCenterService.toggle()
+                    }
                     BarUi.PowerButton {
                         powerService: PowerService
                     }

@@ -1,47 +1,43 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import qs.services
 import qs.ui.widgets
 import qs.ui.theme
 
 Rectangle {
+    id: root
     Layout.fillWidth: true
     Layout.fillHeight: true
     Layout.minimumHeight: 200
-    color: Theme.surface
+    color: "transparent"
     radius: 14
     border.color: Theme.outline
-    border.width: 1
+    border.width: 0
     clip: true
 
     required property var notificationService
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: Theme.spacingLarge
+        anchors.margins: 0
         spacing: Theme.spacing
 
         // Header
         RowLayout {
             Layout.fillWidth: true
             Text {
-            font.family: Theme.fontFamily
-                text: "Notifications"
+                font.family: Theme.fontFamily
+                text: "履歴  ·  " + root.notificationService.history.count
                 color: Theme.text
                 font.pixelSize: 16
                 font.weight: Font.DemiBold
                 Layout.fillWidth: true
             }
-            QsIcon {
-                icon: Icons.x
-                size: 20
-                visible: notificationService.history.count > 0
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: notificationService.clearAll()
-                }
+            QsButton {
+                text: "すべて消去"
+                visible: root.notificationService.history.count > 0
+                onClicked: root.notificationService.clearAll()
             }
         }
 
@@ -52,9 +48,11 @@ Rectangle {
             Layout.fillHeight: true
             clip: true
             spacing: 8
-            model: notificationService.history
+            model: root.notificationService.history
 
             delegate: NotificationPopup {
+                required property var model
+                required property int index
                 width: list.width
                 notification: model.notificationObj
                 appName: model.appName
@@ -65,6 +63,8 @@ Rectangle {
                 imageSource: model.image
                 isPopup: false // Full view in history
 
+                onClosed: root.notificationService.dismiss(index)
+
                 // Add a close button logic for history items if needed,
                 // NotificationPopup has a close button but it closes the notification object.
                 // We might want to just remove from history or close.
@@ -72,11 +72,11 @@ Rectangle {
 
             // Empty State
             Text {
-            font.family: Theme.fontFamily
+                font.family: Theme.fontFamily
                 anchors.centerIn: parent
                 text: "No new notifications"
                 visible: list.count === 0
-                opacity: 0.5
+                color: Theme.textSecondary
             }
         }
     }

@@ -2,6 +2,8 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Wayland
+import qs.ui.theme
 import qs.services
 
 PanelWindow {
@@ -14,13 +16,16 @@ PanelWindow {
         right: true
     }
 
-    implicitWidth: 320
-    implicitHeight: popupList.implicitHeight + 20
+    visible: popupModel.count > 0 && !notificationService.panelVisible
+    exclusionMode: ExclusionMode.Ignore
+    WlrLayershell.layer: WlrLayer.Overlay
+    implicitWidth: 400
+    implicitHeight: Math.min(popupList.implicitHeight + 20, screen.height - 100)
 
     color: "transparent"
 
     margins {
-        top: 10
+        top: Theme.barHeight + Theme.barOuterMargin + 14
         right: 10
     }
 
@@ -32,8 +37,10 @@ PanelWindow {
         target: notificationService
 
         function onNotificationReceived(notification) {
-            if (notificationService.dnd)
+            if (notificationService.dnd || notificationService.panelVisible)
                 return;
+            if (popupModel.count >= 3)
+                popupModel.remove(0);
             popupModel.append({
                 "notificationObj": notification,
                 "appName": notification.appName || "System",

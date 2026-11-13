@@ -48,4 +48,5 @@ Item {
 
         color: networkService.isConnected ? Theme.text : Theme.textSecondary
     }
+    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { ControlCenterService.requestedPage = 5; NotificationService.panelVisible = false; ControlCenterService.visible = true; } }
 }

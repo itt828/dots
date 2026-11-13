@@ -24,12 +24,12 @@ Rectangle {
         topMargin: Theme.barOuterMargin
     }
 
-    implicitHeight: layout.implicitHeight + Theme.barHorizontalPadding
+    implicitHeight: Theme.barHeight
 
-    bottomLeftRadius: Theme.radius
-    bottomRightRadius: Theme.radius
-    topLeftRadius: Theme.radius
-    topRightRadius: Theme.radius
+    bottomLeftRadius: 14
+    bottomRightRadius: 14
+    topLeftRadius: 14
+    topRightRadius: 14
 
     RowLayout {
         id: layout

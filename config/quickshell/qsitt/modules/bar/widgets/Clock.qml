@@ -20,7 +20,8 @@ Item {
         color: Theme.text
         font.family: Theme.fontFamily
         font.pixelSize: Theme.fontSizeBody
+        font.weight: Font.DemiBold
         anchors.fill: parent
-        text: Qt.formatDateTime(clock.date, "yyyy/MM/dd HH:mm")
+        text: Qt.formatDateTime(clock.date, "M/d ddd   HH:mm")
     }
 }

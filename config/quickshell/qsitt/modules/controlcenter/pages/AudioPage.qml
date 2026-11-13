@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import qs.ui.widgets
 import QtQuick.Layouts
 import qs.ui.theme
 
@@ -25,24 +25,38 @@ ColumnLayout {
             RowLayout {
                 Layout.fillWidth: true
                 Text {
-            font.family: Theme.fontFamily
-            text: "Output"; font.bold: true; color: Theme.text }
+                    font.family: Theme.fontFamily
+                    text: "Output"
+                    font.bold: true
+                    color: Theme.text
+                }
                 Text {
-            font.family: Theme.fontFamily
-            text: root.volumeService.sinkName; color: Theme.textSecondary; elide: Text.ElideRight; Layout.fillWidth: true }
-                Button { text: root.volumeService.muted ? "Unmute" : "Mute"; onClicked: root.volumeService.toggleMute() }
+                    font.family: Theme.fontFamily
+                    text: root.volumeService.sinkName
+                    color: Theme.textSecondary
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
+                QsButton {
+                    text: root.volumeService.muted ? "Unmute" : "Mute"
+                    onClicked: root.volumeService.toggleMute()
+                }
             }
             RowLayout {
                 Layout.fillWidth: true
-                Slider {
+                QsSlider {
                     Layout.fillWidth: true
-                    from: 0; to: 1
+                    from: 0
+                    to: 1
                     value: root.volumeService.volume
-                    onMoved: root.volumeService.setVolume(value)
+                    onMoved: value => root.volumeService.setVolume(value)
                 }
                 Text {
-            font.family: Theme.fontFamily
-            text: Math.round(root.volumeService.volume * 100) + "%"; color: Theme.text; Layout.preferredWidth: 44 }
+                    font.family: Theme.fontFamily
+                    text: Math.round(root.volumeService.volume * 100) + "%"
+                    color: Theme.text
+                    Layout.preferredWidth: 44
+                }
             }
         }
     }
@@ -64,24 +78,38 @@ ColumnLayout {
             RowLayout {
                 Layout.fillWidth: true
                 Text {
-            font.family: Theme.fontFamily
-            text: "Input"; font.bold: true; color: Theme.text }
+                    font.family: Theme.fontFamily
+                    text: "Input"
+                    font.bold: true
+                    color: Theme.text
+                }
                 Text {
-            font.family: Theme.fontFamily
-            text: root.volumeService.sourceName; color: Theme.textSecondary; elide: Text.ElideRight; Layout.fillWidth: true }
-                Button { text: root.volumeService.sourceMuted ? "Unmute" : "Mute"; onClicked: root.volumeService.toggleSourceMute() }
+                    font.family: Theme.fontFamily
+                    text: root.volumeService.sourceName
+                    color: Theme.textSecondary
+                    elide: Text.ElideRight
+                    Layout.fillWidth: true
+                }
+                QsButton {
+                    text: root.volumeService.sourceMuted ? "Unmute" : "Mute"
+                    onClicked: root.volumeService.toggleSourceMute()
+                }
             }
             RowLayout {
                 Layout.fillWidth: true
-                Slider {
+                QsSlider {
                     Layout.fillWidth: true
-                    from: 0; to: 1
+                    from: 0
+                    to: 1
                     value: root.volumeService.sourceVolume
-                    onMoved: root.volumeService.setSourceVolume(value)
+                    onMoved: value => root.volumeService.setSourceVolume(value)
                 }
                 Text {
-            font.family: Theme.fontFamily
-            text: Math.round(root.volumeService.sourceVolume * 100) + "%"; color: Theme.text; Layout.preferredWidth: 44 }
+                    font.family: Theme.fontFamily
+                    text: Math.round(root.volumeService.sourceVolume * 100) + "%"
+                    color: Theme.text
+                    Layout.preferredWidth: 44
+                }
             }
         }
     }
@@ -99,13 +127,23 @@ ColumnLayout {
             anchors.fill: parent
             anchors.margins: 12
             Text {
-            font.family: Theme.fontFamily
-            text: "Audio profile"; font.bold: true; color: Theme.text }
-            Item { Layout.fillWidth: true }
+                font.family: Theme.fontFamily
+                text: "Audio profile"
+                font.bold: true
+                color: Theme.text
+            }
+            Item {
+                Layout.fillWidth: true
+            }
             Text {
-            font.family: Theme.fontFamily
-            text: root.volumeService.isHeadphones ? "Headphones" : "Speaker"; color: Theme.textSecondary }
-            Button { text: "Switch"; onClicked: root.volumeService.toggleProfile() }
+                font.family: Theme.fontFamily
+                text: root.volumeService.isHeadphones ? "Headphones" : "Speaker"
+                color: Theme.textSecondary
+            }
+            QsButton {
+                text: "Switch"
+                onClicked: root.volumeService.toggleProfile()
+            }
         }
     }
 }

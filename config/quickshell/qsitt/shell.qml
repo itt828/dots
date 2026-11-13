@@ -23,6 +23,7 @@ ShellRoot {
     ControlCenter {}
     Lock {}
     Notifications {}
+    NotificationPanel {}
     Osd {}
     QrScanner {}
     Search {}

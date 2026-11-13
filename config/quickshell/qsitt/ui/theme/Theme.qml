@@ -40,10 +40,10 @@ QtObject {
         return Qt.rgba(color.r, color.g, color.b, alpha);
     }
 
-    readonly property int barBorderWidth: 2
-    readonly property int barHeight: 32
+    readonly property int barBorderWidth: 1
+    readonly property int barHeight: 40
     readonly property int barOuterMargin: 8
     readonly property int barHorizontalPadding: 12
     readonly property int barSectionSpacing: 12
-    readonly property int barModuleSpacing: 8
+    readonly property int barModuleSpacing: 10
 }

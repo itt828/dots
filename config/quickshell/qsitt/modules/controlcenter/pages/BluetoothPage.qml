@@ -1,5 +1,5 @@
 import QtQuick
-import QtQuick.Controls
+import qs.ui.widgets
 import QtQuick.Layouts
 import qs.ui.theme
 
@@ -20,23 +20,26 @@ ColumnLayout {
             anchors.fill: parent
             anchors.margins: 12
             Text {
-            font.family: Theme.fontFamily
-            text: "Bluetooth"; font.bold: true; color: Theme.text }
+                font.family: Theme.fontFamily
+                text: "Bluetooth"
+                font.bold: true
+                color: Theme.text
+            }
             Text {
-            font.family: Theme.fontFamily
+                font.family: Theme.fontFamily
                 text: root.bluetoothService.available ? (root.bluetoothService.discovering ? "Scanning…" : "Ready") : "No adapter"
                 color: Theme.textSecondary
                 Layout.fillWidth: true
             }
-            Button {
+            QsButton {
                 text: root.bluetoothService.discovering ? "Stop" : "Scan"
                 enabled: root.bluetoothService.enabled
                 onClicked: root.bluetoothService.setDiscovering(!root.bluetoothService.discovering)
             }
-            Switch {
+            QsSwitch {
                 enabled: root.bluetoothService.available
                 checked: root.bluetoothService.enabled
-                onToggled: root.bluetoothService.setEnabled(checked)
+                onToggled: checked => root.bluetoothService.setEnabled(checked)
             }
         }
     }
@@ -61,19 +64,19 @@ ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 10
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     text: modelData.name || modelData.deviceName || modelData.address
                     color: Theme.text
                     font.bold: modelData.connected
                     Layout.fillWidth: true
                 }
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     visible: modelData.batteryAvailable
                     text: Math.round(modelData.battery * 100) + "%"
                     color: Theme.textSecondary
                 }
-                Button {
+                QsButton {
                     text: modelData.connected ? "Disconnect" : (modelData.paired ? "Connect" : "Pair")
                     enabled: !modelData.pairing
                     onClicked: {

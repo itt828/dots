@@ -76,8 +76,9 @@ QtObject {
         else if (item.kind === "tool") {
             if (item.value === "lens") { startLensSelection(); return; }
             if (item.value === "control-center" || item.value === "notifications") {
-                ControlCenterService.requestedPage = item.value === "notifications" ? 1 : 0;
-                ControlCenterService.visible = true;
+                ControlCenterService.requestedPage = 0;
+                ControlCenterService.visible = item.value === "control-center";
+                NotificationService.panelVisible = item.value === "notifications";
             }
             else if (item.value === "qr") ControlCenterService.startQrSelection();
             else if (item.value === "color") ControlCenterService.pickColor();

@@ -19,6 +19,8 @@ QtObject {
     property string _qrError: ""
 
     function toggle() {
+        requestedPage = 0;
+        NotificationService.panelVisible = false;
         visible = !visible;
     }
 

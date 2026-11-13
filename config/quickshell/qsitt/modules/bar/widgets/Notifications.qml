@@ -38,7 +38,7 @@ Item {
         MouseArea {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
-            onClicked: notificationService.dnd = !notificationService.dnd
+            onClicked: { ControlCenterService.visible = false; notificationService.panelVisible = !notificationService.panelVisible; }
         }
     }
 }

@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import qs.ui.widgets
 import qs.ui.theme
 import qs.services
@@ -40,9 +39,9 @@ Item {
 
     MouseArea {
         anchors.fill: parent
+        onClicked: { ControlCenterService.requestedPage = 4; NotificationService.panelVisible = false; ControlCenterService.visible = true; }
+        cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
-        ToolTip.visible: containsMouse
-        ToolTip.text: volumeService.sinkName
-        ToolTip.delay: 500
+        QsToolTip { hovered: parent.containsMouse; text: root.volumeService.sinkName }
     }
 }
