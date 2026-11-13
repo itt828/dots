@@ -72,7 +72,18 @@ func TestAppsAndShortcuts(t *testing.T) {
 	writeTestFile(t, filepath.Join(local, "nested", "firefox.desktop"), []byte("[Desktop Entry]\nType=Application\nName=Firefox\nName[ja]=Firefox 日本語\nGenericName=Browser\nIcon=firefox\n"))
 	writeTestFile(t, filepath.Join(local, "missing.desktop"), []byte("[Desktop Entry]\nType=Application\nName=Missing\nTryExec=/does/not/exist\n"))
 	writeTestFile(t, filepath.Join(local, "nodisplay.desktop"), []byte("[Desktop Entry]\nType=Application\nName=Hidden\nNoDisplay=true\n"))
-	writeTestFile(t, filepath.Join(s.Root, "config", "search-shortcuts.json"), []byte(`{"apps":["nested-firefox.desktop","hidden.desktop"],"tools":["qr","unknown"]}`))
+	writeTestFile(t, filepath.Join(s.Root, "config", "config.toml"), []byte(`
+[settings]
+target_screens = ["eDP-1"]
+[theme]
+palette = "qsitt" # Other sections must not affect shortcuts.
+[search.shortcuts]
+apps = [
+  "nested-firefox.desktop", # Multiline arrays and comments are supported.
+  'hidden.desktop',
+]
+tools = ['qr', "unknown"]
+`))
 	results, err := s.Query(context.Background(), "", "all")
 	if err != nil || len(results) != 2 || results[0].DesktopID != "nested-firefox.desktop" || results[1].Value != "qr" {
 		t.Fatalf("shortcuts: %+v %v", results, err)
@@ -83,6 +94,27 @@ func TestAppsAndShortcuts(t *testing.T) {
 	}
 	if _, err = s.Query(context.Background(), "query", "invalid"); err == nil {
 		t.Fatal("accepted invalid category")
+	}
+}
+
+func TestShortcutsMissingEmptyOrInvalidConfig(t *testing.T) {
+	for _, content := range []string{
+		"", // Missing file.
+		"[settings]\ndebug = false\n",
+		"[search.shortcuts]\napps = []\ntools = []\n",
+		"[search.shortcuts]\ntools = [\n",
+		"[search.shortcuts]\ntools = 42\n",
+	} {
+		t.Run(content, func(t *testing.T) {
+			s := testStore(t)
+			if content != "" {
+				writeTestFile(t, filepath.Join(s.Root, "config", "config.toml"), []byte(content))
+			}
+			results, err := s.Query(context.Background(), "", "all")
+			if err != nil || results == nil || len(results) != 0 {
+				t.Fatalf("expected empty shortcuts: %+v %v", results, err)
+			}
+		})
 	}
 }
 

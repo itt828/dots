@@ -2,12 +2,13 @@ package search
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/pelletier/go-toml/v2"
 )
 
 var tools = []Result{
@@ -23,11 +24,15 @@ var tools = []Result{
 
 func (s *Store) shortcuts() []Result {
 	var config struct {
-		Apps  []string `json:"apps"`
-		Tools []string `json:"tools"`
+		Search struct {
+			Shortcuts struct {
+				Apps  []string `toml:"apps"`
+				Tools []string `toml:"tools"`
+			} `toml:"shortcuts"`
+		} `toml:"search"`
 	}
-	data, err := os.ReadFile(filepath.Join(s.Root, "config", "search-shortcuts.json"))
-	if err != nil || json.Unmarshal(data, &config) != nil {
+	data, err := os.ReadFile(filepath.Join(s.Root, "config", "config.toml"))
+	if err != nil || toml.Unmarshal(data, &config) != nil {
 		return []Result{}
 	}
 	apps := map[string]Result{}
@@ -39,12 +44,12 @@ func (s *Store) shortcuts() []Result {
 		byID[tool.Value] = tool
 	}
 	result := []Result{}
-	for _, id := range config.Apps {
+	for _, id := range config.Search.Shortcuts.Apps {
 		if app, ok := apps[id]; ok {
 			result = append(result, app)
 		}
 	}
-	for _, id := range config.Tools {
+	for _, id := range config.Search.Shortcuts.Tools {
 		if tool, ok := byID[id]; ok {
 			result = append(result, tool)
 		}

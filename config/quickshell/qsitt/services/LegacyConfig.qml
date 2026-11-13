@@ -11,14 +11,14 @@ QtObject {
     property bool ready: false
 
     readonly property FileView configFile: FileView {
-        path: Quickshell.shellPath("config.toml")
+        path: Quickshell.shellPath("config/config.toml")
         blockLoading: true
         onLoaded: {
             root.content = text();
             root.ready = true;
         }
         onLoadFailed: error => {
-            console.warn("Failed to load legacy config.toml:", error);
+            console.warn("Failed to load config/config.toml:", error);
             root.ready = true;
         }
     }

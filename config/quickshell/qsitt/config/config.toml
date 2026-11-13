@@ -9,3 +9,7 @@ lid_clamshell_mode = false
 [theme]
 palette = "qsitt" # qsitt | catppuccin | icon-v4
 mode = "light" # light | dark
+
+[search.shortcuts]
+apps = ["org.mozilla.firefox.desktop", "discord.desktop"]
+tools = []
