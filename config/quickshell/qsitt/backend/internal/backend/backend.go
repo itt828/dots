@@ -58,6 +58,14 @@ func (b *Backend) run(ctx context.Context, input io.Reader, name string, args ..
 	return cmd.Run()
 }
 
+func (b *Backend) launch(ctx context.Context, name string, args ...string) error {
+	cmd := b.command(ctx, name, args...)
+	// GUI apps can outlive the launcher and inherit its descriptors. Use
+	// /dev/null (nil streams) so later log writes cannot hit closed QML pipes.
+	cmd.Stderr = nil
+	return cmd.Run()
+}
+
 func (b *Backend) output(ctx context.Context, input io.Reader, name string, args ...string) ([]byte, error) {
 	cmd := b.command(ctx, name, args...)
 	cmd.Stdin = input
@@ -110,11 +118,11 @@ func (b *Backend) Run(ctx context.Context, args []string) error {
 		return b.clipboard(ctx, rest)
 	case "open":
 		if len(rest) == 1 {
-			return b.run(ctx, nil, "xdg-open", rest[0])
+			return b.launch(ctx, "xdg-open", rest[0])
 		}
 	case "launch":
 		if len(rest) == 1 {
-			return b.run(ctx, nil, "gio", "launch", rest[0])
+			return b.launch(ctx, "gio", "launch", rest[0])
 		}
 	case "tool":
 		return b.tool(ctx, rest)

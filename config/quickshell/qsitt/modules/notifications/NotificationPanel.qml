@@ -66,7 +66,7 @@ Scope {
                         Layout.fillWidth: true
                         ColumnLayout {
                             Text {
-                                text: "通知センター"
+                                text: "通知"
                                 color: Theme.text
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 22
@@ -87,7 +87,10 @@ Scope {
                         }
                     }
                     QsButton {
-                        text: NotificationService.dnd ? "応答不可 · オン" : "応答不可 · オフ"
+                        icon: NotificationService.dnd ? Icons.bellSlash : Icons.bell
+                        highlighted: NotificationService.dnd
+                        checkable: true
+                        toolTip: NotificationService.dnd ? "応答不可: オン（クリックで通知を再開）" : "応答不可: オフ（クリックで通知を停止）"
                         onClicked: NotificationService.dnd = !NotificationService.dnd
                     }
                     NotificationHistory {

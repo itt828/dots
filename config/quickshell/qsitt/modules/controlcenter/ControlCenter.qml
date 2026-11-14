@@ -107,14 +107,6 @@ Scope {
                             spacing: 2
 
                             Text {
-                                font.family: Theme.fontFamily
-                                text: "Control Center"
-                                color: Theme.text
-                                font.pixelSize: Theme.fontSizeTitle
-                                font.weight: Font.DemiBold
-                            }
-
-                            Text {
                                 id: dateLabel
                                 font.family: Theme.fontFamily
                                 text: Qt.formatDateTime(new Date(), "dddd, MMMM d")
@@ -191,13 +183,6 @@ Scope {
                                 id: home
                                 width: parent.width
                                 spacing: 16
-                                Text {
-                                    text: "QUICK SETTINGS"
-                                    color: Theme.textSecondary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 11
-                                    font.letterSpacing: 2
-                                }
                                 RowLayout {
                                     Layout.fillWidth: true
                                     spacing: 10
@@ -251,18 +236,14 @@ Scope {
                                         }
                                     }
                                 }
-                                Text {
-                                    text: "NOW PLAYING"
-                                    color: Theme.textSecondary
-                                    font.family: Theme.fontFamily
-                                    font.pixelSize: 11
-                                    font.letterSpacing: 2
-                                }
                                 MediaControl {}
                                 RowLayout {
                                     Layout.fillWidth: true
                                     QsButton {
-                                        text: root.notificationService.dnd ? "通知を再開" : "応答不可"
+                                        icon: root.notificationService.dnd ? Icons.bellSlash : Icons.bell
+                                        highlighted: root.notificationService.dnd
+                                        checkable: true
+                                        toolTip: root.notificationService.dnd ? "応答不可: オン（クリックで通知を再開）" : "応答不可: オフ（クリックで通知を停止）"
                                         onClicked: root.notificationService.dnd = !root.notificationService.dnd
                                     }
                                     QsButton {

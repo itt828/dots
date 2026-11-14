@@ -134,7 +134,7 @@ func (b *Backend) lens(ctx context.Context, geometry string) error {
 	if closeErr != nil {
 		return closeErr
 	}
-	if err = b.run(ctx, nil, "xdg-open", file.Name()); err != nil {
+	if err = b.launch(ctx, "xdg-open", file.Name()); err != nil {
 		return err
 	}
 	// xdg-open may return before the browser has read the file.
