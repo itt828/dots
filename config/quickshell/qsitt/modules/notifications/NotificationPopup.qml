@@ -23,9 +23,9 @@ Rectangle {
     width: 300
     implicitHeight: Math.min(layout.implicitHeight + 32, 440)
     height: implicitHeight // Max height cap
-    color: Theme.surfaceContainer
+    color: isPopup ? Theme.glassPopup : Theme.surfaceContainer
     radius: 16
-    border.color: Theme.outlineVariant
+    border.color: Theme.glassOutline
     border.width: 1
     clip: true
 

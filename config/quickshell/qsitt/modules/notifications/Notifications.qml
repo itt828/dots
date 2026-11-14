@@ -19,6 +19,22 @@ PanelWindow {
     visible: popupModel.count > 0 && !notificationService.panelVisible
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.namespace: "qsitt:notification-popups"
+    BackgroundEffect.blurRegion: Region {
+        // Popups are capped at three; preserve the clear gaps between cards.
+        Region {
+            item: popupRepeater.count > 0 ? popupRepeater.itemAt(0) : null
+            radius: 16
+        }
+        Region {
+            item: popupRepeater.count > 1 ? popupRepeater.itemAt(1) : null
+            radius: 16
+        }
+        Region {
+            item: popupRepeater.count > 2 ? popupRepeater.itemAt(2) : null
+            radius: 16
+        }
+    }
     implicitWidth: 400
     implicitHeight: Math.min(popupList.implicitHeight + 20, screen.height - 100)
 
@@ -68,6 +84,7 @@ PanelWindow {
         spacing: 10
 
         Repeater {
+            id: popupRepeater
             model: popupModel
 
             delegate: NotificationPopup {

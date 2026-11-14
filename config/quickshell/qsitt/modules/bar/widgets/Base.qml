@@ -11,8 +11,8 @@ Rectangle {
     property alias centerContent: centerLayout.data
     property alias rightContent: rightLayout.data
 
-    color: Theme.surfaceContainerLow
-    border.color: Theme.outlineVariant
+    color: Theme.glassBar
+    border.color: Theme.glassOutline
     border.width: Theme.barBorderWidth
 
     anchors {
@@ -26,10 +26,7 @@ Rectangle {
 
     implicitHeight: Theme.barHeight
 
-    bottomLeftRadius: 14
-    bottomRightRadius: 14
-    topLeftRadius: 14
-    topRightRadius: 14
+    radius: 14
 
     RowLayout {
         id: layout

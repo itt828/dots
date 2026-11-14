@@ -43,6 +43,11 @@ Scope {
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.namespace: "qsitt:control-center"
+            BackgroundEffect.blurRegion: Region {
+                item: ControlCenterService.visible ? controlCenterContent : null
+                radius: Theme.radiusLarge
+            }
             WlrLayershell.keyboardFocus: ControlCenterService.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
             mask: Region {
@@ -60,7 +65,7 @@ Scope {
                 id: dismissLayer
                 anchors.fill: parent
                 visible: ControlCenterService.visible
-                color: Theme.withAlpha("#101820", 0.18)
+                color: Theme.glassScrim
 
                 MouseArea {
                     anchors.fill: parent
@@ -82,9 +87,9 @@ Scope {
 
                 width: Math.min(660, parent.width - 32)
                 height: Math.min(740, parent.height - anchors.topMargin - 20)
-                color: Theme.surface
+                color: Theme.glassPanel
                 radius: Theme.radiusLarge
-                border.color: Theme.outline
+                border.color: Theme.glassOutline
                 border.width: 1
                 clip: true
                 focus: ControlCenterService.visible

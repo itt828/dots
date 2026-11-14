@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 import qs.services
@@ -26,6 +27,11 @@ Scope {
                 right: true
             }
             color: "transparent"
+            WlrLayershell.namespace: "qsitt:power-menu"
+            BackgroundEffect.blurRegion: Region {
+                item: menuContent
+                radius: menuContent.radius
+            }
 
             MouseArea {
                 anchors.fill: parent
@@ -42,10 +48,10 @@ Scope {
 
                 width: 180
                 height: contentCol.implicitHeight + 20
-                color: Theme.surfaceVariant
+                color: Theme.glassPopup
                 radius: 12
-                border.color: Theme.outline
-                border.width: 2
+                border.color: Theme.glassOutline
+                border.width: 1
 
                 MouseArea {
                     anchors.fill: parent

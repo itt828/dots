@@ -23,6 +23,13 @@ QtObject {
     readonly property color danger: ThemeService.current.danger
     readonly property color success: ThemeService.current.success
 
+    // Apply alpha to backgrounds only so labels and icons stay crisp.
+    readonly property color glassBar: withAlpha(surfaceContainerLow, 0.76)
+    readonly property color glassPanel: withAlpha(surface, 0.82)
+    readonly property color glassPopup: withAlpha(surfaceContainer, 0.86)
+    readonly property color glassOutline: withAlpha(outlineVariant, 0.55)
+    readonly property color glassScrim: withAlpha("#101820", 0.12)
+
     readonly property string fontFamily: "sans-serif"
     readonly property int fontSizeSmall: 11
     readonly property int fontSizeBody: 13

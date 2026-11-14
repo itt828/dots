@@ -136,6 +136,11 @@ Scope {
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.namespace: "qsitt:osd"
+            BackgroundEffect.blurRegion: Region {
+                item: osdContent
+                radius: Theme.radiusLarge
+            }
             implicitWidth: 320
             implicitHeight: 94
 
@@ -149,10 +154,11 @@ Scope {
             mask: Region { item: null }
 
             Rectangle {
+                id: osdContent
                 anchors.fill: parent
-                color: Theme.surface
+                color: Theme.glassPopup
                 radius: Theme.radiusLarge
-                border.color: Theme.outline
+                border.color: Theme.glassOutline
                 border.width: 1
 
                 RowLayout {

@@ -28,6 +28,11 @@ Scope {
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.namespace: "qsitt:notifications"
+            BackgroundEffect.blurRegion: Region {
+                item: notificationContent
+                radius: notificationContent.radius
+            }
             WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             anchors {
                 top: true
@@ -40,6 +45,7 @@ Scope {
                 onClicked: NotificationService.panelVisible = false
             }
             Rectangle {
+                id: notificationContent
                 anchors {
                     top: parent.top
                     bottom: parent.bottom
@@ -49,9 +55,9 @@ Scope {
                     rightMargin: 16
                 }
                 width: Math.min(460, parent.width - 32)
-                color: Theme.surface
+                color: Theme.glassPanel
                 radius: 22
-                border.color: Theme.outlineVariant
+                border.color: Theme.glassOutline
                 border.width: 1
                 focus: true
                 Keys.onEscapePressed: NotificationService.panelVisible = false

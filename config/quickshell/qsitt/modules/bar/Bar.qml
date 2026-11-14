@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Wayland
 import qs.services
 import qs.ui.widgets
 import qs.ui.theme
@@ -19,6 +20,11 @@ Scope {
 
             screen: modelData
             color: "transparent"
+            WlrLayershell.namespace: "qsitt:bar"
+            BackgroundEffect.blurRegion: Region {
+                item: barContent
+                radius: barContent.radius
+            }
             implicitHeight: Theme.barHeight + Theme.barOuterMargin
 
             anchors {
@@ -28,6 +34,7 @@ Scope {
             }
 
             BarUi.Base {
+                id: barContent
                 leftContent: RowLayout {
                     spacing: Theme.barModuleSpacing
 

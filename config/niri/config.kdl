@@ -64,6 +64,31 @@ layer-rule {
     place-within-backdrop true
 }
 
+// Frosted glass shared by Ghostty and qsitt's requested blur regions.
+blur {
+    passes 3
+    offset 4
+    noise 0.015
+    saturation 1.1
+}
+
+layer-rule {
+    match namespace="^qsitt:"
+    background-effect {
+        // Blur the windows behind panels rather than only the wallpaper.
+        xray false
+    }
+}
+
+window-rule {
+    match app-id=r#"^com\.mitchellh\.ghostty$"#
+    draw-border-with-background false
+    background-effect {
+        blur true
+        xray false
+    }
+}
+
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 animations {
 }

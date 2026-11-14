@@ -135,6 +135,11 @@ Scope {
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.namespace: "qsitt:search"
+            BackgroundEffect.blurRegion: Region {
+                item: panel
+                radius: Theme.radiusLarge
+            }
             WlrLayershell.keyboardFocus: searchWindow.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             anchors {
                 top: true
@@ -149,7 +154,7 @@ Scope {
             Rectangle {
                 id: dismissLayer
                 anchors.fill: parent
-                color: Theme.withAlpha("#101820", 0.25)
+                color: Theme.glassScrim
                 MouseArea {
                     anchors.fill: parent
                     onClicked: root.searchService.close()
@@ -166,8 +171,8 @@ Scope {
                 width: Math.min(780, parent.width - 32)
                 height: Math.min(680, parent.height - anchors.topMargin - 24)
                 radius: Theme.radiusLarge
-                color: Theme.surface
-                border.color: Theme.outline
+                color: Theme.glassPanel
+                border.color: Theme.glassOutline
                 border.width: 1
                 clip: true
 
