@@ -73,7 +73,7 @@ behind = '[⇣\(${count}\)](bg:overlay fg:rose)'
 disabled = false
 format = " [](fg:overlay)[ $time ]($style)[](fg:overlay)"
 style = "bg:overlay fg:rose"
-time_format = "%I:%M"
+time_format = "%H:%M"
 use_12hr = false
 
 [username]
@@ -82,6 +82,11 @@ format = "[](fg:overlay)[ 󰧱 $user ]($style)[](fg:overlay) "
 show_always = true
 style_root = "bg:overlay fg:iris"
 style_user = "bg:overlay fg:iris"
+
+[status]
+disabled = false
+format = '[$symbol$status]($style)'
+symbol = "x "
 
 # Languages
 
