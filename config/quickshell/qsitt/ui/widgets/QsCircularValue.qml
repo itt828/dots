@@ -71,6 +71,7 @@ Item {
                         radiusY: (root.size / 2) - (root.strokeWidth / 2)
                         startAngle: -90
                         sweepAngle: 360 * root.value
+                        Behavior on sweepAngle { QsNumberAnimation {} }
                     }
                 }
             }

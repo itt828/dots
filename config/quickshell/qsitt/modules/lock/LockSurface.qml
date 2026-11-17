@@ -55,6 +55,12 @@ Rectangle {
     ColumnLayout {
         anchors.centerIn: parent
         spacing: 50
+        NumberAnimation on opacity {
+            from: 0
+            to: 1
+            duration: Theme.motionEnter
+            easing.type: Easing.OutCubic
+        }
 
         // Clock
         ColumnLayout {

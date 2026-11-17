@@ -14,6 +14,8 @@ Rectangle {
     color: Theme.glassBar
     border.color: Theme.glassOutline
     border.width: Theme.barBorderWidth
+    Behavior on color { QsColorAnimation {} }
+    Behavior on border.color { QsColorAnimation {} }
 
     anchors {
         top: parent.top
@@ -21,12 +23,13 @@ Rectangle {
         right: parent.right
         leftMargin: Theme.barOuterMargin
         rightMargin: Theme.barOuterMargin
-        topMargin: Theme.barOuterMargin
     }
 
     implicitHeight: Theme.barHeight
 
     radius: 14
+    topLeftRadius: 0
+    topRightRadius: 0
 
     RowLayout {
         id: layout

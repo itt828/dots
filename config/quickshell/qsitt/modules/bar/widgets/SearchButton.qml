@@ -11,6 +11,9 @@ Rectangle {
     implicitHeight: 24
     radius: Theme.radiusSmall
     color: clickArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+    scale: clickArea.pressed ? 0.9 : 1
+    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on color { QsColorAnimation {} }
 
     QsIcon {
         anchors.centerIn: parent

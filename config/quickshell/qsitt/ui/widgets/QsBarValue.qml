@@ -60,6 +60,7 @@ Item {
 
             Rectangle {
                 width: parent.width * Math.min(Math.max(root.value, 0.0), 1.0)
+                Behavior on width { QsNumberAnimation {} }
                 height: parent.height
                 color: root.progressColor
                 radius: 1

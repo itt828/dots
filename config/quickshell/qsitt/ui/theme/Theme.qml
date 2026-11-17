@@ -29,6 +29,15 @@ QtObject {
     readonly property color glassPopup: withAlpha(surfaceContainer, 0.86)
     readonly property color glassOutline: withAlpha(outlineVariant, 0.55)
     readonly property color glassScrim: withAlpha("#101820", 0.12)
+    readonly property color windowShadowColor: "#60000000"
+    readonly property int windowShadowBlur: 16
+    readonly property int windowShadowOffset: 3
+    readonly property int windowShadowPadding: 20
+
+    readonly property int motionFast: 120
+    readonly property int motionNormal: 180
+    readonly property int motionEnter: 220
+    readonly property int motionExit: 140
 
     readonly property string fontFamily: "sans-serif"
     readonly property int fontSizeSmall: 11

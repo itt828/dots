@@ -17,6 +17,10 @@ Rectangle {
     color: area.containsMouse ? Theme.surfaceContainerHigh : active ? Theme.primaryContainer : Theme.surfaceContainer
     border.color: active ? Theme.withAlpha(Theme.primary, 0.3) : Theme.outlineVariant
     border.width: 1
+    scale: area.pressed ? 0.97 : 1
+    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on color { QsColorAnimation {} }
+    Behavior on border.color { QsColorAnimation {} }
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 14

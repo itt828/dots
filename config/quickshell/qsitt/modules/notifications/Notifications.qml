@@ -4,45 +4,51 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import qs.ui.theme
+import qs.ui.widgets
 import qs.services
 
 PanelWindow {
     id: root
 
     readonly property var notificationService: NotificationService
+    property real reveal: popupModel.count > 0 && !notificationService.panelVisible ? 1 : 0
+    Behavior on reveal { QsNumberAnimation { duration: Theme.motionExit } }
 
     anchors {
         top: true
         right: true
     }
 
-    visible: popupModel.count > 0 && !notificationService.panelVisible
+    visible: popupModel.count > 0 && (!notificationService.panelVisible || reveal > 0)
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "qsitt:notification-popups"
     BackgroundEffect.blurRegion: Region {
         // Popups are capped at three; preserve the clear gaps between cards.
         Region {
-            item: popupRepeater.count > 0 ? popupRepeater.itemAt(0) : null
+            item: popupRepeater.count > 0 ? popupRepeater.itemAt(0).blurSurface : null
             radius: 16
         }
         Region {
-            item: popupRepeater.count > 1 ? popupRepeater.itemAt(1) : null
+            item: popupRepeater.count > 1 ? popupRepeater.itemAt(1).blurSurface : null
             radius: 16
         }
         Region {
-            item: popupRepeater.count > 2 ? popupRepeater.itemAt(2) : null
+            item: popupRepeater.count > 2 ? popupRepeater.itemAt(2).blurSurface : null
             radius: 16
         }
     }
-    implicitWidth: 400
-    implicitHeight: Math.min(popupList.implicitHeight + 20, screen.height - 100)
+    implicitWidth: 400 + Theme.windowShadowPadding * 2
+    implicitHeight: Math.min(popupList.implicitHeight + Theme.windowShadowPadding * 2, screen.height - 100)
+    mask: Region {
+        item: root.notificationService.panelVisible ? null : popupList
+    }
 
     color: "transparent"
 
     margins {
-        top: Theme.barHeight + Theme.barOuterMargin + 14
-        right: 10
+        top: Theme.barHeight + 14 - Theme.windowShadowPadding
+        right: 0
     }
 
     ListModel {
@@ -78,29 +84,52 @@ PanelWindow {
         }
     }
 
-    ColumnLayout {
+    Column {
         id: popupList
-        width: parent.width
+        opacity: root.reveal
+        x: Theme.windowShadowPadding
+        y: Theme.windowShadowPadding
+        width: parent.width - Theme.windowShadowPadding * 2
         spacing: 10
+        move: Transition {
+            QsNumberAnimation { properties: "x,y" }
+        }
 
         Repeater {
             id: popupRepeater
             model: popupModel
 
-            delegate: NotificationPopup {
+            delegate: Item {
+                id: popupDelegate
                 required property var model
+                readonly property Item blurSurface: popup.blurActive && !root.notificationService.panelVisible ? popup : null
 
-                Layout.fillWidth: true
-                notification: model.notificationObj
-                appName: model.appName
-                summary: model.summary
-                body: model.body
-                appIconSource: model.appIcon
-                iconSource: model.icon
-                imageSource: model.image
-                isPopup: true
+                width: popupList.width
+                implicitHeight: popup.implicitHeight
+                height: implicitHeight
 
-                onClosed: root.removePopup(notification)
+                QsWindowShadow {
+                    surface: popup
+                }
+
+                NotificationPopup {
+                    id: popup
+                    width: parent.width
+                    notification: popupDelegate.model.notificationObj
+                    appName: popupDelegate.model.appName
+                    summary: popupDelegate.model.summary
+                    body: popupDelegate.model.body
+                    appIconSource: popupDelegate.model.appIcon
+                    iconSource: popupDelegate.model.icon
+                    imageSource: popupDelegate.model.image
+                    isPopup: true
+
+                    onClosed: shown = false
+                    onVisibleChanged: {
+                        if (!visible && !shown)
+                            root.removePopup(notification);
+                    }
+                }
             }
         }
     }

@@ -25,12 +25,20 @@ Scope {
                 item: barContent
                 radius: barContent.radius
             }
-            implicitHeight: Theme.barHeight + Theme.barOuterMargin
+            implicitHeight: Theme.barHeight + Theme.windowShadowPadding
+            exclusiveZone: Theme.barHeight
+            mask: Region {
+                item: barContent
+            }
 
             anchors {
                 top: true
                 left: true
                 right: true
+            }
+
+            QsWindowShadow {
+                surface: barContent
             }
 
             BarUi.Base {
@@ -52,7 +60,10 @@ Scope {
                 }
 
                 centerContent: BarUi.Clock {
+                    scale: clockArea.pressed ? 0.97 : 1
+                    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
                     MouseArea {
+                        id: clockArea
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: ControlCenterService.toggle()

@@ -10,6 +10,8 @@ Rectangle {
     radius: 14
     color: checked ? Theme.primary : Theme.surfaceContainerHigh
     opacity: enabled ? 1 : 0.4
+    Behavior on color { QsColorAnimation {} }
+    Behavior on opacity { QsNumberAnimation {} }
     activeFocusOnTab: true
     border.width: activeFocus ? 2 : 0
     border.color: Theme.text
@@ -23,13 +25,15 @@ Rectangle {
         height: 20
         radius: 10
         color: root.checked ? Theme.primaryText : Theme.textSecondary
+        scale: area.pressed ? 0.9 : 1
+        Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+        Behavior on color { QsColorAnimation {} }
         Behavior on x {
-            NumberAnimation {
-                duration: 140
-            }
+            QsNumberAnimation {}
         }
     }
     MouseArea {
+        id: area
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: root.toggle()

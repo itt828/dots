@@ -57,6 +57,15 @@ layout {
         active-color "#d9a3a3"
         inactive-color "#6f8792"
     }
+    // Match qsitt's window shadow (KDL colors use #RRGGBBAA).
+    shadow {
+        on
+        softness 16
+        spread 0
+        offset x=0 y=3
+        color "#00000060"
+        inactive-color "#00000060"
+    }
 }
 
 layer-rule {

@@ -18,7 +18,10 @@ Scope {
             required property var modelData
             screen: modelData
 
-            visible: PowerService.visible
+            visible: menuContent.visible
+            mask: Region {
+                item: menuContent.shown ? powerMenuWindow.contentItem : null
+            }
 
             anchors {
                 top: true
@@ -29,21 +32,27 @@ Scope {
             color: "transparent"
             WlrLayershell.namespace: "qsitt:power-menu"
             BackgroundEffect.blurRegion: Region {
-                item: menuContent
+                item: menuContent.blurActive ? menuContent : null
                 radius: menuContent.radius
             }
 
             MouseArea {
                 anchors.fill: parent
+                enabled: menuContent.shown
                 onClicked: PowerService.visible = false
             }
 
-            Rectangle {
+            QsWindowShadow {
+                surface: menuContent
+            }
+
+            QsPopupSurface {
                 id: menuContent
+                shown: PowerService.visible
 
                 anchors.top: parent.top
                 anchors.right: parent.right
-                anchors.topMargin: 60
+                anchors.topMargin: Theme.barHeight + 12
                 anchors.rightMargin: 16
 
                 width: 180

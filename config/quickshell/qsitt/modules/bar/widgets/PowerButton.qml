@@ -9,6 +9,8 @@ Item {
     height: icon.height
     implicitWidth: icon.width
     implicitHeight: icon.height
+    scale: area.pressed ? 0.9 : 1
+    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
 
     required property var powerService
 
@@ -18,6 +20,7 @@ Item {
         size: 16
 
         MouseArea {
+            id: area
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             onClicked: powerService.toggle()

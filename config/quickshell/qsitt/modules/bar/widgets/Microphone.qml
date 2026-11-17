@@ -9,6 +9,8 @@ Item {
     implicitHeight: display.implicitHeight + 6
     width: implicitWidth
     height: implicitHeight
+    scale: area.pressed ? 0.94 : 1
+    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
 
     required property var volumeService
     property bool isMuted: volumeService.sourceMuted
@@ -26,6 +28,7 @@ Item {
     }
 
     MouseArea {
+        id: area
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
         onClicked: volumeService.toggleSourceMute()

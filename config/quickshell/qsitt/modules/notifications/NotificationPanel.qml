@@ -24,16 +24,19 @@ Scope {
             id: window
             required property var modelData
             screen: modelData
-            visible: NotificationService.panelVisible
+            visible: notificationContent.visible
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.namespace: "qsitt:notifications"
             BackgroundEffect.blurRegion: Region {
-                item: notificationContent
+                item: notificationContent.blurActive ? notificationContent : null
                 radius: notificationContent.radius
             }
-            WlrLayershell.keyboardFocus: visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: notificationContent.shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            mask: Region {
+                item: notificationContent.shown ? window.contentItem : null
+            }
             anchors {
                 top: true
                 bottom: true
@@ -42,15 +45,21 @@ Scope {
             }
             MouseArea {
                 anchors.fill: parent
+                enabled: notificationContent.shown
                 onClicked: NotificationService.panelVisible = false
             }
-            Rectangle {
+            QsWindowShadow {
+                surface: notificationContent
+            }
+
+            QsPopupSurface {
                 id: notificationContent
+                shown: NotificationService.panelVisible
                 anchors {
                     top: parent.top
                     bottom: parent.bottom
                     right: parent.right
-                    topMargin: Theme.barHeight + Theme.barOuterMargin + 12
+                    topMargin: Theme.barHeight + 12
                     bottomMargin: 16
                     rightMargin: 16
                 }
@@ -59,7 +68,7 @@ Scope {
                 radius: 22
                 border.color: Theme.glassOutline
                 border.width: 1
-                focus: true
+                focus: shown
                 Keys.onEscapePressed: NotificationService.panelVisible = false
                 MouseArea {
                     anchors.fill: parent

@@ -45,7 +45,7 @@ Scope {
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.namespace: "qsitt:control-center"
             BackgroundEffect.blurRegion: Region {
-                item: ControlCenterService.visible ? controlCenterContent : null
+                item: controlCenterContent.blurActive ? controlCenterContent : null
                 radius: Theme.radiusLarge
             }
             WlrLayershell.keyboardFocus: ControlCenterService.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
@@ -64,7 +64,9 @@ Scope {
             Rectangle {
                 id: dismissLayer
                 anchors.fill: parent
-                visible: ControlCenterService.visible
+                visible: controlCenterContent.visible
+                opacity: controlCenterContent.reveal
+                enabled: ControlCenterService.visible
                 color: Theme.glassScrim
 
                 MouseArea {
@@ -73,14 +75,18 @@ Scope {
                 }
             }
 
-            Rectangle {
+            QsWindowShadow {
+                surface: controlCenterContent
+            }
+
+            QsPopupSurface {
                 id: controlCenterContent
 
-                visible: ControlCenterService.visible
+                shown: ControlCenterService.visible
 
                 anchors {
                     top: parent.top
-                    topMargin: Theme.barHeight + Theme.barOuterMargin + 12
+                    topMargin: Theme.barHeight + 12
                     right: parent.right
                     rightMargin: 16
                 }
@@ -136,6 +142,9 @@ Scope {
                             implicitHeight: 34
                             radius: 17
                             color: closeArea.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
+                            scale: closeArea.pressed ? 0.9 : 1
+                            Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+                            Behavior on color { QsColorAnimation {} }
 
                             QsIcon {
                                 anchors.centerIn: parent
@@ -176,9 +185,17 @@ Scope {
                         }
                     }
                     StackLayout {
+                        id: pageStack
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         currentIndex: controlCenterWindow.currentPage === 0 ? 0 : controlCenterWindow.currentPage - 3
+                        onCurrentIndexChanged: pageAnimation.restart()
+                        transform: Translate { id: pageOffset }
+                        ParallelAnimation {
+                            id: pageAnimation
+                            QsNumberAnimation { target: pageStack; property: "opacity"; from: 0; to: 1 }
+                            QsNumberAnimation { target: pageOffset; property: "x"; from: 12; to: 0 }
+                        }
                         Flickable {
                             clip: true
                             contentWidth: width

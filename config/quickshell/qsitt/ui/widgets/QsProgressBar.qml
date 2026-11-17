@@ -12,6 +12,7 @@ Rectangle {
     color: Theme.surfaceContainerHigh
     Rectangle {
         width: parent.width * Math.max(0, Math.min(1, (root.value - root.from) / (root.to - root.from || 1)))
+        Behavior on width { QsNumberAnimation {} }
         height: parent.height
         radius: 2
         color: Theme.primary

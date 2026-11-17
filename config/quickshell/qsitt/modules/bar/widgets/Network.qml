@@ -9,6 +9,8 @@ Item {
     implicitHeight: display.implicitHeight
     width: implicitWidth
     height: implicitHeight
+    scale: area.pressed ? 0.96 : 1
+    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
 
     required property var networkService
 
@@ -48,5 +50,5 @@ Item {
 
         color: networkService.isConnected ? Theme.text : Theme.textSecondary
     }
-    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { ControlCenterService.requestedPage = 5; NotificationService.panelVisible = false; ControlCenterService.visible = true; } }
+    MouseArea { id: area; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { ControlCenterService.requestedPage = 5; NotificationService.panelVisible = false; ControlCenterService.visible = true; } }
 }

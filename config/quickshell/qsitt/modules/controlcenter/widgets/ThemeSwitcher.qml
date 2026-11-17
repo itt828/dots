@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.ui.theme
 import qs.services
+import qs.ui.widgets
 
 ColumnLayout {
     spacing: Theme.spacingSmall
@@ -40,6 +41,10 @@ ColumnLayout {
                     color: selected ? Theme.primaryContainer : (optionArea.containsMouse ? Theme.surfaceContainerHigh : "transparent")
                     border.color: selected ? Theme.primary : "transparent"
                     border.width: 1
+                    scale: optionArea.pressed ? 0.97 : 1
+                    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+                    Behavior on color { QsColorAnimation {} }
+                    Behavior on border.color { QsColorAnimation {} }
 
                     RowLayout {
                         anchors.centerIn: parent
@@ -85,6 +90,9 @@ ColumnLayout {
                     Layout.fillHeight: true
                     radius: Theme.radiusSmall
                     color: selected ? Theme.primary : (modeArea.containsMouse ? Theme.surfaceContainerHigh : "transparent")
+                    scale: modeArea.pressed ? 0.95 : 1
+                    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+                    Behavior on color { QsColorAnimation {} }
 
                     Text {
                         anchors.centerIn: parent

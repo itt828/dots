@@ -67,6 +67,8 @@ Item {
                     anchors.fill: parent
                     visible: !modelData.separator
                     radius: 2
+                    scale: workspaceArea.pressed ? 0.85 : workspace && workspace.is_focused ? 1.1 : 1
+                    Behavior on scale { QsNumberAnimation {} }
                     color: {
                         if (!workspace)
                             return Theme.surfaceVariant;
@@ -80,12 +82,11 @@ Item {
                     }
 
                     Behavior on color {
-                        ColorAnimation {
-                            duration: 200
-                        }
+                        QsColorAnimation { duration: Theme.motionNormal }
                     }
 
                     MouseArea {
+                        id: workspaceArea
                         anchors.fill: parent
                         enabled: parent.visible
                         cursorShape: Qt.PointingHandCursor

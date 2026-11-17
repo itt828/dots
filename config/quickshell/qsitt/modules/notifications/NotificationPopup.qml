@@ -7,11 +7,12 @@ import qs.ui.widgets
 import qs.ui.theme
 import qs.services
 
-Rectangle {
+QsPopupSurface {
     id: root
 
     property var notification // The Notification object
     property bool isPopup: true // True if showing as popup, False if in center
+    animated: isPopup
 
     property string appName: (notification && notification.appName) ? notification.appName : "System"
     property string summary: (notification && notification.summary) ? notification.summary : ""

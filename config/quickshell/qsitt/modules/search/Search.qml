@@ -131,16 +131,16 @@ Scope {
             id: searchWindow
             required property var modelData
             screen: modelData
-            visible: root.searchService.visible && modelData.name === root.searchService.focusedOutputName
+            visible: panel.visible
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Top
             WlrLayershell.namespace: "qsitt:search"
             BackgroundEffect.blurRegion: Region {
-                item: panel
+                item: panel.blurActive ? panel : null
                 radius: Theme.radiusLarge
             }
-            WlrLayershell.keyboardFocus: searchWindow.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: panel.shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             anchors {
                 top: true
                 left: true
@@ -148,24 +148,32 @@ Scope {
                 bottom: true
             }
             mask: Region {
-                item: searchWindow.visible ? dismissLayer : null
+                item: panel.shown ? dismissLayer : null
             }
 
             Rectangle {
                 id: dismissLayer
                 anchors.fill: parent
                 color: Theme.glassScrim
+                opacity: panel.reveal
+                enabled: panel.shown
                 MouseArea {
                     anchors.fill: parent
                     onClicked: root.searchService.close()
                 }
             }
 
-            Rectangle {
+            QsWindowShadow {
+                surface: panel
+            }
+
+            QsPopupSurface {
                 id: panel
+                shown: root.searchService.visible && searchWindow.modelData.name === root.searchService.focusedOutputName
+                transformOrigin: Item.Top
                 anchors {
                     top: parent.top
-                    topMargin: Theme.barHeight + Theme.barOuterMargin + 12
+                    topMargin: Theme.barHeight + 12
                     horizontalCenter: parent.horizontalCenter
                 }
                 width: Math.min(780, parent.width - 32)
@@ -201,6 +209,7 @@ Scope {
                         color: Theme.surfaceContainer
                         border.color: searchInput.activeFocus ? Theme.primary : Theme.outline
                         border.width: 1
+                        Behavior on border.color { QsColorAnimation {} }
 
                         RowLayout {
                             anchors.fill: parent
@@ -276,6 +285,9 @@ Scope {
                                 implicitHeight: 30
                                 radius: 12
                                 color: root.searchService.category === modelData.key ? Theme.primaryContainer : categoryArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                                scale: categoryArea.pressed ? 0.96 : 1
+                                Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+                                Behavior on color { QsColorAnimation {} }
                                 Text {
                                     id: categoryText
                                     anchors.centerIn: parent
@@ -323,6 +335,7 @@ Scope {
                             height: modelData.preview ? 96 : 66
                             radius: 12
                             color: root.searchService.selectedIndex === index ? Theme.primaryContainer : resultArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                            Behavior on color { QsColorAnimation {} }
 
                             RowLayout {
                                 anchors.fill: parent

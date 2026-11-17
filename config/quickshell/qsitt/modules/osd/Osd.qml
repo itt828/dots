@@ -132,30 +132,37 @@ Scope {
             required property var modelData
 
             screen: modelData
-            visible: root.active
+            visible: osdContent.visible
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.namespace: "qsitt:osd"
             BackgroundEffect.blurRegion: Region {
-                item: osdContent
+                item: osdContent.blurActive ? osdContent : null
                 radius: Theme.radiusLarge
             }
-            implicitWidth: 320
-            implicitHeight: 94
+            implicitWidth: 320 + Theme.windowShadowPadding * 2
+            implicitHeight: 94 + Theme.windowShadowPadding * 2
 
             anchors {
                 bottom: true
             }
             margins {
-                bottom: 64
+                bottom: 64 - Theme.windowShadowPadding
             }
 
             mask: Region { item: null }
 
-            Rectangle {
+            QsWindowShadow {
+                surface: osdContent
+            }
+
+            QsPopupSurface {
                 id: osdContent
+                shown: root.active
+                transformOrigin: Item.Bottom
                 anchors.fill: parent
+                anchors.margins: Theme.windowShadowPadding
                 color: Theme.glassPopup
                 radius: Theme.radiusLarge
                 border.color: Theme.glassOutline
@@ -219,6 +226,7 @@ Scope {
 
                             Rectangle {
                                 width: parent.width * Math.max(0, Math.min(1, root.value))
+                                Behavior on width { QsNumberAnimation {} }
                                 height: parent.height
                                 radius: parent.radius
                                 color: Theme.primary

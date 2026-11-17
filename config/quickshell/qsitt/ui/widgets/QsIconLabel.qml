@@ -11,6 +11,7 @@ Item {
     property alias spacing: layout.spacing
     property alias iconSize: iconItem.size
     property color color: Theme.text
+    Behavior on color { QsColorAnimation {} }
 
     implicitWidth: layout.implicitWidth
     implicitHeight: layout.implicitHeight

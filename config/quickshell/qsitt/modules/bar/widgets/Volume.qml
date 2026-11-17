@@ -9,6 +9,8 @@ Item {
     implicitHeight: display.implicitHeight + 6
     width: implicitWidth
     height: implicitHeight
+    scale: area.pressed ? 0.94 : 1
+    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
 
     onCurrentVolumeChanged: highlight.flash()
     onIsMutedChanged: highlight.flash()
@@ -38,6 +40,7 @@ Item {
     }
 
     MouseArea {
+        id: area
         anchors.fill: parent
         onClicked: { ControlCenterService.requestedPage = 4; NotificationService.panelVisible = false; ControlCenterService.visible = true; }
         cursorShape: Qt.PointingHandCursor

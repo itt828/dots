@@ -49,6 +49,15 @@ Rectangle {
             clip: true
             spacing: 8
             model: root.notificationService.history
+            add: Transition {
+                QsNumberAnimation { property: "opacity"; from: 0; to: 1 }
+            }
+            remove: Transition {
+                QsNumberAnimation { property: "opacity"; to: 0; duration: Theme.motionExit }
+            }
+            displaced: Transition {
+                QsNumberAnimation { properties: "x,y" }
+            }
 
             delegate: NotificationPopup {
                 required property var model
