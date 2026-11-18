@@ -131,7 +131,9 @@ Scope {
             id: searchWindow
             required property var modelData
             screen: modelData
-            visible: panel.visible
+            // Item.visible also reflects its parent window's visibility.
+            // Use the popup state directly so a hidden window can open again.
+            visible: panel.shown || panel.reveal > 0
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Top

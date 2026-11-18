@@ -132,7 +132,8 @@ Scope {
             required property var modelData
 
             screen: modelData
-            visible: osdContent.visible
+            // Item.visible inherits the window's visibility; use popup state instead.
+            visible: osdContent.shown || osdContent.reveal > 0
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay

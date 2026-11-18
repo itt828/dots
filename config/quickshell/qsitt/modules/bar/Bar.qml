@@ -61,7 +61,11 @@ Scope {
 
                 centerContent: BarUi.Clock {
                     scale: clockArea.pressed ? 0.97 : 1
-                    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+                    Behavior on scale {
+                        QsNumberAnimation {
+                            duration: Theme.motionFast
+                        }
+                    }
                     MouseArea {
                         id: clockArea
                         anchors.fill: parent
