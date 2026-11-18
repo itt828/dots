@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.services
 import qs.ui.theme
+import qs.ui.widgets
 
 ColumnLayout {
     spacing: Theme.spacingSmall
@@ -15,44 +16,47 @@ ColumnLayout {
 
     Rectangle {
         Layout.fillWidth: true
-        implicitHeight: 54
+        implicitHeight: lidRow.implicitHeight + 24
         radius: Theme.radius
         color: Theme.surface
 
         RowLayout {
+            id: lidRow
             anchors.fill: parent
-            anchors.leftMargin: 12
-            anchors.rightMargin: 12
+            anchors.margins: 12
+            spacing: Theme.spacing
 
             ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 2
 
                 Text {
+                    Layout.fillWidth: true
                     text: "クラムシェルモード"
                     color: Theme.text
                     font.family: Theme.fontFamily
+                    wrapMode: Text.Wrap
                 }
 
                 Text {
+                    Layout.fillWidth: true
                     text: "有効な外部画面をすべて点灯して作業を続ける"
                     color: Theme.textSecondary
                     font.family: Theme.fontFamily
                     font.pixelSize: Theme.fontSizeSmall
+                    wrapMode: Text.Wrap
                 }
             }
 
-            Text {
-                text: SettingsService.lidClamshellMode ? "オン" : "オフ"
-                color: SettingsService.lidClamshellMode ? Theme.accent : Theme.textSecondary
-                font.family: Theme.fontFamily
+            QsSwitch {
+                checked: SettingsService.lidClamshellMode
+                Accessible.role: Accessible.CheckBox
+                Accessible.name: "クラムシェルモード"
+                Accessible.checkable: true
+                Accessible.checked: checked
+                Accessible.onToggleAction: toggle()
+                onToggled: checked => SettingsService.set("lidClamshellMode", checked)
             }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            onClicked: SettingsService.set("lidClamshellMode", !SettingsService.lidClamshellMode)
         }
     }
 

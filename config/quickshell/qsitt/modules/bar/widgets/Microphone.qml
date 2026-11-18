@@ -3,12 +3,15 @@ import qs.ui.widgets
 import qs.ui.theme
 import qs.services
 
-Item {
+Rectangle {
     id: root
-    implicitWidth: display.implicitWidth + 8
-    implicitHeight: display.implicitHeight + 6
+    implicitWidth: display.implicitWidth + 20
+    implicitHeight: 28
     width: implicitWidth
     height: implicitHeight
+    radius: height / 2
+    color: Theme.surfaceContainerHigh
+    Behavior on color { QsColorAnimation {} }
     scale: area.pressed ? 0.94 : 1
     Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
 
@@ -18,6 +21,7 @@ Item {
 
     QsHighlightEffect {
         id: highlight
+        cornerRadius: root.radius
     }
 
     QsIconLabel {

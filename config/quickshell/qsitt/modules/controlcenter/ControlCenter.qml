@@ -6,7 +6,7 @@ import Quickshell.Wayland
 import qs.ui.theme
 import qs.services
 import qs.ui.widgets
-import qs.modules.controlcenter.pages
+import "pages"
 import qs.modules.controlcenter.widgets
 import qs.modules.notifications
 
@@ -87,9 +87,9 @@ Scope {
                 anchors {
                     top: parent.top
                     topMargin: Theme.barHeight + 12
-                    right: parent.right
-                    rightMargin: 16
+                    horizontalCenter: parent.horizontalCenter
                 }
+                transformOrigin: Item.Top
 
                 width: Math.min(660, parent.width - 32)
                 height: Math.min(740, parent.height - anchors.topMargin - 20)
@@ -137,6 +137,13 @@ Scope {
                             Layout.fillWidth: true
                         }
 
+                        QsButton {
+                            text: "設定"
+                            toolTip: "外観・クラムシェルモードの設定"
+                            highlighted: controlCenterWindow.currentPage === 7
+                            onClicked: controlCenterWindow.currentPage = 7
+                        }
+
                         Rectangle {
                             implicitWidth: 34
                             implicitHeight: 34
@@ -167,14 +174,15 @@ Scope {
                         visible: controlCenterWindow.currentPage !== 0
                         Layout.fillWidth: true
                         QsButton {
-                            text: "‹  Home"
+                            text: "‹  ホーム"
                             onClicked: controlCenterWindow.currentPage = 0
                         }
                         Text {
                             text: ({
                                     4: "Audio",
                                     5: "Network",
-                                    6: "Bluetooth"
+                                    6: "Bluetooth",
+                                    7: "設定"
                                 })[controlCenterWindow.currentPage] || ""
                             color: Theme.text
                             font.family: Theme.fontFamily
@@ -258,7 +266,9 @@ Scope {
                                         }
                                     }
                                 }
-                                MediaControl {}
+                                MediaControl {
+                                    visible: SettingsService.showMediaInfo
+                                }
                                 RowLayout {
                                     Layout.fillWidth: true
                                     QsButton {
@@ -286,9 +296,6 @@ Scope {
                                         }
                                     }
                                 }
-                                ThemeSwitcher {
-                                    Layout.fillWidth: true
-                                }
                             }
                         }
                         AudioPage {
@@ -300,6 +307,7 @@ Scope {
                         BluetoothPage {
                             bluetoothService: root.bluetoothService
                         }
+                        SettingsPage {}
                     }
                 }
             }

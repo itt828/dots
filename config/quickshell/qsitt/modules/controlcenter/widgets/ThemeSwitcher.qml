@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import qs.ui.theme
@@ -5,112 +6,58 @@ import qs.services
 import qs.ui.widgets
 
 ColumnLayout {
-    spacing: Theme.spacingSmall
+    spacing: Theme.spacing
 
     Text {
-        text: "Theme"
+        text: "表示モード"
         color: Theme.text
         font.family: Theme.fontFamily
         font.bold: true
-        font.pointSize: 12
+        font.pixelSize: Theme.fontSizeBody
     }
 
-    Rectangle {
+    RowLayout {
         Layout.fillWidth: true
-        implicitHeight: 54
-        radius: Theme.radius
-        color: Theme.surface
+        spacing: Theme.spacingSmall
 
-        RowLayout {
-            anchors.fill: parent
-            anchors.margins: 6
-            spacing: Theme.spacingSmall
+        Repeater {
+            model: ThemeService.availableModes
 
-            Repeater {
-                model: ThemeService.availablePalettes
+            delegate: QsButton {
+                required property string modelData
 
-                delegate: Rectangle {
-                    id: option
-
-                    required property var modelData
-                    readonly property bool selected: ThemeService.currentPalette === modelData.name
-
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    radius: Theme.radiusSmall
-                    color: selected ? Theme.primaryContainer : (optionArea.containsMouse ? Theme.surfaceContainerHigh : "transparent")
-                    border.color: selected ? Theme.primary : "transparent"
-                    border.width: 1
-                    scale: optionArea.pressed ? 0.97 : 1
-                    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
-                    Behavior on color { QsColorAnimation {} }
-                    Behavior on border.color { QsColorAnimation {} }
-
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: Theme.spacingSmall
-
-                        Text {
-                            text: option.modelData.label
-                            color: Theme.text
-                            font.family: Theme.fontFamily
-                            font.pixelSize: Theme.fontSizeBody
-                            font.weight: option.selected ? Font.DemiBold : Font.Normal
-                        }
-                    }
-
-                    MouseArea {
-                        id: optionArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: ThemeService.setPalette(option.modelData.name)
-                    }
-                }
+                Layout.fillWidth: true
+                text: modelData === "light" ? "Light" : "Dark"
+                highlighted: ThemeService.currentMode === modelData
+                checkable: true
+                onClicked: ThemeService.setMode(modelData)
             }
+        }
+    }
 
-            Rectangle {
-                Layout.preferredWidth: 1
-                Layout.fillHeight: true
-                Layout.topMargin: 6
-                Layout.bottomMargin: 6
-                color: Theme.outline
-            }
+    Text {
+        Layout.topMargin: Theme.spacing
+        text: "テーマ"
+        color: Theme.text
+        font.family: Theme.fontFamily
+        font.bold: true
+        font.pixelSize: Theme.fontSizeBody
+    }
 
-            Repeater {
-                model: ThemeService.availableModes
+    Flow {
+        Layout.fillWidth: true
+        spacing: Theme.spacingSmall
 
-                delegate: Rectangle {
-                    id: modeOption
+        Repeater {
+            model: ThemeService.availablePalettes
 
-                    required property string modelData
-                    readonly property bool selected: ThemeService.currentMode === modelData
+            delegate: QsButton {
+                required property var modelData
 
-                    Layout.preferredWidth: 58
-                    Layout.fillHeight: true
-                    radius: Theme.radiusSmall
-                    color: selected ? Theme.primary : (modeArea.containsMouse ? Theme.surfaceContainerHigh : "transparent")
-                    scale: modeArea.pressed ? 0.95 : 1
-                    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
-                    Behavior on color { QsColorAnimation {} }
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: modeOption.modelData === "light" ? "Light" : "Dark"
-                        color: modeOption.selected ? Theme.primaryText : Theme.textSecondary
-                        font.family: Theme.fontFamily
-                        font.pixelSize: Theme.fontSizeSmall
-                        font.weight: modeOption.selected ? Font.DemiBold : Font.Normal
-                    }
-
-                    MouseArea {
-                        id: modeArea
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: ThemeService.setMode(modeOption.modelData)
-                    }
-                }
+                text: modelData.label
+                highlighted: ThemeService.currentPalette === modelData.name
+                checkable: true
+                onClicked: ThemeService.setPalette(modelData.name)
             }
         }
     }

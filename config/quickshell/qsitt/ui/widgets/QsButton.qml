@@ -14,8 +14,16 @@ Rectangle {
     radius: 12
     opacity: enabled ? 1 : 0.4
     scale: area.pressed ? 0.95 : 1
-    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
-    Behavior on opacity { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on scale {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
+    Behavior on opacity {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
     color: area.pressed ? Theme.primaryContainer : highlighted ? Theme.primary : area.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
     border.width: activeFocus ? 2 : 0
     border.color: Theme.primary

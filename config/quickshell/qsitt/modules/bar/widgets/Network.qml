@@ -3,12 +3,15 @@ import qs.ui.theme
 import qs.services
 import qs.ui.widgets
 
-Item {
+Rectangle {
     id: root
-    implicitWidth: display.implicitWidth
-    implicitHeight: display.implicitHeight
+    implicitWidth: display.implicitWidth + 20
+    implicitHeight: 28
     width: implicitWidth
     height: implicitHeight
+    radius: height / 2
+    color: Theme.surfaceContainerHigh
+    Behavior on color { QsColorAnimation {} }
     scale: area.pressed ? 0.96 : 1
     Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
 
@@ -16,6 +19,7 @@ Item {
 
     QsIconLabel {
         id: display
+        anchors.centerIn: parent
         text: {
             if (networkService.isConnected)
                 return networkService.connectionName;

@@ -3,12 +3,15 @@ import qs.ui.widgets
 import qs.ui.theme
 import qs.services
 
-Item {
+Rectangle {
     id: root
-    implicitWidth: display.implicitWidth + 8
-    implicitHeight: display.implicitHeight + 6
+    implicitWidth: display.implicitWidth + 20
+    implicitHeight: 28
     width: implicitWidth
     height: implicitHeight
+    radius: height / 2
+    color: Theme.surfaceContainerHigh
+    Behavior on color { QsColorAnimation {} }
     scale: area.pressed ? 0.94 : 1
     Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
 
@@ -16,6 +19,7 @@ Item {
 
     QsHighlightEffect {
         id: highlight
+        cornerRadius: root.radius
     }
 
     Connections {
@@ -37,11 +41,12 @@ Item {
         icon: notificationService.dnd ? Icons.bellSlash : (notificationService.history.count > 0 ? Icons.bellRinging : Icons.bell)
         text: notificationService.history.count.toString()
 
-        MouseArea {
-            id: area
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            onClicked: { ControlCenterService.visible = false; notificationService.panelVisible = !notificationService.panelVisible; }
-        }
+    }
+
+    MouseArea {
+        id: area
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: { ControlCenterService.visible = false; notificationService.panelVisible = !notificationService.panelVisible; }
     }
 }

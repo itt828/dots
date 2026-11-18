@@ -13,11 +13,14 @@ Row {
         delegate: Rectangle {
             visible: modelData.type === UPowerDeviceType.Battery && modelData.isPresent
 
-            color: (modelData.percentage < 0.2 && modelData.state !== UPowerDeviceState.Charging) ? Theme.danger : "transparent"
-            radius: 4
+            color: (modelData.percentage < 0.2 && modelData.state !== UPowerDeviceState.Charging) ? Theme.danger : Theme.surfaceContainerHigh
+            radius: height / 2
+            Behavior on color { QsColorAnimation {} }
 
-            implicitWidth: display.implicitWidth + 8
-            implicitHeight: display.implicitHeight + 4
+            implicitWidth: display.implicitWidth + 20
+            implicitHeight: 28
+            width: implicitWidth
+            height: implicitHeight
 
             QsIconLabel {
                 id: display
