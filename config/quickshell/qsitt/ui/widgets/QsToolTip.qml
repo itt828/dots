@@ -8,7 +8,11 @@ Item {
     property real reveal: hovered && delay.ready ? 1 : 0
     visible: reveal > 0
     opacity: reveal
-    Behavior on reveal { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on reveal {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
     implicitWidth: label.implicitWidth + 20
     implicitHeight: label.implicitHeight + 16
     x: Math.min(0, parent.width - width)

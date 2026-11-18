@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Effects
 import qs.ui.theme
 
-// Place before the surface, as a sibling, so its clipping does not cut off the shadow.
 RectangularShadow {
     required property Rectangle surface
 

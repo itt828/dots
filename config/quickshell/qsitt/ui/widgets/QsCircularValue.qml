@@ -6,13 +6,11 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    // Properties
-    property real value: 0.0 // 0.0 to 1.0
+    property real value: 0.0
     property string iconName: ""
     property string labelText: ""
     property bool showLabel: false
 
-    // Style
     property color color: Theme.text
     property color progressColor: Theme.surface
     property color trackColor: Theme.textSecondary
@@ -29,7 +27,6 @@ Item {
         spacing: 6
         anchors.verticalCenter: parent.verticalCenter
 
-        // Circular Progress Part
         Item {
             Layout.preferredWidth: root.size
             Layout.preferredHeight: root.size
@@ -40,7 +37,6 @@ Item {
                 layer.enabled: true
                 layer.samples: 4
 
-                // Track (Background Circle)
                 ShapePath {
                     strokeColor: root.trackColor
                     strokeWidth: root.strokeWidth
@@ -57,7 +53,6 @@ Item {
                     }
                 }
 
-                // Progress (Foreground Arc)
                 ShapePath {
                     strokeColor: root.progressColor
                     strokeWidth: root.strokeWidth
@@ -71,12 +66,13 @@ Item {
                         radiusY: (root.size / 2) - (root.strokeWidth / 2)
                         startAngle: -90
                         sweepAngle: 360 * root.value
-                        Behavior on sweepAngle { QsNumberAnimation {} }
+                        Behavior on sweepAngle {
+                            QsNumberAnimation {}
+                        }
                     }
                 }
             }
 
-            // Icon in Center
             QsIcon {
                 anchors.centerIn: parent
                 icon: root.iconName

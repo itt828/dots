@@ -10,8 +10,12 @@ Rectangle {
     radius: 14
     color: checked ? Theme.primary : Theme.surfaceContainerHigh
     opacity: enabled ? 1 : 0.4
-    Behavior on color { QsColorAnimation {} }
-    Behavior on opacity { QsNumberAnimation {} }
+    Behavior on color {
+        QsColorAnimation {}
+    }
+    Behavior on opacity {
+        QsNumberAnimation {}
+    }
     activeFocusOnTab: true
     border.width: activeFocus ? 2 : 0
     border.color: Theme.text
@@ -26,8 +30,14 @@ Rectangle {
         radius: 10
         color: root.checked ? Theme.primaryText : Theme.textSecondary
         scale: area.pressed ? 0.9 : 1
-        Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
-        Behavior on color { QsColorAnimation {} }
+        Behavior on scale {
+            QsNumberAnimation {
+                duration: Theme.motionFast
+            }
+        }
+        Behavior on color {
+            QsColorAnimation {}
+        }
         Behavior on x {
             QsNumberAnimation {}
         }

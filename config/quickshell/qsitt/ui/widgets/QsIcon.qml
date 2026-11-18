@@ -13,7 +13,6 @@ Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
 
-    // Resolve icon string to character using Icons
     text: icon
 
     FontLoader {

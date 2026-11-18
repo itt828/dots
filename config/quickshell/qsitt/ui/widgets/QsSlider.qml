@@ -10,14 +10,18 @@ Item {
     property real displayedFraction: fraction
     Behavior on displayedFraction {
         enabled: !area.dragging
-        QsNumberAnimation { duration: Theme.motionFast }
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
     }
     signal moved(real value)
     implicitWidth: 160
     implicitHeight: 36
     activeFocusOnTab: true
     opacity: enabled ? 1 : 0.4
-    Behavior on opacity { QsNumberAnimation {} }
+    Behavior on opacity {
+        QsNumberAnimation {}
+    }
     function setAt(x) {
         moved(from + Math.max(0, Math.min(1, (x - 9) / Math.max(1, width - 18))) * (to - from));
     }
@@ -48,7 +52,11 @@ Item {
         border.width: root.activeFocus ? 3 : 0
         border.color: Theme.text
         scale: area.pressed ? 1.18 : area.containsMouse ? 1.08 : 1
-        Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+        Behavior on scale {
+            QsNumberAnimation {
+                duration: Theme.motionFast
+            }
+        }
     }
     MouseArea {
         id: area
