@@ -152,7 +152,9 @@ Scope {
                 bottom: 64 - Theme.windowShadowPadding
             }
 
-            mask: Region { item: null }
+            mask: Region {
+                item: null
+            }
 
             QsWindowShadow {
                 surface: osdContent
@@ -197,7 +199,9 @@ Scope {
                                 color: Theme.text
                             }
 
-                            Item { Layout.fillWidth: true }
+                            Item {
+                                Layout.fillWidth: true
+                            }
 
                             Text {
                                 visible: root.showLevel
@@ -227,7 +231,9 @@ Scope {
 
                             Rectangle {
                                 width: parent.width * Math.max(0, Math.min(1, root.value))
-                                Behavior on width { QsNumberAnimation {} }
+                                Behavior on width {
+                                    QsNumberAnimation {}
+                                }
                                 height: parent.height
                                 radius: parent.radius
                                 color: Theme.primary

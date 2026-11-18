@@ -10,8 +10,8 @@ import qs.services
 QsPopupSurface {
     id: root
 
-    property var notification // The Notification object
-    property bool isPopup: true // True if showing as popup, False if in center
+    property var notification
+    property bool isPopup: true
     animated: isPopup
 
     property string appName: (notification && notification.appName) ? notification.appName : "System"
@@ -23,7 +23,7 @@ QsPopupSurface {
 
     width: 300
     implicitHeight: Math.min(layout.implicitHeight + 32, 440)
-    height: implicitHeight // Max height cap
+    height: implicitHeight
     color: isPopup ? Theme.glassPopup : Theme.surfaceContainer
     radius: 16
     border.color: Theme.glassOutline
@@ -53,7 +53,6 @@ QsPopupSurface {
         anchors.margins: 16
         spacing: 10
 
-        // Icon (Left side - strictly for App Identity)
         Rectangle {
             Layout.alignment: Qt.AlignTop
             Layout.preferredWidth: 40
@@ -64,7 +63,6 @@ QsPopupSurface {
             Image {
                 id: iconImage
                 anchors.fill: parent
-                // Prioritize App Icon, then App Name, then generic notification icon
                 source: root.appIconSource ? resolveIcon(root.appIconSource) : root.iconSource ? resolveIcon(root.iconSource) : ""
                 fillMode: Image.PreserveAspectFit
                 onStatusChanged: if (status == Image.Error)
@@ -80,7 +78,6 @@ QsPopupSurface {
             }
         }
 
-        // Text Content
         ColumnLayout {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
@@ -98,7 +95,6 @@ QsPopupSurface {
                     Layout.fillWidth: true
                 }
 
-                // Close button for popups
                 QsIcon {
                     visible: true
                     icon: Icons.x

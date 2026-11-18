@@ -11,9 +11,15 @@ Rectangle {
     height: implicitHeight
     radius: height / 2
     color: Theme.surfaceContainerHigh
-    Behavior on color { QsColorAnimation {} }
+    Behavior on color {
+        QsColorAnimation {}
+    }
     scale: area.pressed ? 0.94 : 1
-    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on scale {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
 
     onCurrentVolumeChanged: highlight.flash()
     onIsMutedChanged: highlight.flash()
@@ -46,9 +52,16 @@ Rectangle {
     MouseArea {
         id: area
         anchors.fill: parent
-        onClicked: { ControlCenterService.requestedPage = 4; NotificationService.panelVisible = false; ControlCenterService.visible = true; }
+        onClicked: {
+            ControlCenterService.requestedPage = 4;
+            NotificationService.panelVisible = false;
+            ControlCenterService.visible = true;
+        }
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
-        QsToolTip { hovered: parent.containsMouse; text: root.volumeService.sinkName }
+        QsToolTip {
+            hovered: parent.containsMouse
+            text: root.volumeService.sinkName
+        }
     }
 }

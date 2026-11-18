@@ -9,14 +9,12 @@ Item {
 
     property var workspaces: []
 
-    // Internal state to track window titles for activity detection
-    property var _windowTitles: ({}) // { windowId: title }
+    property var _windowTitles: ({})
 
     function update(newWorkspaces) {
         if (!newWorkspaces || !Array.isArray(newWorkspaces))
             return;
 
-        // Preserve local urgency if it was set
         let oldWorkspaces = workspaces;
         workspaces = newWorkspaces.map(ws => {
             let oldWs = oldWorkspaces.find(o => o.id === ws.id);
@@ -53,7 +51,6 @@ Item {
         }
 
         function onWorkspaceActivated(data) {
-            // When a workspace is activated, update states and clear its local urgency
             let targetOutput = "";
             let wsToUpdate = workspaces.find(w => w.id === data.id);
             if (wsToUpdate)
@@ -77,7 +74,6 @@ Item {
                 }
             });
 
-            // Trigger a full refresh to be sure
             refreshWorkspaces.running = true;
         }
 
@@ -97,12 +93,10 @@ Item {
             let newTitle = window.title;
             _windowTitles[window.id] = newTitle;
 
-            // Activity detection: title changed and window is NOT focused
             if (oldTitle !== undefined && oldTitle !== newTitle && !window.is_focused) {
                 setLocalUrgent(window.workspace_id, true);
             }
 
-            // Also handle explicit urgency flag from niri
             if (window.is_urgent) {
                 setLocalUrgent(window.workspace_id, true);
             }
@@ -144,7 +138,6 @@ Item {
         }
     }
 
-    // Periodically sync window titles to handle initial state or missed events
     BackendProcess {
         id: syncWindows
         arguments: ["niri", "windows"]
@@ -163,5 +156,7 @@ Item {
         }
     }
 
-    BackendProcess { id: focusProcess }
+    BackendProcess {
+        id: focusProcess
+    }
 }

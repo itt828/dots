@@ -1,7 +1,6 @@
 import Quickshell
 import Quickshell.Io
 
-// All external operations pass arguments directly to the Go backend, without a shell.
 Process {
     id: backendProcess
     property list<string> arguments: []

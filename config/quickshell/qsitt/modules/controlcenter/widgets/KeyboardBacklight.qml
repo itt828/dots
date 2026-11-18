@@ -26,8 +26,7 @@ Rectangle {
         if (!available || busy)
             return;
         busy = true;
-        setProcess.arguments = ["backlight", "keyboard-set",
-                                String((level + 1) % (maxLevel + 1))];
+        setProcess.arguments = ["backlight", "keyboard-set", String((level + 1) % (maxLevel + 1))];
         setProcess.running = true;
     }
 
@@ -35,7 +34,8 @@ Rectangle {
         arguments: ["backlight", "get", "keyboard"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (!text.trim()) return;
+                if (!text.trim())
+                    return;
                 try {
                     const state = JSON.parse(text);
                     root.level = state.current;

@@ -8,12 +8,12 @@ QtObject {
     id: root
 
     readonly property var defaults: ({
-        targetScreens: [],
-        animationDuration: 200,
-        debug: false,
-        lidClamshellMode: false,
-        showMediaInfo: true
-    })
+            targetScreens: [],
+            animationDuration: 200,
+            debug: false,
+            lidClamshellMode: false,
+            showMediaInfo: true
+        })
     property var values: ({})
     property var pendingChanges: ({})
     property bool loaded: false
@@ -57,7 +57,9 @@ QtObject {
             next[key] = normalized;
         values = next;
         if (!loaded)
-            pendingChanges = Object.assign({}, pendingChanges, { [key]: normalized });
+            pendingChanges = Object.assign({}, pendingChanges, {
+                [key]: normalized
+            });
         else
             saveTimer.restart();
         return true;
@@ -143,7 +145,9 @@ QtObject {
 
     readonly property Connections legacyConnection: Connections {
         target: LegacyConfig
-        function onReadyChanged(): void { root.finishLoad(); }
+        function onReadyChanged(): void {
+            root.finishLoad();
+        }
     }
 
     readonly property BackendProcess loader: BackendProcess {

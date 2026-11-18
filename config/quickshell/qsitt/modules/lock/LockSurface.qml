@@ -12,8 +12,7 @@ Rectangle {
     id: root
     required property LockService context
     readonly property var battery: UPower.devices.values.find(device => device.isLaptopBattery && device.isPresent) ?? null
-    readonly property var mediaPlayer: Mpris.players.values.find(player => player.isPlaying && player.canTogglePlaying)
-        ?? Mpris.players.values.find(player => player.canTogglePlaying) ?? null
+    readonly property var mediaPlayer: Mpris.players.values.find(player => player.isPlaying && player.canTogglePlaying) ?? Mpris.players.values.find(player => player.canTogglePlaying) ?? null
 
     color: Theme.text
 
@@ -30,8 +29,7 @@ Rectangle {
         QsIconLabel {
             id: batteryLabel
             anchors.centerIn: parent
-            color: root.battery && root.battery.percentage < 0.2
-                && root.battery.state === UPowerDeviceState.Discharging ? Theme.danger : Theme.surface
+            color: root.battery && root.battery.percentage < 0.2 && root.battery.state === UPowerDeviceState.Discharging ? Theme.danger : Theme.surface
             icon: {
                 if (!root.battery)
                     return "";
@@ -45,10 +43,7 @@ Rectangle {
                     return Icons.batteryMedium;
                 return Icons.batteryLow;
             }
-            text: root.battery ? Math.round(root.battery.percentage * 100) + "% " +
-                (root.battery.state === UPowerDeviceState.Charging ? "充電中" :
-                 root.battery.state === UPowerDeviceState.FullyCharged ? "満充電" :
-                 root.battery.state === UPowerDeviceState.Discharging ? "放電中" : "バッテリー") : ""
+            text: root.battery ? Math.round(root.battery.percentage * 100) + "% " + (root.battery.state === UPowerDeviceState.Charging ? "充電中" : root.battery.state === UPowerDeviceState.FullyCharged ? "満充電" : root.battery.state === UPowerDeviceState.Discharging ? "放電中" : "バッテリー") : ""
         }
     }
 
@@ -68,8 +63,8 @@ Rectangle {
             spacing: 0
 
             Text {
-            font.family: Theme.fontFamily
                 id: timeLabel
+                font.family: Theme.fontFamily
                 Layout.alignment: Qt.AlignHCenter
                 font.pixelSize: 96
                 color: Theme.surface
@@ -86,8 +81,8 @@ Rectangle {
             }
 
             Text {
-            font.family: Theme.fontFamily
                 id: dateLabel
+                font.family: Theme.fontFamily
                 Layout.alignment: Qt.AlignHCenter
                 font.pixelSize: 24
                 color: Theme.outline
@@ -150,7 +145,7 @@ Rectangle {
             }
 
             Text {
-            font.family: Theme.fontFamily
+                font.family: Theme.fontFamily
                 visible: root.context.showFailure
                 text: "Incorrect password"
                 color: Theme.danger

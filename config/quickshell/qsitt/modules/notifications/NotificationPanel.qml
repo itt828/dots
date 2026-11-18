@@ -24,7 +24,6 @@ Scope {
             id: window
             required property var modelData
             screen: modelData
-            // Item.visible inherits the window's visibility; use popup state instead.
             visible: notificationContent.shown || notificationContent.reveal > 0
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore

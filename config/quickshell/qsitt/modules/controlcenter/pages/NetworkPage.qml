@@ -52,8 +52,12 @@ ColumnLayout {
             radius: 10
             color: modelData.connected ? Theme.primaryContainer : Theme.surface
             border.color: modelData.connected ? Theme.primary : Theme.outline
-            Behavior on color { QsColorAnimation {} }
-            Behavior on border.color { QsColorAnimation {} }
+            Behavior on color {
+                QsColorAnimation {}
+            }
+            Behavior on border.color {
+                QsColorAnimation {}
+            }
             border.width: 1
 
             RowLayout {

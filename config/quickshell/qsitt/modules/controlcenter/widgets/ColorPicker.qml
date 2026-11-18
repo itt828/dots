@@ -36,7 +36,7 @@ Rectangle {
             spacing: 3
 
             Text {
-            font.family: Theme.fontFamily
+                font.family: Theme.fontFamily
                 Layout.fillWidth: true
                 text: "カラーピッカー"
                 color: Theme.text
@@ -44,7 +44,7 @@ Rectangle {
             }
 
             Text {
-            font.family: Theme.fontFamily
+                font.family: Theme.fontFamily
                 Layout.fillWidth: true
                 text: root.controlCenterService.pickerStatus
                 color: root.controlCenterService.pickerBusy ? Theme.accent : Theme.textSecondary

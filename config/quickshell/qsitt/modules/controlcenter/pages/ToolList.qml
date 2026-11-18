@@ -46,7 +46,7 @@ ColumnLayout {
                 color: Theme.primaryContainer
 
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     anchors.centerIn: parent
                     text: "QR"
                     color: Theme.accent
@@ -60,7 +60,7 @@ ColumnLayout {
                 spacing: 3
 
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     Layout.fillWidth: true
                     text: "QRコードを範囲から読み取る"
                     color: Theme.text
@@ -68,7 +68,7 @@ ColumnLayout {
                 }
 
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     Layout.fillWidth: true
                     text: root.controlCenterService.qrStatus
                     color: root.controlCenterService.qrBusy ? Theme.accent : Theme.textSecondary
@@ -78,7 +78,7 @@ ColumnLayout {
             }
 
             Text {
-            font.family: Theme.fontFamily
+                font.family: Theme.fontFamily
                 text: root.controlCenterService.qrBusy ? "…" : "実行"
                 color: root.controlCenterService.qrBusy ? "#90a4ae" : Theme.accent
                 font.bold: true
@@ -104,7 +104,7 @@ ColumnLayout {
     }
 
     Text {
-            font.family: Theme.fontFamily
+        font.family: Theme.fontFamily
         Layout.fillWidth: true
         text: "範囲・色の選択をキャンセルするには Esc キーを押します。"
         color: Theme.textSecondary

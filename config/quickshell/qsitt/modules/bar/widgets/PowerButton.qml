@@ -10,7 +10,11 @@ Item {
     implicitWidth: icon.width
     implicitHeight: icon.height
     scale: area.pressed ? 0.9 : 1
-    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on scale {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
 
     required property var powerService
 

@@ -15,7 +15,9 @@ Row {
 
             color: (modelData.percentage < 0.2 && modelData.state !== UPowerDeviceState.Charging) ? Theme.danger : Theme.surfaceContainerHigh
             radius: height / 2
-            Behavior on color { QsColorAnimation {} }
+            Behavior on color {
+                QsColorAnimation {}
+            }
 
             implicitWidth: display.implicitWidth + 20
             implicitHeight: 28

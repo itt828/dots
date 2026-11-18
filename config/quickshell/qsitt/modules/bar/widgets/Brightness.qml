@@ -11,7 +11,9 @@ Rectangle {
     height: implicitHeight
     radius: height / 2
     color: Theme.surfaceContainerHigh
-    Behavior on color { QsColorAnimation {} }
+    Behavior on color {
+        QsColorAnimation {}
+    }
 
     required property var brightnessService
     property real brightnessVal: brightnessService.brightness

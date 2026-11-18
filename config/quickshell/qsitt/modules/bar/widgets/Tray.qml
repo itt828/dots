@@ -21,7 +21,11 @@ Row {
                 source: modelData.icon
                 fillMode: Image.PreserveAspectFit
                 scale: area.pressed ? 0.9 : 1
-                Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+                Behavior on scale {
+                    QsNumberAnimation {
+                        duration: Theme.motionFast
+                    }
+                }
 
                 MouseArea {
                     id: area

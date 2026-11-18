@@ -11,9 +11,15 @@ Rectangle {
     height: implicitHeight
     radius: height / 2
     color: Theme.surfaceContainerHigh
-    Behavior on color { QsColorAnimation {} }
+    Behavior on color {
+        QsColorAnimation {}
+    }
     scale: area.pressed ? 0.94 : 1
-    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on scale {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
 
     required property var volumeService
     property bool isMuted: volumeService.sourceMuted
@@ -37,6 +43,9 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         onClicked: volumeService.toggleSourceMute()
         hoverEnabled: true
-        QsToolTip { hovered: parent.containsMouse; text: root.volumeService.sourceName }
+        QsToolTip {
+            hovered: parent.containsMouse
+            text: root.volumeService.sourceName
+        }
     }
 }

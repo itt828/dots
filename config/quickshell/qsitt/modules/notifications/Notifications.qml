@@ -12,7 +12,11 @@ PanelWindow {
 
     readonly property var notificationService: NotificationService
     property real reveal: popupModel.count > 0 && !notificationService.panelVisible ? 1 : 0
-    Behavior on reveal { QsNumberAnimation { duration: Theme.motionExit } }
+    Behavior on reveal {
+        QsNumberAnimation {
+            duration: Theme.motionExit
+        }
+    }
 
     anchors {
         top: true
@@ -24,7 +28,6 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "qsitt:notification-popups"
     BackgroundEffect.blurRegion: Region {
-        // Popups are capped at three; preserve the clear gaps between cards.
         Region {
             item: popupRepeater.count > 0 ? popupRepeater.itemAt(0).blurSurface : null
             radius: 16
@@ -92,7 +95,9 @@ PanelWindow {
         width: parent.width - Theme.windowShadowPadding * 2
         spacing: 10
         move: Transition {
-            QsNumberAnimation { properties: "x,y" }
+            QsNumberAnimation {
+                properties: "x,y"
+            }
         }
 
         Repeater {

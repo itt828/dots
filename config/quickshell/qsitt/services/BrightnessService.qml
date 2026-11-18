@@ -17,7 +17,8 @@ QtObject {
         arguments: ["backlight", "get", "display"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (!text.trim()) return;
+                if (!text.trim())
+                    return;
                 try {
                     const state = JSON.parse(text);
                     root.brightness = state.brightness;

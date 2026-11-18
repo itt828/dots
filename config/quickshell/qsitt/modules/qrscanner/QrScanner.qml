@@ -45,7 +45,7 @@ Scope {
             }
 
             Text {
-            font.family: Theme.fontFamily
+                font.family: Theme.fontFamily
                 anchors {
                     top: parent.top
                     horizontalCenter: parent.horizontalCenter
@@ -96,5 +96,4 @@ Scope {
             }
         }
     }
-
 }

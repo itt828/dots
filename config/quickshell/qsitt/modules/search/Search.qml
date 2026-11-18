@@ -211,7 +211,9 @@ Scope {
                         color: Theme.surfaceContainer
                         border.color: searchInput.activeFocus ? Theme.primary : Theme.outline
                         border.width: 1
-                        Behavior on border.color { QsColorAnimation {} }
+                        Behavior on border.color {
+                            QsColorAnimation {}
+                        }
 
                         RowLayout {
                             anchors.fill: parent
@@ -288,8 +290,14 @@ Scope {
                                 radius: 12
                                 color: root.searchService.category === modelData.key ? Theme.primaryContainer : categoryArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
                                 scale: categoryArea.pressed ? 0.96 : 1
-                                Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
-                                Behavior on color { QsColorAnimation {} }
+                                Behavior on scale {
+                                    QsNumberAnimation {
+                                        duration: Theme.motionFast
+                                    }
+                                }
+                                Behavior on color {
+                                    QsColorAnimation {}
+                                }
                                 Text {
                                     id: categoryText
                                     anchors.centerIn: parent
@@ -337,7 +345,9 @@ Scope {
                             height: modelData.preview ? 96 : 66
                             radius: 12
                             color: root.searchService.selectedIndex === index ? Theme.primaryContainer : resultArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
-                            Behavior on color { QsColorAnimation {} }
+                            Behavior on color {
+                                QsColorAnimation {}
+                            }
 
                             RowLayout {
                                 anchors.fill: parent

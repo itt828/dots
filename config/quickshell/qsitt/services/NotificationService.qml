@@ -20,7 +20,6 @@ Item {
         onNotification: notification => {
             notification.tracked = true;
             console.log("Notification received:", notification.appName, notification.summary, "Icon:", notification.icon, "Image:", notification.image);
-            // Add to beginning of history
             root.history.insert(0, {
                 "notificationObj": notification,
                 "appName": notification.appName || "System",

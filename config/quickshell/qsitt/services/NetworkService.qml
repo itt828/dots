@@ -17,8 +17,7 @@ QtObject {
         return null;
     }
 
-    readonly property var availableNetworks: wifiAdapter && wifiAdapter.networks
-        ? wifiAdapter.networks.values : []
+    readonly property var availableNetworks: wifiAdapter && wifiAdapter.networks ? wifiAdapter.networks.values : []
 
     readonly property var wiredDevice: {
         for (var i = 0; i < 20; i++) {

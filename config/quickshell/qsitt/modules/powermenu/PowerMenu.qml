@@ -17,8 +17,6 @@ Scope {
             id: powerMenuWindow
             required property var modelData
             screen: modelData
-
-            // Item.visible inherits the window's visibility; use popup state instead.
             visible: menuContent.shown || menuContent.reveal > 0
             mask: Region {
                 item: menuContent.shown ? powerMenuWindow.contentItem : null
@@ -109,5 +107,4 @@ Scope {
             }
         }
     }
-
 }

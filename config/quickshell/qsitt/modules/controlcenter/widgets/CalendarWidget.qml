@@ -37,7 +37,7 @@ Rectangle {
                 spacing: 1
 
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     text: Qt.formatDate(root.currentDate, "dddd")
                     color: Theme.textSecondary
                     font.pixelSize: Theme.fontSizeSmall
@@ -45,7 +45,7 @@ Rectangle {
                 }
 
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     text: Qt.formatDate(root.currentDate, "MMMM d")
                     color: Theme.text
                     font.pixelSize: 26
@@ -53,7 +53,9 @@ Rectangle {
                 }
             }
 
-            Item { Layout.fillWidth: true }
+            Item {
+                Layout.fillWidth: true
+            }
 
             Rectangle {
                 implicitWidth: monthLabel.implicitWidth + 24
@@ -62,8 +64,8 @@ Rectangle {
                 color: Theme.primaryContainer
 
                 Text {
-            font.family: Theme.fontFamily
                     id: monthLabel
+                    font.family: Theme.fontFamily
                     anchors.centerIn: parent
                     text: Qt.formatDate(root.currentDate, "MMMM yyyy")
                     color: Theme.primary
@@ -85,7 +87,7 @@ Rectangle {
                 model: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
                 delegate: Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     required property string modelData
 
                     Layout.fillWidth: true
@@ -133,7 +135,7 @@ Rectangle {
                     color: isToday ? Theme.primary : dayArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
 
                     Text {
-            font.family: Theme.fontFamily
+                        font.family: Theme.fontFamily
                         anchors.centerIn: parent
                         text: parent.index + 1
                         color: parent.isToday ? Theme.primaryText : Theme.text

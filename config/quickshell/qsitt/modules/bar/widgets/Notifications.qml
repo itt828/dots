@@ -11,9 +11,15 @@ Rectangle {
     height: implicitHeight
     radius: height / 2
     color: Theme.surfaceContainerHigh
-    Behavior on color { QsColorAnimation {} }
+    Behavior on color {
+        QsColorAnimation {}
+    }
     scale: area.pressed ? 0.94 : 1
-    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on scale {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
 
     required property var notificationService
 
@@ -29,7 +35,6 @@ Rectangle {
         }
     }
 
-    // Monitor history count changes
     property int lastCount: notificationService.history.count
     onLastCountChanged: {
         highlight.flash();
@@ -40,13 +45,15 @@ Rectangle {
         anchors.centerIn: parent
         icon: notificationService.dnd ? Icons.bellSlash : (notificationService.history.count > 0 ? Icons.bellRinging : Icons.bell)
         text: notificationService.history.count.toString()
-
     }
 
     MouseArea {
         id: area
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: { ControlCenterService.visible = false; notificationService.panelVisible = !notificationService.panelVisible; }
+        onClicked: {
+            ControlCenterService.visible = false;
+            notificationService.panelVisible = !notificationService.panelVisible;
+        }
     }
 }

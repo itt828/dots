@@ -25,9 +25,6 @@ Item {
                 if (!line)
                     return;
 
-                // Use print for more reliable console output in some environments
-                // print("[NiriService] Raw:", line);
-
                 try {
                     const event = JSON.parse(line);
                     if (event.WorkspacesChanged) {

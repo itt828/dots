@@ -150,8 +150,14 @@ Scope {
                             radius: 17
                             color: closeArea.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
                             scale: closeArea.pressed ? 0.9 : 1
-                            Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
-                            Behavior on color { QsColorAnimation {} }
+                            Behavior on scale {
+                                QsNumberAnimation {
+                                    duration: Theme.motionFast
+                                }
+                            }
+                            Behavior on color {
+                                QsColorAnimation {}
+                            }
 
                             QsIcon {
                                 anchors.centerIn: parent
@@ -198,11 +204,23 @@ Scope {
                         Layout.fillHeight: true
                         currentIndex: controlCenterWindow.currentPage === 0 ? 0 : controlCenterWindow.currentPage - 3
                         onCurrentIndexChanged: pageAnimation.restart()
-                        transform: Translate { id: pageOffset }
+                        transform: Translate {
+                            id: pageOffset
+                        }
                         ParallelAnimation {
                             id: pageAnimation
-                            QsNumberAnimation { target: pageStack; property: "opacity"; from: 0; to: 1 }
-                            QsNumberAnimation { target: pageOffset; property: "x"; from: 12; to: 0 }
+                            QsNumberAnimation {
+                                target: pageStack
+                                property: "opacity"
+                                from: 0
+                                to: 1
+                            }
+                            QsNumberAnimation {
+                                target: pageOffset
+                                property: "x"
+                                from: 12
+                                to: 0
+                            }
                         }
                         Flickable {
                             clip: true

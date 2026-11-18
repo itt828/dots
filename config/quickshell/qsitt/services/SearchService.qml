@@ -21,7 +21,9 @@ QtObject {
     property string _activeCategory: ""
     property string _response: ""
 
-    function refresh(): void { refreshTimer.restart(); }
+    function refresh(): void {
+        refreshTimer.restart();
+    }
 
     function open(): void {
         visible = false;
@@ -41,7 +43,10 @@ QtObject {
     }
 
     function toggle(): void {
-        if (visible || _opening) close(); else open();
+        if (visible || _opening)
+            close();
+        else
+            open();
     }
 
     function setCategory(value: string): void {
@@ -51,8 +56,10 @@ QtObject {
     }
 
     function submit(): void {
-        if (results.length > 0) activate(results[Math.min(selectedIndex, results.length - 1)]);
-        else if (query.trim()) searchWeb(query.trim());
+        if (results.length > 0)
+            activate(results[Math.min(selectedIndex, results.length - 1)]);
+        else if (query.trim())
+            searchWeb(query.trim());
     }
 
     function searchWeb(value: string): void {
@@ -62,32 +69,53 @@ QtObject {
     }
 
     function activate(item: var): void {
-        if (!item) return;
-        if (item.kind === "web") { searchWeb(item.value); return; }
-        if (item.kind === "lens") { startLensSelection(); return; }
+        if (!item)
+            return;
+        if (item.kind === "web") {
+            searchWeb(item.value);
+            return;
+        }
+        if (item.kind === "lens") {
+            startLensSelection();
+            return;
+        }
         if (item.kind === "app") {
             _actionProcess.arguments = ["launch", item.value];
             _actionProcess.running = true;
             close();
             return;
         }
-        if (item.kind === "file") _actionProcess.arguments = ["open", item.value];
-        else if (item.kind === "clipboard" || item.kind === "clipboard-image" || item.kind === "clipboard-file") _actionProcess.arguments = ["clipboard", "copy", item.value];
+        if (item.kind === "file")
+            _actionProcess.arguments = ["open", item.value];
+        else if (item.kind === "clipboard" || item.kind === "clipboard-image" || item.kind === "clipboard-file")
+            _actionProcess.arguments = ["clipboard", "copy", item.value];
         else if (item.kind === "tool") {
-            if (item.value === "lens") { startLensSelection(); return; }
+            if (item.value === "lens") {
+                startLensSelection();
+                return;
+            }
             if (item.value === "control-center" || item.value === "notifications") {
                 ControlCenterService.requestedPage = 0;
                 ControlCenterService.visible = item.value === "control-center";
                 NotificationService.panelVisible = item.value === "notifications";
+            } else if (item.value === "qr")
+                ControlCenterService.startQrSelection();
+            else if (item.value === "color")
+                ControlCenterService.pickColor();
+            else if (item.value === "lock")
+                PowerService.lock();
+            else if (item.value === "suspend")
+                PowerService.suspend();
+            else if (item.value === "screenshot")
+                _actionProcess.arguments = ["niri", "screenshot"];
+            else
+                return;
+            if (item.value !== "screenshot") {
+                close();
+                return;
             }
-            else if (item.value === "qr") ControlCenterService.startQrSelection();
-            else if (item.value === "color") ControlCenterService.pickColor();
-            else if (item.value === "lock") PowerService.lock();
-            else if (item.value === "suspend") PowerService.suspend();
-            else if (item.value === "screenshot") _actionProcess.arguments = ["niri", "screenshot"];
-            else return;
-            if (item.value !== "screenshot") { close(); return; }
-        } else return;
+        } else
+            return;
         _actionProcess.running = true;
         close();
     }
@@ -97,7 +125,8 @@ QtObject {
     }
 
     function startLensSelection(): void {
-        if (lensSelecting || lensBusy) return;
+        if (lensSelecting || lensBusy)
+            return;
         close();
         lensSelecting = true;
     }
@@ -108,7 +137,9 @@ QtObject {
         lensBusy = true;
     }
 
-    function cancelLensSelection(): void { lensSelecting = false; }
+    function cancelLensSelection(): void {
+        lensSelecting = false;
+    }
 
     readonly property BackendProcess _focusedOutputProcess: BackendProcess {
         arguments: ["niri", "focused-output"]
@@ -123,7 +154,8 @@ QtObject {
             }
         }
         onExited: {
-            if (!root._opening) return;
+            if (!root._opening)
+                return;
             if (!root.focusedOutputName && Quickshell.screens.length > 0)
                 root.focusedOutputName = Quickshell.screens[0].name;
             root._opening = false;
@@ -135,7 +167,8 @@ QtObject {
     readonly property Timer refreshTimer: Timer {
         interval: 100
         onTriggered: {
-            if (root._queryProcess.running) return;
+            if (root._queryProcess.running)
+                return;
             root._activeQuery = root.query;
             root._activeCategory = root.category;
             root._response = "";
@@ -149,7 +182,8 @@ QtObject {
             onStreamFinished: root._response = text
         }
         onExited: {
-            if (!root.visible) return;
+            if (!root.visible)
+                return;
             if (root._activeQuery !== root.query || root._activeCategory !== root.category) {
                 root.refresh();
                 return;
@@ -175,7 +209,8 @@ QtObject {
         running: true
         repeat: true
         onTriggered: {
-            if (!root._indexProcess.running) root._indexProcess.running = true;
+            if (!root._indexProcess.running)
+                root._indexProcess.running = true;
         }
     }
 
@@ -200,9 +235,12 @@ QtObject {
     readonly property Timer _watchRestart: Timer {
         interval: 3000
         onTriggered: {
-            if (!root._clipboardWatcher.running) root._clipboardWatcher.running = true;
-            if (!root._imageWatcher.running) root._imageWatcher.running = true;
-            if (!root._fileWatcher.running) root._fileWatcher.running = true;
+            if (!root._clipboardWatcher.running)
+                root._clipboardWatcher.running = true;
+            if (!root._imageWatcher.running)
+                root._imageWatcher.running = true;
+            if (!root._fileWatcher.running)
+                root._fileWatcher.running = true;
         }
     }
 

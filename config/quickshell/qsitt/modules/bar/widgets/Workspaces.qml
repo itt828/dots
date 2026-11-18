@@ -55,8 +55,8 @@ Item {
                 implicitHeight: 16
 
                 Text {
-            font.family: Theme.fontFamily
                     id: separator
+                    font.family: Theme.fontFamily
                     anchors.centerIn: parent
                     visible: modelData.separator === true
                     text: "|"
@@ -68,7 +68,9 @@ Item {
                     visible: !modelData.separator
                     radius: 2
                     scale: workspaceArea.pressed ? 0.85 : workspace && workspace.is_focused ? 1.1 : 1
-                    Behavior on scale { QsNumberAnimation {} }
+                    Behavior on scale {
+                        QsNumberAnimation {}
+                    }
                     color: {
                         if (!workspace)
                             return Theme.surfaceVariant;
@@ -82,7 +84,9 @@ Item {
                     }
 
                     Behavior on color {
-                        QsColorAnimation { duration: Theme.motionNormal }
+                        QsColorAnimation {
+                            duration: Theme.motionNormal
+                        }
                     }
 
                     MouseArea {
@@ -96,5 +100,4 @@ Item {
             }
         }
     }
-
 }

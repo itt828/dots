@@ -8,29 +8,50 @@ import Quickshell.Io
 QtObject {
     id: root
 
-    // Palette files define colors; selected palette and mode live in XDG state.
     readonly property var availablePalettes: detectedPalettes.map(name => ({
-        "name": name,
-        "label": paletteLabel(name)
-    }))
+                "name": name,
+                "label": paletteLabel(name)
+            }))
     readonly property var availableModes: ["light", "dark"]
 
     readonly property var fallbackPalette: ({
-        "light": {
-            "background": "#eef2f5", "surface": "#ffffff", "surfaceVariant": "#e8eef2",
-            "surfaceContainerLow": "#eaf6fc", "surfaceContainer": "#f6f8fa", "surfaceContainerHigh": "#e1e8ed",
-            "primary": "#0078d4", "primaryContainer": "#d8ebff", "primaryText": "#ffffff",
-            "text": "#000000", "textSecondary": "#52616b", "outline": "#bcc8cf", "outlineVariant": "#6f8792",
-            "accent": "#0078d4", "danger": "#ff6b6b", "success": "#00aa00"
-        },
-        "dark": {
-            "background": "#11181c", "surface": "#182126", "surfaceVariant": "#222d33",
-            "surfaceContainerLow": "#172329", "surfaceContainer": "#1d272c", "surfaceContainerHigh": "#2a373e",
-            "primary": "#62b5f5", "primaryContainer": "#173f59", "primaryText": "#081218",
-            "text": "#edf4f7", "textSecondary": "#a9bac3", "outline": "#485961", "outlineVariant": "#526872",
-            "accent": "#72c2ff", "danger": "#ff8a8a", "success": "#6bd58b"
-        }
-    })
+            "light": {
+                "background": "#eef2f5",
+                "surface": "#ffffff",
+                "surfaceVariant": "#e8eef2",
+                "surfaceContainerLow": "#eaf6fc",
+                "surfaceContainer": "#f6f8fa",
+                "surfaceContainerHigh": "#e1e8ed",
+                "primary": "#0078d4",
+                "primaryContainer": "#d8ebff",
+                "primaryText": "#ffffff",
+                "text": "#000000",
+                "textSecondary": "#52616b",
+                "outline": "#bcc8cf",
+                "outlineVariant": "#6f8792",
+                "accent": "#0078d4",
+                "danger": "#ff6b6b",
+                "success": "#00aa00"
+            },
+            "dark": {
+                "background": "#11181c",
+                "surface": "#182126",
+                "surfaceVariant": "#222d33",
+                "surfaceContainerLow": "#172329",
+                "surfaceContainer": "#1d272c",
+                "surfaceContainerHigh": "#2a373e",
+                "primary": "#62b5f5",
+                "primaryContainer": "#173f59",
+                "primaryText": "#081218",
+                "text": "#edf4f7",
+                "textSecondary": "#a9bac3",
+                "outline": "#485961",
+                "outlineVariant": "#526872",
+                "accent": "#72c2ff",
+                "danger": "#ff8a8a",
+                "success": "#6bd58b"
+            }
+        })
 
     property string configuredPalette: "qsitt"
     property string configuredMode: "light"
@@ -152,11 +173,17 @@ QtObject {
             else if (assignment[1] === "mode")
                 mode = tomlValue(assignment[2]);
         }
-        return { palette: palette.trim().toLowerCase(), mode: mode.trim().toLowerCase() };
+        return {
+            palette: palette.trim().toLowerCase(),
+            mode: mode.trim().toLowerCase()
+        };
     }
 
     function loadPalette(content: string): void {
-        const parsed = { "light": {}, "dark": {} };
+        const parsed = {
+            "light": {},
+            "dark": {}
+        };
         let section = "";
 
         for (const rawLine of content.split(/\r?\n/)) {
@@ -194,7 +221,9 @@ QtObject {
 
     readonly property Connections legacyConnection: Connections {
         target: LegacyConfig
-        function onReadyChanged(): void { root.finishLoad(); }
+        function onReadyChanged(): void {
+            root.finishLoad();
+        }
     }
 
     readonly property BackendProcess paletteLoader: BackendProcess {

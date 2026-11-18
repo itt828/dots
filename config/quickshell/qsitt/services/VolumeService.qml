@@ -10,7 +10,6 @@ QtObject {
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property var source: Pipewire.defaultAudioSource
 
-    // Track objects to ensure properties are updated instantly
     property var tracker: PwObjectTracker {
         objects: {
             let objs = [];

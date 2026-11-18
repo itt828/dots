@@ -14,7 +14,8 @@ QtObject {
         arguments: ["metrics", "cpu"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (!text.trim()) return;
+                if (!text.trim())
+                    return;
                 try {
                     const state = JSON.parse(text);
                     root.usage = state.usage;

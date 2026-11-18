@@ -23,7 +23,6 @@ Rectangle {
         anchors.margins: 0
         spacing: Theme.spacing
 
-        // Header
         RowLayout {
             Layout.fillWidth: true
             Text {
@@ -41,7 +40,6 @@ Rectangle {
             }
         }
 
-        // List
         ListView {
             id: list
             Layout.fillWidth: true
@@ -50,13 +48,23 @@ Rectangle {
             spacing: 8
             model: root.notificationService.history
             add: Transition {
-                QsNumberAnimation { property: "opacity"; from: 0; to: 1 }
+                QsNumberAnimation {
+                    property: "opacity"
+                    from: 0
+                    to: 1
+                }
             }
             remove: Transition {
-                QsNumberAnimation { property: "opacity"; to: 0; duration: Theme.motionExit }
+                QsNumberAnimation {
+                    property: "opacity"
+                    to: 0
+                    duration: Theme.motionExit
+                }
             }
             displaced: Transition {
-                QsNumberAnimation { properties: "x,y" }
+                QsNumberAnimation {
+                    properties: "x,y"
+                }
             }
 
             delegate: NotificationPopup {
@@ -73,13 +81,8 @@ Rectangle {
                 isPopup: false // Full view in history
 
                 onClosed: root.notificationService.dismiss(index)
-
-                // Add a close button logic for history items if needed,
-                // NotificationPopup has a close button but it closes the notification object.
-                // We might want to just remove from history or close.
             }
 
-            // Empty State
             Text {
                 font.family: Theme.fontFamily
                 anchors.centerIn: parent

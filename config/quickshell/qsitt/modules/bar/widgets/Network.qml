@@ -11,9 +11,15 @@ Rectangle {
     height: implicitHeight
     radius: height / 2
     color: Theme.surfaceContainerHigh
-    Behavior on color { QsColorAnimation {} }
+    Behavior on color {
+        QsColorAnimation {}
+    }
     scale: area.pressed ? 0.96 : 1
-    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
+    Behavior on scale {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
 
     required property var networkService
 
@@ -54,5 +60,14 @@ Rectangle {
 
         color: networkService.isConnected ? Theme.text : Theme.textSecondary
     }
-    MouseArea { id: area; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: { ControlCenterService.requestedPage = 5; NotificationService.panelVisible = false; ControlCenterService.visible = true; } }
+    MouseArea {
+        id: area
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+            ControlCenterService.requestedPage = 5;
+            NotificationService.panelVisible = false;
+            ControlCenterService.visible = true;
+        }
+    }
 }

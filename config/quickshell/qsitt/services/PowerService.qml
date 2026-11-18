@@ -36,8 +36,16 @@ QtObject {
         _logoutProcess.running = true;
     }
 
-    readonly property BackendProcess _shutdownProcess: BackendProcess { arguments: ["power", "poweroff"] }
-    readonly property BackendProcess _rebootProcess: BackendProcess { arguments: ["power", "reboot"] }
-    readonly property BackendProcess _suspendProcess: BackendProcess { arguments: ["power", "suspend"] }
-    readonly property BackendProcess _logoutProcess: BackendProcess { arguments: ["power", "logout"] }
+    readonly property BackendProcess _shutdownProcess: BackendProcess {
+        arguments: ["power", "poweroff"]
+    }
+    readonly property BackendProcess _rebootProcess: BackendProcess {
+        arguments: ["power", "reboot"]
+    }
+    readonly property BackendProcess _suspendProcess: BackendProcess {
+        arguments: ["power", "suspend"]
+    }
+    readonly property BackendProcess _logoutProcess: BackendProcess {
+        arguments: ["power", "logout"]
+    }
 }

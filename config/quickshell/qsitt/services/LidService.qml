@@ -128,7 +128,8 @@ QtObject {
         arguments: ["lid", "get"]
         stdout: StdioCollector {
             onStreamFinished: {
-                if (!text.trim() || root.stateKnown) return;
+                if (!text.trim() || root.stateKnown)
+                    return;
                 try {
                     root.updateLidState(JSON.parse(text).closed);
                 } catch (error) {
@@ -164,5 +165,4 @@ QtObject {
             root.monitor.running = true;
         }
     }
-
 }

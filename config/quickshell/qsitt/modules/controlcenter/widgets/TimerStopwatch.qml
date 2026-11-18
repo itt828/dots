@@ -54,7 +54,7 @@ ColumnLayout {
                 Layout.fillWidth: true
 
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     text: "タイマー"
                     color: Theme.text
                     font.bold: true
@@ -63,7 +63,7 @@ ColumnLayout {
                     Layout.fillWidth: true
                 }
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     text: root.formatTime(root.timerRemaining)
                     color: root.timerRunning ? Theme.accent : Theme.text
                     font.bold: true
@@ -84,7 +84,7 @@ ColumnLayout {
                         radius: 6
                         color: !root.timerRunning && root.timerDuration === modelData * 60 ? Theme.primaryContainer : Theme.surfaceVariant
                         Text {
-            font.family: Theme.fontFamily
+                            font.family: Theme.fontFamily
                             anchors.centerIn: parent
                             text: modelData + "分"
                             color: Theme.text
@@ -104,7 +104,7 @@ ColumnLayout {
                     radius: 6
                     color: root.timerRunning ? "#ffcdd2" : "#c8e6c9"
                     Text {
-            font.family: Theme.fontFamily
+                        font.family: Theme.fontFamily
                         anchors.centerIn: parent
                         text: root.timerRunning ? "停止" : (root.timerRemaining < root.timerDuration ? "再開" : "開始")
                         color: Theme.text
@@ -149,13 +149,13 @@ ColumnLayout {
                 Layout.fillWidth: true
                 spacing: 2
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     text: "ストップウォッチ"
                     color: Theme.text
                     font.bold: true
                 }
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     text: root.formatTime(root.stopwatchAccumulated / 1000)
                     color: root.stopwatchRunning ? Theme.accent : Theme.text
                     font.bold: true
@@ -169,7 +169,7 @@ ColumnLayout {
                 radius: 6
                 color: root.stopwatchRunning ? "#ffcdd2" : "#c8e6c9"
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     anchors.centerIn: parent
                     text: root.stopwatchRunning ? "停止" : "開始"
                     color: Theme.text
@@ -195,7 +195,7 @@ ColumnLayout {
                 radius: 6
                 color: Theme.surfaceVariant
                 Text {
-            font.family: Theme.fontFamily
+                    font.family: Theme.fontFamily
                     anchors.centerIn: parent
                     text: "リセット"
                     color: Theme.text
@@ -232,5 +232,4 @@ ColumnLayout {
                 root.stopwatchStartedAt = now;
         }
     }
-
 }
