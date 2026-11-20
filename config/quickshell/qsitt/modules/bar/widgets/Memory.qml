@@ -15,10 +15,10 @@ Item {
     QsBarValue {
         id: display
         value: memoryService.usage
-        iconName: Icons.memory
+        iconName: Icons.ram
         showLabel: true
         labelText: memoryService.label
-        progressColor: Theme.text
-        trackColor: Theme.outline
+        progressColor: Theme.textPrimary
+        trackColor: Theme.border
     }
 }

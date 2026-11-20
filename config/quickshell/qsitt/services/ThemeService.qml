@@ -12,45 +12,108 @@ QtObject {
                 "name": name,
                 "label": paletteLabel(name)
             }))
-    readonly property var availableModes: ["light", "dark"]
+    readonly property var availableModes: ["light", "dark", "auto"]
 
     readonly property var fallbackPalette: ({
             "light": {
-                "background": "#eef2f5",
-                "surface": "#ffffff",
-                "surfaceVariant": "#e8eef2",
-                "surfaceContainerLow": "#eaf6fc",
-                "surfaceContainer": "#f6f8fa",
-                "surfaceContainerHigh": "#e1e8ed",
-                "primary": "#0078d4",
-                "primaryContainer": "#d8ebff",
-                "primaryText": "#ffffff",
-                "text": "#000000",
-                "textSecondary": "#52616b",
-                "outline": "#bcc8cf",
-                "outlineVariant": "#6f8792",
-                "accent": "#0078d4",
-                "danger": "#ff6b6b",
-                "success": "#00aa00"
+                "bg-primary": "#fcfaf6",
+                "bg-secondary": "#ffffff",
+                "bg-tertiary": "#f6f3ec",
+                "text-primary": "#24211c",
+                "text-secondary": "#615d54",
+                "border-primary": "#e8e4dd",
+                "accent": "#e3cfa5",
+                "success": "#258343",
+                "warn": "#9a5f1a",
+                "status/error": "#ba3e3c",
+                "info": "#346fb8",
+                "surface": "#fcfaf6",
+                "ink": "#252a32",
+                "muted": "#626975",
+                "border": "#b3b9c2",
+                "subtle": "#f5f6f8",
+                "hover": "#eceef1",
+                "pressed": "#dce0e5",
+                "focus": "#8b5b25",
+                "disabled": "#e7e9ed",
+                "disabled-ink": "#747b86",
+                "accent-hover": "#dcab72",
+                "accent-pressed": "#cc985d",
+                "error": "#af303a",
+                "error-hover": "#982832",
+                "error-pressed": "#7d2029",
+                "error-surface": "#fff3f3",
+                "mustard/50": "#faf5e6",
+                "mustard/200": "#f1dfa7",
+                "mustard/500": "#b99a43",
+                "mustard/800": "#725a19",
+                "canvas/warm": "#e9e4da",
+                "shadow": "#1f332914"
             },
             "dark": {
-                "background": "#11181c",
-                "surface": "#182126",
-                "surfaceVariant": "#222d33",
-                "surfaceContainerLow": "#172329",
-                "surfaceContainer": "#1d272c",
-                "surfaceContainerHigh": "#2a373e",
-                "primary": "#62b5f5",
-                "primaryContainer": "#173f59",
-                "primaryText": "#081218",
-                "text": "#edf4f7",
-                "textSecondary": "#a9bac3",
-                "outline": "#485961",
-                "outlineVariant": "#526872",
-                "accent": "#72c2ff",
-                "danger": "#ff8a8a",
-                "success": "#6bd58b"
+                "bg-primary": "#16130b",
+                "bg-secondary": "#231f17",
+                "bg-tertiary": "#231f17",
+                "text-primary": "#eae1d4",
+                "text-secondary": "#cfc5b4",
+                "border-primary": "#4c4639",
+                "accent": "#785e26",
+                "success": "#aecfac",
+                "warn": "#ffc780",
+                "status/error": "#ffb4ab",
+                "info": "#a6c8ff",
+                "surface": "#16130b",
+                "ink": "#eae1d4",
+                "muted": "#cfc5b4",
+                "border": "#989080",
+                "subtle": "#2e2921",
+                "hover": "#393329",
+                "pressed": "#4c4639",
+                "focus": "#edca78",
+                "disabled": "#332e24",
+                "disabled-ink": "#ada392",
+                "accent-hover": "#876c30",
+                "accent-pressed": "#956f31",
+                "error": "#ffb4ab",
+                "error-hover": "#ff9b90",
+                "error-pressed": "#ff8579",
+                "error-surface": "#461d1b",
+                "mustard/50": "#211c10",
+                "mustard/200": "#594400",
+                "mustard/500": "#b99a43",
+                "mustard/800": "#e5c36c",
+                "canvas/warm": "#1f1b13",
+                "shadow": "#60000000"
             }
+        })
+
+    readonly property var legacyColorKeys: ({
+            "bg-primary": "background",
+            "bg-secondary": "surface",
+            "bg-tertiary": "surfaceContainer",
+            "text-primary": "text",
+            "text-secondary": "textSecondary",
+            "border-primary": "outlineVariant",
+            "status/error": "danger",
+            "ink": "text",
+            "muted": "textSecondary",
+            "border": "outline",
+            "subtle": "surfaceContainer",
+            "hover": "surfaceContainerHigh",
+            "pressed": "surfaceVariant",
+            "focus": "primary",
+            "disabled": "surfaceVariant",
+            "disabled-ink": "textSecondary",
+            "accent-hover": "primaryContainer",
+            "accent-pressed": "primaryContainer",
+            "error": "danger",
+            "error-hover": "danger",
+            "error-pressed": "danger",
+            "mustard/50": "surfaceContainerLow",
+            "mustard/200": "primaryContainer",
+            "mustard/500": "accent",
+            "mustard/800": "primary",
+            "canvas/warm": "background"
         })
 
     property string configuredPalette: "qsitt"
@@ -66,7 +129,10 @@ QtObject {
     property string savedMode: ""
 
     readonly property string currentPalette: hasPalette(configuredPalette) ? configuredPalette : (detectedPalettes.length > 0 ? detectedPalettes[0] : "qsitt")
-    readonly property string currentMode: availableModes.includes(configuredMode) ? configuredMode : "light"
+    readonly property SystemClock clock: SystemClock {
+        precision: SystemClock.Minutes
+    }
+    readonly property string currentMode: configuredMode === "auto" ? (clock.date.getHours() >= 18 || clock.date.getHours() < 6 ? "dark" : "light") : configuredMode === "dark" ? "dark" : "light"
     readonly property string currentName: currentPalette + "-" + currentMode
     readonly property var current: paletteData[currentMode] ?? fallbackPalette[currentMode]
 
@@ -195,15 +261,29 @@ QtObject {
             }
             if ((section !== "light" && section !== "dark") || line === "")
                 continue;
-            const assignment = line.match(/^([A-Za-z0-9_-]+)\s*=\s*(.+)$/);
-            if (assignment)
-                parsed[section][assignment[1]] = tomlValue(assignment[2]);
+            const assignment = line.match(/^(?:"([a-zA-Z0-9_/-]+)"|'([a-zA-Z0-9_/-]+)'|([a-zA-Z0-9_-]+))\s*=\s*(.+)$/);
+            if (!assignment)
+                continue;
+            const key = assignment[1] ?? assignment[2] ?? assignment[3];
+            const value = tomlValue(assignment[4]);
+            if (/^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value))
+                parsed[section][key] = value;
         }
 
         paletteData = {
-            "light": Object.assign({}, fallbackPalette.light, parsed.light),
-            "dark": Object.assign({}, fallbackPalette.dark, parsed.dark)
+            "light": resolveColors("light", parsed.light),
+            "dark": resolveColors("dark", parsed.dark)
         };
+    }
+
+    function resolveColors(mode: string, colors: var): var {
+        const defaults = fallbackPalette[mode];
+        const resolved = {};
+        for (const key of Object.keys(defaults)) {
+            const oldKey = legacyColorKeys[key];
+            resolved[key] = colors[key] ?? (oldKey ? colors[oldKey] : undefined) ?? defaults[key];
+        }
+        return resolved;
     }
 
     function finishLoad(): void {

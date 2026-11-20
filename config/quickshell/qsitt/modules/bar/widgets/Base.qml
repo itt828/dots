@@ -1,21 +1,24 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.ui.widgets
 import qs.ui.theme
 
 Rectangle {
     id: root
 
-    default property alias content: layout.data
     property alias leftContent: leftLayout.data
     property alias centerContent: centerLayout.data
+    property alias centerTrailingContent: centerTrailing.data
     property alias rightContent: rightLayout.data
 
-    color: Theme.glassBar
-    border.color: Theme.glassOutline
-    border.width: Theme.barBorderWidth
-    Behavior on color { QsColorAnimation {} }
-    Behavior on border.color { QsColorAnimation {} }
+    readonly property real centerTrailingWidth: centerTrailing.implicitWidth
+    readonly property real rightWidth: rightLayout.implicitWidth
+    readonly property int padding: 8
+    color: Theme.surface
+    radius: Theme.barRadius
+    topLeftRadius: 0
+    topRightRadius: 0
+    border.color: Theme.borderPrimary
+    border.width: 1
 
     anchors {
         top: parent.top
@@ -27,47 +30,43 @@ Rectangle {
 
     implicitHeight: Theme.barHeight
 
-    radius: 14
-    topLeftRadius: 0
-    topRightRadius: 0
+    Behavior on color {
+        ColorAnimation {
+            duration: Theme.motionFast
+        }
+    }
 
     RowLayout {
-        id: layout
+        id: leftLayout
         anchors {
-            fill: parent
-            leftMargin: Theme.barHorizontalPadding
-            rightMargin: Theme.barHorizontalPadding
-            topMargin: 0
-            bottomMargin: 0
+            left: parent.left
+            leftMargin: root.padding
+            right: centerLayout.implicitWidth > 0 ? centerLayout.left : centerTrailing.left
+            rightMargin: 8
+            verticalCenter: parent.verticalCenter
         }
-        spacing: Theme.barSectionSpacing
+        spacing: 8
+    }
 
-        Item {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            RowLayout {
-                id: leftLayout
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Theme.barSectionSpacing
-            }
-        }
+    RowLayout {
+        id: centerLayout
+        anchors.centerIn: parent
+    }
 
-        RowLayout {
-            id: centerLayout
-            Layout.alignment: Qt.AlignCenter
-            spacing: Theme.barSectionSpacing
-        }
+    RowLayout {
+        id: centerTrailing
 
-        Item {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            RowLayout {
-                id: rightLayout
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: Theme.barSectionSpacing
-            }
+        x: centerLayout.implicitWidth > 0 ? centerLayout.x + centerLayout.width + 8 : (root.width - width) / 2
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+    RowLayout {
+        id: rightLayout
+        anchors {
+            right: parent.right
+            rightMargin: root.padding
+            verticalCenter: parent.verticalCenter
         }
+        spacing: 0
     }
 }

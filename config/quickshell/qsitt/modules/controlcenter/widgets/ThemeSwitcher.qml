@@ -10,7 +10,7 @@ ColumnLayout {
 
     Text {
         text: "表示モード"
-        color: Theme.text
+        color: Theme.textPrimary
         font.family: Theme.fontFamily
         font.bold: true
         font.pixelSize: Theme.fontSizeBody
@@ -27,8 +27,15 @@ ColumnLayout {
                 required property string modelData
 
                 Layout.fillWidth: true
-                text: modelData === "light" ? "Light" : "Dark"
-                highlighted: ThemeService.currentMode === modelData
+                text: ({
+                        light: "ライト",
+                        dark: "ダーク",
+                        auto: "自動"
+                    })[modelData]
+                toolTip: modelData === "auto" ? "18:00〜6:00 はダーク" : ""
+                horizontalPadding: 6
+                labelSize: 12
+                highlighted: ThemeService.configuredMode === modelData
                 checkable: true
                 onClicked: ThemeService.setMode(modelData)
             }
@@ -38,7 +45,7 @@ ColumnLayout {
     Text {
         Layout.topMargin: Theme.spacing
         text: "テーマ"
-        color: Theme.text
+        color: Theme.textPrimary
         font.family: Theme.fontFamily
         font.bold: true
         font.pixelSize: Theme.fontSizeBody

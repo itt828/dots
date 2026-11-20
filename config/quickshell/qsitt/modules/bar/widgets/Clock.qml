@@ -1,27 +1,16 @@
 import QtQuick
 import Quickshell
 import qs.ui.theme
+import qs.ui.widgets
 
-Item {
-    id: root
-
-    implicitWidth: clockText.implicitWidth
-    implicitHeight: clockText.implicitHeight
-    width: implicitWidth
-    height: implicitHeight
+QsButton {
+    text: clock.date.toLocaleString(Qt.locale("ja_JP"), "M月d日（ddd） HH:mm")
+    variant: QsButton.Ghost
+    horizontalPadding: 8
+    toolTip: "カレンダー"
 
     SystemClock {
         id: clock
         precision: SystemClock.Minutes
-    }
-
-    Text {
-        id: clockText
-        color: Theme.text
-        font.family: Theme.fontFamily
-        font.pixelSize: Theme.fontSizeBody
-        font.weight: Font.DemiBold
-        anchors.fill: parent
-        text: Qt.formatDateTime(clock.date, "M/d ddd   HH:mm")
     }
 }

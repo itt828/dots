@@ -16,7 +16,8 @@ Rectangle {
     radius: cornerRadius
 
     function flash() {
-        flashAnim.restart();
+        if (Theme.motionEnabled)
+            flashAnim.restart();
     }
 
     SequentialAnimation on opacity {
@@ -24,11 +25,11 @@ Rectangle {
         running: false
         NumberAnimation {
             to: root.maxOpacity
-            duration: root.flashInDuration
+            duration: Math.round(root.flashInDuration * Theme.motionScale)
         }
         NumberAnimation {
             to: 0
-            duration: root.flashOutDuration
+            duration: Math.round(root.flashOutDuration * Theme.motionScale)
         }
     }
 }

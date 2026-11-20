@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -26,6 +27,12 @@ func (b *Backend) tool(ctx context.Context, args []string) error {
 			return b.run(ctx, nil, "notify-send", "タイマー", "設定した時間になりました", "-u", "critical")
 		case "color":
 			return b.pickColor(ctx)
+		case "record-path":
+			return b.recordPath(ctx)
+		case "appearance-capabilities":
+			_, wallpaper := exec.LookPath("awww")
+			_, night := exec.LookPath("wlsunset")
+			return b.json(map[string]bool{"wallpaper": wallpaper == nil, "night": night == nil})
 		}
 	}
 	if len(args) == 2 && geometryPattern.MatchString(args[1]) {
@@ -144,4 +151,27 @@ func (b *Backend) lens(ctx context.Context, geometry string) error {
 	case <-time.After(5 * time.Second):
 		return nil
 	}
+}
+
+func (b *Backend) recordPath(ctx context.Context) error {
+	if _, err := exec.LookPath("wf-recorder"); err != nil {
+		return err
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return err
+	}
+	directory := filepath.Join(home, "Videos")
+	if output, err := b.output(ctx, nil, "xdg-user-dir", "VIDEOS"); err == nil {
+		if configured := strings.TrimSpace(string(output)); filepath.IsAbs(configured) && filepath.Clean(configured) != filepath.Clean(home) {
+			directory = configured
+		}
+	}
+	directory = filepath.Join(directory, "Screencasts")
+	if err = os.MkdirAll(directory, 0700); err != nil {
+		return err
+	}
+	name := "Screencast-" + time.Now().Format("2006-01-02_15-04-05.000000000") + ".mkv"
+	_, err = fmt.Fprintln(b.Out, filepath.Join(directory, name))
+	return err
 }

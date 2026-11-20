@@ -5,15 +5,12 @@ import qs.ui.widgets
 
 Rectangle {
     id: root
-    implicitWidth: display.implicitWidth + 20
-    implicitHeight: 28
+    implicitWidth: display.implicitWidth + 16
+    implicitHeight: 36
     width: implicitWidth
     height: implicitHeight
-    radius: height / 2
-    color: Theme.surfaceContainerHigh
-    Behavior on color {
-        QsColorAnimation {}
-    }
+    radius: 8
+    color: "transparent"
     scale: area.pressed ? 0.96 : 1
     Behavior on scale {
         QsNumberAnimation {
@@ -21,17 +18,32 @@ Rectangle {
         }
     }
 
+    required property string outputName
     required property var networkService
+    property bool showLabel: true
+
+    HoverHandler {
+        id: statusHover
+    }
+
+    QsHoverBackground {
+        hovered: statusHover.hovered
+    }
 
     QsIconLabel {
         id: display
+        hoverBackground: false
+        hovered: statusHover.hovered
         anchors.centerIn: parent
+        maximumTextWidth: 92
         text: {
+            if (!root.showLabel)
+                return "";
             if (networkService.isConnected)
                 return networkService.connectionName;
             if (!networkService.isWifiEnabled)
-                return "Disabled";
-            return "Disconnected";
+                return "Wi-Fi オフ";
+            return "未接続";
         }
 
         icon: {
@@ -54,20 +66,16 @@ Rectangle {
             }
 
             if (!networkService.isWifiEnabled)
-                return Icons.power;
+                return Icons.wifiSlash;
             return Icons.wifiX;
         }
 
-        color: networkService.isConnected ? Theme.text : Theme.textSecondary
+        color: networkService.isConnected ? Theme.ink : Theme.muted
     }
     MouseArea {
         id: area
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            ControlCenterService.requestedPage = 5;
-            NotificationService.panelVisible = false;
-            ControlCenterService.visible = true;
-        }
+        onClicked: ControlCenterService.openPage(5, root.outputName)
     }
 }

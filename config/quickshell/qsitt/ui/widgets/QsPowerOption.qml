@@ -11,11 +11,14 @@ Rectangle {
 
     Layout.fillWidth: true
     height: 40
-    color: mouseArea.pressed ? Theme.primaryContainer : mouseArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+    color: mouseArea.pressed ? Theme.mustard200 : mouseArea.containsMouse ? Theme.hover : "transparent"
     radius: 6
     scale: mouseArea.pressed ? 0.97 : 1
-    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
-    Behavior on color { QsColorAnimation {} }
+    Behavior on scale {
+        QsNumberAnimation {
+            duration: Theme.motionFast
+        }
+    }
 
     RowLayout {
         anchors.fill: parent
@@ -32,7 +35,7 @@ Rectangle {
         Text {
             font.family: Theme.fontFamily
             text: root.text
-            color: Theme.text
+            color: Theme.textPrimary
             Layout.fillWidth: true
         }
     }

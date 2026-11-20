@@ -38,6 +38,8 @@ Scope {
     }
 
     function show(title, detail, icon, value, showLevel) {
+        if (ControlCenterService.visible)
+            return;
         root.title = title;
         root.detail = detail;
         root.icon = icon;
@@ -164,6 +166,8 @@ Scope {
                 id: osdContent
                 shown: root.active
                 transformOrigin: Item.Bottom
+                entryX: 0
+                entryY: 12
                 anchors.fill: parent
                 anchors.margins: Theme.windowShadowPadding
                 color: Theme.glassPopup
@@ -179,7 +183,7 @@ Scope {
                     QsIcon {
                         icon: root.icon
                         size: 28
-                        color: Theme.primary
+                        color: Theme.mustard800
                         Layout.preferredWidth: 32
                     }
 
@@ -196,7 +200,7 @@ Scope {
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontSizeBody
                                 font.bold: true
-                                color: Theme.text
+                                color: Theme.textPrimary
                             }
 
                             Item {
@@ -208,17 +212,16 @@ Scope {
                                 text: Math.round(root.value * 100) + "%"
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontSizeBody
-                                color: Theme.text
+                                color: Theme.textPrimary
                             }
                         }
 
-                        Text {
+                        QsMarqueeText {
                             visible: root.detail !== ""
                             text: root.detail
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSizeSmall
                             color: Theme.textSecondary
-                            elide: Text.ElideRight
                             Layout.fillWidth: true
                         }
 
@@ -227,7 +230,7 @@ Scope {
                             Layout.fillWidth: true
                             Layout.preferredHeight: 6
                             radius: 3
-                            color: Theme.surfaceVariant
+                            color: Theme.pressed
 
                             Rectangle {
                                 width: parent.width * Math.max(0, Math.min(1, root.value))
@@ -236,7 +239,7 @@ Scope {
                                 }
                                 height: parent.height
                                 radius: parent.radius
-                                color: Theme.primary
+                                color: Theme.mustard800
                             }
                         }
                     }

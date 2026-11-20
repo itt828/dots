@@ -89,7 +89,7 @@ func (b *Backend) state(args []string) error {
 				return errors.New("invalid palette name")
 			}
 		case "mode":
-			if value != "light" && value != "dark" {
+			if value != "light" && value != "dark" && value != "auto" {
 				return errors.New("invalid theme mode")
 			}
 		}

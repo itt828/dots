@@ -12,9 +12,7 @@ Scope {
         }
 
         function open(): string {
-            ControlCenterService.requestedPage = 0;
-            NotificationService.panelVisible = false;
-            ControlCenterService.visible = true;
+            ControlCenterService.openPage(0, "");
             return ControlCenterService.visible ? "visible" : "hidden";
         }
 

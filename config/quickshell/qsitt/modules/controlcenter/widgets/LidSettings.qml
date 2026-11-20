@@ -9,7 +9,7 @@ ColumnLayout {
 
     Text {
         text: "蓋を閉じたとき"
-        color: Theme.text
+        color: Theme.textPrimary
         font.family: Theme.fontFamily
         font.bold: true
     }
@@ -33,7 +33,7 @@ ColumnLayout {
                 Text {
                     Layout.fillWidth: true
                     text: "クラムシェルモード"
-                    color: Theme.text
+                    color: Theme.textPrimary
                     font.family: Theme.fontFamily
                     wrapMode: Text.Wrap
                 }

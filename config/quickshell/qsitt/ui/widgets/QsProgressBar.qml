@@ -3,18 +3,25 @@ import qs.ui.theme
 
 Rectangle {
     id: root
+    property int animationDuration: Theme.motionNormal
+    property int animationEasing: Easing.OutCubic
     property real from: 0
     property real to: 1
     property real value: 0
     implicitWidth: 160
     implicitHeight: 4
     radius: 2
-    color: Theme.surfaceContainerHigh
+    color: Theme.hover
     Rectangle {
         width: parent.width * Math.max(0, Math.min(1, (root.value - root.from) / (root.to - root.from || 1)))
-        Behavior on width { QsNumberAnimation {} }
+        Behavior on width {
+            QsNumberAnimation {
+                duration: root.animationDuration
+                easing.type: root.animationEasing
+            }
+        }
         height: parent.height
         radius: 2
-        color: Theme.primary
+        color: Theme.mustard800
     }
 }

@@ -6,6 +6,7 @@ Item {
     property real from: 0
     property real to: 1
     property real value: 0
+    readonly property int thumbSize: 16
     readonly property real fraction: Math.max(0, Math.min(1, (value - from) / (to - from || 1)))
     property real displayedFraction: fraction
     Behavior on displayedFraction {
@@ -16,41 +17,44 @@ Item {
     }
     signal moved(real value)
     implicitWidth: 160
-    implicitHeight: 36
+    implicitHeight: 24
     activeFocusOnTab: true
+    Accessible.role: Accessible.Slider
+    Accessible.onIncreaseAction: root.step(0.02)
+    Accessible.onDecreaseAction: root.step(-0.02)
     opacity: enabled ? 1 : 0.4
     Behavior on opacity {
         QsNumberAnimation {}
     }
     function setAt(x) {
-        moved(from + Math.max(0, Math.min(1, (x - 9) / Math.max(1, width - 18))) * (to - from));
+        moved(from + Math.max(0, Math.min(1, (x - thumbSize / 2) / Math.max(1, width - thumbSize))) * (to - from));
     }
     function step(delta) {
         moved(Math.max(from, Math.min(to, value + delta * (to - from))));
     }
     Rectangle {
         anchors.verticalCenter: parent.verticalCenter
-        x: 9
-        width: parent.width - 18
-        height: 6
-        radius: 3
-        color: Theme.surfaceContainerHigh
+        width: parent.width
+        height: 4
+        radius: 2
+        color: Theme.borderPrimary
         Rectangle {
-            width: parent.width * root.displayedFraction
+            width: root.thumbSize / 2 + (parent.width - root.thumbSize) * root.displayedFraction
+            visible: root.displayedFraction > 0
             height: parent.height
-            radius: 3
-            color: Theme.primary
+            radius: 2
+            color: Theme.mustard800
         }
     }
     Rectangle {
         x: root.displayedFraction * (root.width - width)
         anchors.verticalCenter: parent.verticalCenter
-        width: 18
-        height: 18
-        radius: 9
-        color: Theme.primary
-        border.width: root.activeFocus ? 3 : 0
-        border.color: Theme.text
+        width: root.thumbSize
+        height: width
+        radius: width / 2
+        color: Theme.mustard800
+        border.width: root.activeFocus ? 2 : 1
+        border.color: Theme.focus
         scale: area.pressed ? 1.18 : area.containsMouse ? 1.08 : 1
         Behavior on scale {
             QsNumberAnimation {

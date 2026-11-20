@@ -1,61 +1,104 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.ui.theme
-import qs.ui.widgets
 
 Rectangle {
     id: root
+
     required property string title
     required property string subtitle
-    required property string icon
+    property string icon: ""
     property bool active: false
+    property bool compact: false
     signal clicked
+
     Layout.fillWidth: true
     Layout.preferredWidth: 1
-    implicitHeight: 116
-    radius: 16
-    color: area.containsMouse ? Theme.surfaceContainerHigh : active ? Theme.primaryContainer : Theme.surfaceContainer
-    border.color: active ? Theme.withAlpha(Theme.primary, 0.3) : Theme.outlineVariant
-    border.width: 1
-    scale: area.pressed ? 0.97 : 1
-    Behavior on scale { QsNumberAnimation { duration: Theme.motionFast } }
-    Behavior on color { QsColorAnimation {} }
-    Behavior on border.color { QsColorAnimation {} }
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 14
-        spacing: 5
-        RowLayout {
+    implicitHeight: compact ? Math.max(76, content.implicitHeight + 32) : Math.max(132, content.implicitHeight + 32)
+    radius: 14
+    color: {
+        if (!enabled)
+            return Theme.disabled;
+        if (area.pressed)
+            return active ? Theme.accentPressed : Theme.pressed;
+        if (area.containsMouse)
+            return active ? Theme.accent : Theme.hover;
+        return active ? Theme.mustard200 : Theme.bgTertiary;
+    }
+    border.color: activeFocus ? Theme.focus : Theme.borderPrimary
+    border.width: activeFocus ? 2 : 1
+    activeFocusOnTab: true
+    Accessible.role: Accessible.Button
+    Accessible.name: title
+    Accessible.description: subtitle
+    Accessible.onPressAction: if (enabled)
+        clicked()
+
+    GridLayout {
+        id: content
+        columns: 3
+        columnSpacing: 8
+        rowSpacing: 8
+        anchors {
+            top: root.compact ? undefined : parent.top
+            verticalCenter: root.compact ? parent.verticalCenter : undefined
+            left: parent.left
+            right: parent.right
+            margins: 16
+        }
+
+        QsIcon {
+            icon: root.icon
+            size: 20
+            color: root.enabled ? Theme.ink : Theme.disabledInk
+            Layout.row: 0
+            Layout.column: 0
+        }
+
+        ColumnLayout {
+            Layout.row: root.compact ? 0 : 1
+            Layout.column: root.compact ? 1 : 0
+            Layout.columnSpan: root.compact ? 1 : 3
             Layout.fillWidth: true
-            QsIcon {
-                icon: root.icon
-                size: 23
-                color: root.active ? Theme.primary : Theme.textSecondary
-            }
-            Item {
-                Layout.fillWidth: true
-            }
+            spacing: root.compact ? 4 : 8
+
             Text {
-                text: "›"
-                color: Theme.textSecondary
-                font.pixelSize: 20
+                Layout.fillWidth: true
+                text: root.title
+                color: root.enabled ? Theme.ink : Theme.disabledInk
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSizeBody
+                font.weight: Font.Medium
+                wrapMode: Text.Wrap
+            }
+            QsMarqueeText {
+                Layout.fillWidth: true
+                text: root.subtitle
+                color: root.enabled ? Theme.textSecondary : Theme.disabledInk
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSizeSmall
+                maximumLineCount: 2
+                wrapMode: Text.Wrap
             }
         }
-        Text {
-            text: root.title
-            color: Theme.text
-            font.family: Theme.fontFamily
-            font.bold: true
+
+        QsIcon {
+            Layout.row: 0
+            Layout.column: 2
+            Layout.alignment: Qt.AlignRight
+            icon: Icons.caretRight
+            size: 20
+            color: root.enabled ? Theme.ink : Theme.disabledInk
         }
-        Text {
+
+        Item {
+            visible: !root.compact
+            Layout.row: 0
+            Layout.column: 1
             Layout.fillWidth: true
-            text: root.subtitle
-            color: Theme.textSecondary
-            font.family: Theme.fontFamily
-            font.pixelSize: 11
-            elide: Text.ElideRight
         }
     }
+
     MouseArea {
         id: area
         anchors.fill: parent
@@ -63,4 +106,6 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         onClicked: root.clicked()
     }
+    Keys.onReturnPressed: clicked()
+    Keys.onSpacePressed: clicked()
 }

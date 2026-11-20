@@ -11,17 +11,11 @@ ColumnLayout {
 
     Text {
         font.family: Theme.fontFamily
-        text: "Tools"
-        color: Theme.text
+        text: "ツール"
+        color: Theme.textPrimary
         font.bold: true
         font.pointSize: 12
     }
-
-    ThemeSwitcher {}
-
-    LidSettings {}
-
-    KeyboardBacklight {}
 
     Rectangle {
         Layout.fillWidth: true
@@ -43,7 +37,7 @@ ColumnLayout {
                 Layout.preferredWidth: 42
                 Layout.preferredHeight: 42
                 radius: 8
-                color: Theme.primaryContainer
+                color: Theme.mustard200
 
                 Text {
                     font.family: Theme.fontFamily
@@ -63,7 +57,7 @@ ColumnLayout {
                     font.family: Theme.fontFamily
                     Layout.fillWidth: true
                     text: "QRコードを範囲から読み取る"
-                    color: Theme.text
+                    color: Theme.textPrimary
                     font.bold: true
                 }
 
@@ -96,10 +90,6 @@ ColumnLayout {
     }
 
     ColorPicker {
-        controlCenterService: root.controlCenterService
-    }
-
-    TimerStopwatch {
         controlCenterService: root.controlCenterService
     }
 

@@ -2,46 +2,75 @@ pragma Singleton
 pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Networking
+import Quickshell.Io
 
 QtObject {
     id: root
 
     readonly property var devices: Networking.devices ? Networking.devices.values : []
 
-    readonly property var wifiAdapter: {
-        for (var i = 0; i < devices.length; i++) {
-            var dev = devices[i];
-            if (dev && (dev.type === 1 || isWifiName(dev.name)))
-                return dev;
-        }
-        return null;
+    readonly property var wifiAdapter: devices.find(device => device.type === DeviceType.Wifi || isWifiName(device.name)) ?? null
+    readonly property var availableNetworks: wifiAdapter?.networks?.values ?? []
+    readonly property var ethernet: devices.find(device => device.type === DeviceType.Wired && !isVirtual(device.name)) ?? null
+    readonly property var wiredDevice: devices.find(device => device.connected && device.type === DeviceType.Wired && !isVirtual(device.name)) ?? null
+    readonly property var wifiDevice: devices.find(device => device.connected && (device.type === DeviceType.Wifi || isWifiName(device.name))) ?? null
+    readonly property bool scanning: scan.running
+    readonly property bool vpnBusy: vpnRefresh.running || vpnChange.running
+    property var vpnProfiles: []
+    property string lastScanError: ""
+    property string vpnError: ""
+
+    function rescan(): void {
+        if (!wifiAdapter || scanning)
+            return;
+        lastScanError = "";
+        scan.running = true;
     }
 
-    readonly property var availableNetworks: wifiAdapter && wifiAdapter.networks ? wifiAdapter.networks.values : []
-
-    readonly property var wiredDevice: {
-        for (var i = 0; i < 20; i++) {
-            var dev = devices[i];
-            if (!dev)
-                break;
-            if (dev.connected && !isVirtual(dev.name) && !isWifiName(dev.name)) {
-                if (dev.type === 1 || dev.name.match(/^(eth|en[posx]|usb)/))
-                    return dev;
-            }
-        }
-        return null;
+    function refreshVpn(): void {
+        if (!vpnRefresh.running && !vpnChange.running)
+            vpnRefresh.running = true;
     }
 
-    readonly property var wifiDevice: {
-        for (var i = 0; i < 20; i++) {
-            var dev = devices[i];
-            if (!dev)
-                break;
-            if (dev.connected && isWifiName(dev.name)) {
-                return dev;
+    function toggleVpn(profile: var): void {
+        if (!vpnBusy && /^[0-9a-f-]{36}$/i.test(profile.uuid)) {
+            vpnError = "";
+            vpnChange.exec(["nmcli", "--wait", "20", "connection", profile.active ? "down" : "up", "uuid", profile.uuid]);
+        }
+    }
+
+    readonly property Process scan: Process {
+        command: ["nmcli", "--wait", "10", "device", "wifi", "rescan", "ifname", root.wifiAdapter?.name ?? ""]
+        onExited: code => root.lastScanError = code === 0 ? "" : "Wi-Fi を再スキャンできませんでした"
+    }
+
+    readonly property Process vpnRefresh: Process {
+        command: ["nmcli", "--terse", "--escape", "no", "--fields", "UUID,TYPE,ACTIVE,NAME", "connection", "show"]
+        environment: ({
+                LC_ALL: "C"
+            })
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const profiles = [];
+                for (const line of text.split("\n")) {
+                    const match = /^([0-9a-f-]{36}):(vpn|wireguard):(yes|no):(.*)$/i.exec(line);
+                    if (match)
+                        profiles.push({
+                            uuid: match[1],
+                            active: match[3] === "yes",
+                            name: match[4]
+                        });
+                }
+                root.vpnProfiles = profiles;
             }
         }
-        return null;
+    }
+
+    readonly property Process vpnChange: Process {
+        onExited: code => {
+            root.vpnError = code === 0 ? "" : "VPN の接続状態を切り替えられませんでした";
+            Qt.callLater(root.refreshVpn);
+        }
     }
 
     function isVirtual(name) {
@@ -83,7 +112,7 @@ QtObject {
             return activeNetwork.name;
         if (wifiDevice)
             return wifiDevice.name;
-        return "Disconnected";
+        return "未接続";
     }
 
     readonly property bool isWifi: wifiDevice !== null

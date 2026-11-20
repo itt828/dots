@@ -17,7 +17,7 @@ Scope {
             required property var modelData
             screen: modelData
             visible: root.controlCenterService.qrSelecting
-            color: Theme.withAlpha(Theme.text, 0.2)
+            color: Theme.withAlpha(Theme.textPrimary, 0.2)
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
 
@@ -38,8 +38,8 @@ Scope {
                 y: Math.min(selector.startY, selector.currentY)
                 width: Math.abs(selector.currentX - selector.startX)
                 height: Math.abs(selector.currentY - selector.startY)
-                color: Theme.withAlpha(Theme.primary, 0.13)
-                border.color: Theme.primary
+                color: Theme.withAlpha(Theme.mustard800, 0.13)
+                border.color: Theme.mustard800
                 border.width: 2
                 visible: selectionArea.pressed
             }
@@ -52,7 +52,7 @@ Scope {
                     topMargin: 32
                 }
                 text: "QRコードをドラッグで囲む • 右クリックでキャンセル"
-                color: Theme.primaryText
+                color: Theme.surface
                 font.bold: true
                 style: Text.Outline
                 styleColor: "#80000000"

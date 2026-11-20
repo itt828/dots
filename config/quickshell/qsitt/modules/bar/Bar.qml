@@ -9,26 +9,26 @@ import qs.ui.theme
 import qs.modules.bar.widgets as BarUi
 
 Scope {
-    id: root
-
     Variants {
         model: Quickshell.screens.filter(screen => SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(screen.name))
 
         PanelWindow {
             id: barWindow
             required property var modelData
+            readonly property bool expanded: width >= Theme.expandedWidth
 
             screen: modelData
             color: "transparent"
             WlrLayershell.namespace: "qsitt:bar"
-            BackgroundEffect.blurRegion: Region {
-                item: barContent
-                radius: barContent.radius
-            }
-            implicitHeight: Theme.barHeight + Theme.windowShadowPadding
-            exclusiveZone: Theme.barHeight
+            // Keep the press active when the compositor moves focus from an open menu to the bar.
+            WlrLayershell.keyboardFocus: ControlCenterService.visible || PowerService.visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+            exclusiveZone: Theme.barHeight + Theme.barOuterMargin
+            implicitHeight: Math.max(exclusiveZone, Theme.barHeight + Math.ceil(barShadow.blur + barShadow.offset.y))
             mask: Region {
                 item: barContent
+                radius: barContent.radius
+                topLeftRadius: barContent.topLeftRadius
+                topRightRadius: barContent.topRightRadius
             }
 
             anchors {
@@ -38,74 +38,102 @@ Scope {
             }
 
             QsWindowShadow {
+                id: barShadow
+
                 surface: barContent
+                topLeftRadius: barContent.topLeftRadius
+                topRightRadius: barContent.topRightRadius
+                // RectangularShadow needs about 20% more blur for Niri's CSS-style softness of 16.
+                blur: 16 * 1.2
+                offset: Qt.vector2d(0, 3)
+                color: "#60000000"
             }
 
             BarUi.Base {
                 id: barContent
-                leftContent: RowLayout {
-                    spacing: Theme.barModuleSpacing
-
+                leftContent: [
                     BarUi.SearchButton {
                         searchService: SearchService
-                    }
+                        outputName: barWindow.modelData.name
+                    },
                     BarUi.Workspaces {
+                        Layout.fillWidth: true
+                        Layout.minimumWidth: 0
+                        Layout.maximumWidth: implicitWidth
                         workspaceService: WorkspaceService
                         outputName: barWindow.screen.name
                         showOtherOutputs: true
-                    }
+                    },
                     BarUi.WindowTitle {
+                        id: windowTitle
+
+                        Layout.fillWidth: true
+                        Layout.preferredWidth: Math.min(implicitWidth, 160)
+                        Layout.minimumWidth: 0
                         windowService: WindowService
+                    },
+                    Item {
+                        Layout.fillWidth: true
+                        visible: !windowTitle.visible
                     }
+                ]
+
+                centerContent: BarUi.NowPlaying {
+                    id: nowPlaying
+                    outputName: barWindow.modelData.name
+                    availableWidth: Math.max(0, barContent.width - 2 * (barContent.rightWidth + barContent.centerTrailingWidth + 16))
                 }
 
-                centerContent: BarUi.Clock {
-                    scale: clockArea.pressed ? 0.97 : 1
-                    Behavior on scale {
-                        QsNumberAnimation {
-                            duration: Theme.motionFast
-                        }
-                    }
-                    MouseArea {
-                        id: clockArea
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: ControlCenterService.toggle()
-                    }
+                centerTrailingContent: BarUi.Clock {
+                    onClicked: ControlCenterService.openPage(1, barWindow.modelData.name)
                 }
 
-                rightContent: RowLayout {
-                    spacing: Theme.barModuleSpacing
-
+                rightContent: [
                     BarUi.Tray {
+                        visible: implicitWidth > 0
                         rootWindow: barWindow
-                    }
+                    },
+                    QsButton {
+                        visible: RecorderService.recording
+                        text: "停止"
+                        icon: Icons.record
+                        toolTip: "画面録画を停止"
+                        variant: QsButton.Destructive
+                        horizontalPadding: 8
+                        onClicked: RecorderService.stop()
+                    },
                     BarUi.Notifications {
                         notificationService: NotificationService
-                    }
+                        outputName: barWindow.modelData.name
+                    },
                     BarUi.Volume {
+                        visible: barWindow.expanded
                         volumeService: VolumeService
-                    }
-                    BarUi.Microphone {
-                        volumeService: VolumeService
-                    }
+                        outputName: barWindow.modelData.name
+                    },
                     BarUi.Brightness {
+                        visible: barWindow.expanded && BrightnessService.initialized
                         brightnessService: BrightnessService
-                    }
+                    },
                     BarUi.Network {
+                        showLabel: barWindow.expanded && !MediaService.playing
                         networkService: NetworkService
-                    }
-                    BarUi.Battery {}
+                        outputName: barWindow.modelData.name
+                    },
+                    BarUi.Battery {},
                     QsButton {
-                        text: "設定"
+                        icon: Icons.settings
+                        toolTip: "コントロールセンター"
+                        variant: QsButton.Ghost
                         highlighted: ControlCenterService.visible
-                        implicitHeight: 28
-                        onClicked: ControlCenterService.toggle()
-                    }
+                        highlightColor: Theme.mustard200
+                        onClicked: ControlCenterService.toggle(barWindow.modelData.name)
+                    },
                     BarUi.PowerButton {
                         powerService: PowerService
+                        outputName: barWindow.modelData.name
                     }
-                }
+                ]
             }
         }
     }

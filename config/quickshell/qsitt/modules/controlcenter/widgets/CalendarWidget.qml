@@ -22,7 +22,7 @@ Rectangle {
     implicitHeight: 350
     color: Theme.surface
     radius: 14
-    border.color: Theme.outline
+    border.color: Theme.border
     border.width: 1
 
     ColumnLayout {
@@ -47,7 +47,7 @@ Rectangle {
                 Text {
                     font.family: Theme.fontFamily
                     text: Qt.formatDate(root.currentDate, "MMMM d")
-                    color: Theme.text
+                    color: Theme.textPrimary
                     font.pixelSize: 26
                     font.weight: Font.DemiBold
                 }
@@ -61,14 +61,14 @@ Rectangle {
                 implicitWidth: monthLabel.implicitWidth + 24
                 implicitHeight: 32
                 radius: 16
-                color: Theme.primaryContainer
+                color: Theme.mustard200
 
                 Text {
                     id: monthLabel
                     font.family: Theme.fontFamily
                     anchors.centerIn: parent
                     text: Qt.formatDate(root.currentDate, "MMMM yyyy")
-                    color: Theme.primary
+                    color: Theme.mustard800
                     font.pixelSize: Theme.fontSizeSmall
                     font.weight: Font.DemiBold
                 }
@@ -132,13 +132,13 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 34
                     radius: 10
-                    color: isToday ? Theme.primary : dayArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                    color: isToday ? Theme.mustard800 : dayArea.containsMouse ? Theme.hover : "transparent"
 
                     Text {
                         font.family: Theme.fontFamily
                         anchors.centerIn: parent
                         text: parent.index + 1
-                        color: parent.isToday ? Theme.primaryText : Theme.text
+                        color: parent.isToday ? Theme.surface : Theme.textPrimary
                         font.pixelSize: Theme.fontSizeBody
                         font.weight: parent.isToday ? Font.DemiBold : Font.Normal
                     }

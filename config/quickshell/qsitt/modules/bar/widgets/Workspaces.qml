@@ -1,101 +1,165 @@
+pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Layouts
-import qs.ui.widgets
-import qs.services
 import qs.ui.theme
+import qs.ui.widgets
 
-Item {
+Rectangle {
     id: root
+
     required property var workspaceService
     property string outputName: ""
     property bool showOtherOutputs: false
+    readonly property int buttonSize: 24
+    readonly property int buttonRadius: 6
+
     readonly property var displayEntries: {
         const all = workspaceService.workspaces || [];
-        const outputs = [root.outputName];
-
-        if (root.showOtherOutputs) {
-            all.forEach(ws => {
-                if (ws.output !== root.outputName && !outputs.includes(ws.output))
-                    outputs.push(ws.output);
-            });
+        const outputs = [outputName];
+        if (showOtherOutputs) {
+            for (const workspace of all) {
+                if (workspace.output && !outputs.includes(workspace.output))
+                    outputs.push(workspace.output);
+            }
         }
 
         const entries = [];
-        outputs.forEach(output => {
-            const outputWorkspaces = all.filter(ws => ws.output === output).sort((a, b) => a.idx - b.idx);
-
-            if (outputWorkspaces.length === 0)
-                return;
+        for (const output of outputs) {
+            const workspaces = all.filter(workspace => workspace.output === output).sort((a, b) => a.idx - b.idx);
+            if (workspaces.length === 0)
+                continue;
             if (entries.length > 0)
-                entries.push({
-                    separator: true
-                });
-            outputWorkspaces.forEach(ws => entries.push({
-                    workspace: ws
-                }));
-        });
+                entries.push(null);
+            entries.push(...workspaces);
+        }
         return entries;
     }
-    width: layout.implicitWidth
-    height: layout.implicitHeight
-    implicitWidth: layout.implicitWidth
-    implicitHeight: layout.implicitHeight
 
-    RowLayout {
-        id: layout
-        spacing: 8
+    readonly property int activeIndex: displayEntries.findIndex(workspace => workspace?.output === outputName && workspace.is_active)
+    property bool markerVisible: false
+    property bool markerFocused: false
+    property real markerX: 0
 
-        Repeater {
-            model: root.displayEntries
+    function placeMarker(): void {
+        const entry = workspaceRepeater.itemAt(activeIndex);
+        if (!entry) {
+            markerVisible = false;
+            return;
+        }
 
-            Item {
-                required property var modelData
-                readonly property var workspace: modelData.workspace
-                implicitWidth: modelData.separator ? separator.implicitWidth : 16
-                implicitHeight: 16
+        markerX = entry.x;
+        markerFocused = entry.focused;
+        markerVisible = true;
+    }
 
-                Text {
-                    id: separator
-                    font.family: Theme.fontFamily
-                    anchors.centerIn: parent
-                    visible: modelData.separator === true
-                    text: "|"
-                    color: Theme.textSecondary
-                }
+    onDisplayEntriesChanged: Qt.callLater(placeMarker)
+
+    color: Theme.bgTertiary
+    radius: 11
+    visible: displayEntries.length > 0
+    implicitWidth: workspaceRow.implicitWidth + 8
+    implicitHeight: buttonSize + 8
+
+    Flickable {
+        anchors.fill: parent
+        anchors.margins: 4
+        clip: true
+        contentWidth: workspaceRow.implicitWidth
+        contentHeight: height
+        flickableDirection: Flickable.HorizontalFlick
+        boundsBehavior: Flickable.StopAtBounds
+        interactive: contentWidth > width
+
+        Rectangle {
+            id: marker
+
+            x: root.markerX
+            width: root.buttonSize
+            height: root.buttonSize
+            anchors.verticalCenter: workspaceRow.verticalCenter
+            radius: root.buttonRadius
+            visible: root.markerVisible
+            color: root.markerFocused ? Theme.mustard800 : Theme.bgSecondary
+            border.color: Theme.mustard800
+            border.width: root.markerFocused ? 0 : 1
+
+            Behavior on x {
+                enabled: marker.visible
+                QsNumberAnimation {}
+            }
+        }
+
+        Row {
+            id: workspaceRow
+
+            height: parent.height
+            spacing: 4
+
+            Repeater {
+                id: workspaceRepeater
+
+                model: root.displayEntries
+                onItemAdded: Qt.callLater(root.placeMarker)
+                onItemRemoved: Qt.callLater(root.placeMarker)
 
                 Rectangle {
-                    anchors.fill: parent
-                    visible: !modelData.separator
-                    radius: 2
-                    scale: workspaceArea.pressed ? 0.85 : workspace && workspace.is_focused ? 1.1 : 1
-                    Behavior on scale {
-                        QsNumberAnimation {}
-                    }
+                    id: entry
+
+                    required property var modelData
+                    readonly property bool divider: modelData === null
+                    readonly property bool local: !divider && modelData.output === root.outputName
+                    readonly property bool selected: !divider && (modelData.is_active ?? false)
+                    readonly property bool focused: !divider && (modelData.is_focused ?? false)
+                    readonly property bool urgent: !divider && (modelData.is_urgent ?? false) && !focused
+                    readonly property bool overMarker: local && marker.visible && x + width / 2 >= marker.x && x + width / 2 < marker.x + marker.width
+                    readonly property bool filled: overMarker ? root.markerFocused : selected && !local && focused
+                    readonly property bool outlined: selected && !local && !focused
+
+                    onXChanged: if (local && selected)
+                        Qt.callLater(root.placeMarker)
+                    width: divider ? 1 : root.buttonSize
+                    height: divider ? 16 : root.buttonSize
+                    anchors.verticalCenter: parent.verticalCenter
+                    radius: root.buttonRadius
                     color: {
-                        if (!workspace)
-                            return Theme.surfaceVariant;
-                        if (workspace.is_focused)
-                            return Theme.accent;
-                        if (workspace.is_active)
-                            return "#505050"; // Darker gray for active but unfocused
-                        if (workspace.is_urgent)
-                            return Theme.danger;
-                        return Theme.surfaceVariant;
+                        if (divider)
+                            return Theme.borderPrimary;
+                        if (selected && !local)
+                            return focused ? Theme.mustard800 : Theme.bgSecondary;
+                        if (urgent && !overMarker)
+                            return Theme.errorSurface;
+                        return "transparent";
+                    }
+                    border.width: activeFocus ? 2 : outlined || (!divider && !overMarker && !selected) ? 1 : 0
+                    border.color: activeFocus ? Theme.focus : outlined ? Theme.mustard800 : Theme.border
+                    activeFocusOnTab: !divider
+                    Accessible.ignored: divider
+                    Accessible.role: Accessible.Button
+                    Accessible.name: divider ? "" : modelData.name || "ワークスペース " + modelData.idx
+                    Accessible.selected: selected
+                    Accessible.onPressAction: activate()
+
+                    function activate(): void {
+                        if (!divider)
+                            root.workspaceService.activateWorkspace(modelData.output, modelData.idx);
                     }
 
-                    Behavior on color {
-                        QsColorAnimation {
-                            duration: Theme.motionNormal
-                        }
+                    QsHoverBackground {
+                        hovered: !entry.divider && area.containsMouse
+                        anchors.margins: entry.border.width
+                        radius: entry.radius
+                        color: entry.filled ? Theme.withAlpha(Theme.surface, 0.16) : entry.overMarker || entry.outlined ? Theme.withAlpha(Theme.ink, 0.06) : Theme.hover
                     }
 
                     MouseArea {
-                        id: workspaceArea
+                        id: area
                         anchors.fill: parent
-                        enabled: parent.visible
+                        enabled: !entry.divider
+                        hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.workspaceService.focus(workspace.output, workspace.idx)
+                        onClicked: entry.activate()
                     }
+                    Keys.onSpacePressed: activate()
+                    Keys.onReturnPressed: activate()
                 }
             }
         }

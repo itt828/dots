@@ -13,19 +13,26 @@ Row {
         delegate: Rectangle {
             visible: modelData.type === UPowerDeviceType.Battery && modelData.isPresent
 
-            color: (modelData.percentage < 0.2 && modelData.state !== UPowerDeviceState.Charging) ? Theme.danger : Theme.surfaceContainerHigh
-            radius: height / 2
-            Behavior on color {
-                QsColorAnimation {}
-            }
+            color: (modelData.percentage < 0.2 && modelData.state !== UPowerDeviceState.Charging) ? Theme.errorSurface : "transparent"
+            radius: 8
 
-            implicitWidth: display.implicitWidth + 20
-            implicitHeight: 28
+            implicitWidth: display.implicitWidth + 16
+            implicitHeight: 36
             width: implicitWidth
             height: implicitHeight
 
+            HoverHandler {
+                id: batteryHover
+            }
+
+            QsHoverBackground {
+                hovered: batteryHover.hovered
+            }
+
             QsIconLabel {
                 id: display
+                hoverBackground: false
+                hovered: batteryHover.hovered
                 anchors.centerIn: parent
 
                 icon: {
@@ -45,8 +52,8 @@ Row {
                     if (modelData.state === UPowerDeviceState.Charging)
                         return Theme.success;
                     if (modelData.percentage < 0.2)
-                        return "white";
-                    return Theme.text;
+                        return Theme.error;
+                    return Theme.ink;
                 }
             }
         }

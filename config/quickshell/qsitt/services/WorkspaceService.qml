@@ -38,9 +38,14 @@ Item {
         });
     }
 
-    function focus(output: string, index: int): void {
-        focusProcess.arguments = ["niri", "focus", output, String(index)];
-        focusProcess.running = true;
+    function activateWorkspace(output: string, index: int): void {
+        if (!output || index < 1)
+            return;
+        const args = ["niri", "focus", output, String(index)];
+        if (focusProcess.running)
+            focusProcess.pending = args;
+        else
+            focusProcess.execute(args);
     }
 
     Connections {
@@ -51,29 +56,19 @@ Item {
         }
 
         function onWorkspaceActivated(data) {
-            let targetOutput = "";
-            let wsToUpdate = workspaces.find(w => w.id === data.id);
-            if (wsToUpdate)
-                targetOutput = wsToUpdate.output;
-
-            workspaces = workspaces.map(ws => {
-                if (ws.id === data.id) {
-                    return Object.assign({}, ws, {
-                        is_active: true,
-                        is_focused: true,
-                        is_urgent: false,
-                        local_urgent: false
+            const target = workspaces.find(workspace => workspace.id === data.id);
+            if (target) {
+                workspaces = workspaces.map(workspace => {
+                    const selected = workspace.id === data.id;
+                    const focused = data.focused ? selected : workspace.is_focused;
+                    return Object.assign({}, workspace, {
+                        is_active: workspace.output === target.output ? selected : workspace.is_active,
+                        is_focused: focused,
+                        is_urgent: focused ? false : workspace.is_urgent,
+                        local_urgent: focused ? false : workspace.local_urgent
                     });
-                } else if (targetOutput !== "" && ws.output === targetOutput) {
-                    return Object.assign({}, ws, {
-                        is_active: false,
-                        is_focused: false
-                    });
-                } else {
-                    return ws;
-                }
-            });
-
+                });
+            }
             refreshWorkspaces.running = true;
         }
 
@@ -158,5 +153,14 @@ Item {
 
     BackendProcess {
         id: focusProcess
+        property var pending: null
+
+        onExited: {
+            if (pending) {
+                const next = pending;
+                pending = null;
+                execute(next);
+            }
+        }
     }
 }

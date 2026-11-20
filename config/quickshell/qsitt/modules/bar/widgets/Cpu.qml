@@ -18,7 +18,7 @@ Item {
         iconName: Icons.cpu
         showLabel: true
         labelText: cpuService.label
-        progressColor: Theme.text
-        trackColor: Theme.outline
+        progressColor: Theme.textPrimary
+        trackColor: Theme.border
     }
 }

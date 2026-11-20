@@ -76,7 +76,7 @@ func (b *Backend) json(value any) error { return json.NewEncoder(b.Out).Encode(v
 
 func (b *Backend) Run(ctx context.Context, args []string) error {
 	if len(args) == 0 {
-		return errors.New("usage: qsittd niri|metrics|backlight|lid|power|desktop-theme|audio|state|search|clipboard|open|launch|tool ...")
+		return errors.New("usage: qsittd niri|metrics|backlight|lid|power|desktop-theme|audio|bluetooth|state|search|clipboard|open|launch|tool ...")
 	}
 	op, rest := args[0], args[1:]
 	switch op {
@@ -108,6 +108,8 @@ func (b *Backend) Run(ctx context.Context, args []string) error {
 		return b.run(ctx, nil, "gsettings", "set", "org.gnome.desktop.interface", "color-scheme", rest[0])
 	case "audio":
 		return b.audio(ctx, rest)
+	case "bluetooth":
+		return b.bluetooth(ctx, rest)
 	case "state":
 		return b.state(rest)
 	case "search":
@@ -155,6 +157,9 @@ func (b *Backend) search(ctx context.Context, args ...string) error {
 }
 
 func (b *Backend) clipboard(ctx context.Context, args []string) error {
+	if len(args) == 2 && args[0] == "copy-text" {
+		return b.copy(ctx, []byte(args[1]))
+	}
 	// wl-paste invokes this same executable with clipboard bytes on stdin.
 	if len(args) == 2 && args[0] == "watch" {
 		methods := map[string]string{"text": "text", "image": "image", "text/uri-list": "files"}

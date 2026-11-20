@@ -9,7 +9,7 @@ import (
 func (b *Backend) niri(ctx context.Context, args []string) error {
 	if len(args) == 1 {
 		switch args[0] {
-		case "event-stream", "workspaces", "windows", "focused-window", "focused-output":
+		case "event-stream", "workspaces", "windows", "focused-window", "focused-output", "outputs":
 			return b.run(ctx, nil, "niri", "msg", "-j", args[0])
 		case "power-on-monitors", "screenshot":
 			return b.run(ctx, nil, "niri", "msg", "action", args[0])

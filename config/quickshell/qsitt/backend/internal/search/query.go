@@ -12,7 +12,15 @@ import (
 )
 
 var tools = []Result{
-	{Kind: "tool", Value: "control-center", Title: "Control Center", Subtitle: "音量・ネットワーク・設定"},
+	{Kind: "tool", Value: "control-center", Title: "コントロールセンター", Subtitle: "音量・ネットワーク・設定"},
+	{Kind: "tool", Value: "network", Title: "ネットワーク設定", Subtitle: "Wi-Fi・有線・VPN"},
+	{Kind: "tool", Value: "bluetooth", Title: "Bluetooth 設定", Subtitle: "機器の接続・ペアリング"},
+	{Kind: "tool", Value: "audio", Title: "オーディオ設定", Subtitle: "出力・マイク・アプリ別音量"},
+	{Kind: "tool", Value: "settings", Title: "デスクトップ設定", Subtitle: "ディスプレイ・テーマ・バー"},
+	{Kind: "tool", Value: "calendar", Title: "カレンダー", Subtitle: "日付を確認する"},
+	{Kind: "tool", Value: "focus", Title: "集中タイマー", Subtitle: "ポモドーロ・ストップウォッチ"},
+	{Kind: "tool", Value: "monitor", Title: "システムモニター", Subtitle: "CPU・メモリー"},
+	{Kind: "tool", Value: "record", Title: "画面録画", Subtitle: "現在のディスプレイの録画を開始・停止"},
 	{Kind: "tool", Value: "notifications", Title: "通知", Subtitle: "通知履歴を開く"},
 	{Kind: "tool", Value: "screenshot", Title: "スクリーンショット", Subtitle: "範囲を選んで撮影"},
 	{Kind: "tool", Value: "lens", Title: "Google Lens", Subtitle: "画面の範囲を画像検索"},
@@ -94,11 +102,17 @@ func rankResults(items []Result, query string, tool bool, limit int) []Result {
 
 func (s *Store) Query(ctx context.Context, query, category string) ([]Result, error) {
 	switch category {
-	case "all", "apps", "web", "files", "tools", "clipboard":
+	case "all", "apps", "web", "files", "tools", "clipboard", "calc":
 	default:
 		return nil, fmt.Errorf("unknown search category: %s", category)
 	}
 	query = strings.TrimSpace(query)
+	if category == "calc" {
+		if value, ok := calculate(query); ok {
+			return []Result{{Kind: "calculation", Title: value, Subtitle: query, Value: value}}, nil
+		}
+		return []Result{}, nil
+	}
 	if query == "" && category == "all" {
 		return s.shortcuts(), nil
 	}

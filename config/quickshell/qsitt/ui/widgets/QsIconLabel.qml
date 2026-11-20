@@ -10,7 +10,10 @@ Item {
     property alias text: textItem.text
     property alias spacing: layout.spacing
     property alias iconSize: iconItem.size
-    property color color: Theme.text
+    property bool hoverBackground: true
+    property bool hovered: pointer.hovered
+    property int maximumTextWidth: 184
+    property color color: Theme.ink
     Behavior on color {
         QsColorAnimation {}
     }
@@ -20,22 +23,35 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
+    HoverHandler {
+        id: pointer
+    }
+
+    QsHoverBackground {
+        anchors.margins: -3
+        hovered: root.hoverBackground && root.hovered
+    }
+
     RowLayout {
         id: layout
         anchors.fill: parent
-        spacing: 6
+        spacing: 8
 
         QsIcon {
             id: iconItem
             color: root.color
+            size: 20
             Layout.alignment: Qt.AlignVCenter
         }
 
-        Text {
+        QsMarqueeText {
             id: textItem
+            hovered: root.hovered
             color: root.color
             font.family: Theme.fontFamily
             font.pixelSize: Theme.fontSizeBody
+            font.weight: Font.Medium
+            Layout.maximumWidth: root.maximumTextWidth
             visible: text !== ""
             Layout.alignment: Qt.AlignVCenter
         }

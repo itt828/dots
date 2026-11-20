@@ -1,22 +1,24 @@
 import QtQuick
+import qs.ui.theme
 
-Text {
+Item {
     id: root
     property string icon: ""
     property int size: 16
+    property color color: Theme.ink
 
-    font.family: fontLoader.name
-    font.pixelSize: size
-
+    implicitWidth: size
+    implicitHeight: size
     width: size
     height: size
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
 
-    text: icon
-
-    FontLoader {
-        id: fontLoader
-        source: "../../assets/fonts/Phosphor.ttf"
+    Text {
+        anchors.fill: parent
+        font.family: Icons.fontFamily
+        font.pixelSize: root.size
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        text: root.icon
+        color: root.color
     }
 }

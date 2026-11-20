@@ -1,123 +1,143 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.Mpris
+import qs.services
 import qs.ui.widgets
 import qs.ui.theme
 
-Rectangle {
+QsPanelCard {
     id: root
-    readonly property var players: Mpris.players.values
-    property int selectedPlayer: -1
-    readonly property var player: selectedPlayer >= 0 && selectedPlayer < players.length ? players[selectedPlayer] : players.find(p => p.playbackState === Mpris.Playing) || players[0] || null
-    color: Theme.surfaceContainer
-    radius: 16
-    implicitHeight: 184
-    Layout.fillWidth: true
-    function duration(seconds) {
-        const s = Math.max(0, Math.floor(seconds || 0));
-        return Math.floor(s / 60) + ":" + (s % 60).toString().padStart(2, "0");
+
+    readonly property var players: MediaService.players
+    readonly property var player: MediaService.player
+    property bool compact: false
+    readonly property bool playing: player?.playbackState === MprisPlaybackState.Playing
+
+    padding: compact ? 10 : 16
+    spacing: 5
+
+    function duration(seconds: real): string {
+        const elapsed = Math.max(0, Math.floor(seconds || 0));
+        return Math.floor(elapsed / 60) + ":" + (elapsed % 60).toString().padStart(2, "0");
     }
+
     RowLayout {
-        anchors.fill: parent
-        anchors.margins: 16
-        spacing: 18
+        Layout.fillWidth: true
+        spacing: 6
+
         Rectangle {
-            Layout.preferredWidth: 104
-            Layout.preferredHeight: 130
-            radius: 12
-            color: Theme.surfaceContainerHigh
+            Layout.preferredWidth: 44
+            Layout.preferredHeight: 44
+            radius: 8
+            color: Theme.mustard200
             clip: true
             Image {
                 id: art
                 anchors.fill: parent
-                source: root.player ? root.player.trackArtUrl : ""
+                source: root.player?.trackArtUrl ?? ""
                 fillMode: Image.PreserveAspectCrop
+                asynchronous: true
             }
             QsIcon {
                 anchors.centerIn: parent
                 icon: Icons.mediaMusic
-                size: 36
-                color: Theme.primary
+                size: 21
+                color: Theme.mustard800
                 visible: art.status !== Image.Ready
             }
         }
+
         ColumnLayout {
             Layout.fillWidth: true
-            spacing: 6
-            RowLayout {
+            Layout.minimumWidth: 0
+            spacing: 1
+            QsMarqueeText {
                 Layout.fillWidth: true
-                Text {
-                    Layout.fillWidth: true
-                    text: root.player ? root.player.identity : "メディア"
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 11
-                    elide: Text.ElideRight
-                }
-                QsButton {
-                    visible: root.players.length > 1
-                    text: "切替"
-                    onClicked: root.selectedPlayer = (root.players.indexOf(root.player) + 1) % root.players.length
-                }
-            }
-            Text {
-                Layout.fillWidth: true
-                text: root.player ? root.player.trackTitle || "タイトルなし" : "再生中のメディアはありません"
-                color: Theme.text
+                text: root.player?.trackTitle || "タイトルなし"
+                textFormat: Text.PlainText
+                color: Theme.ink
                 font.family: Theme.fontFamily
-                font.pixelSize: 17
-                font.bold: true
-                elide: Text.ElideRight
+                font.pixelSize: Theme.fontSizeBody
+                font.weight: Font.Bold
             }
-            Text {
+            QsMarqueeText {
                 Layout.fillWidth: true
-                text: root.player ? root.player.trackArtist || "アーティスト不明" : "音楽や動画を再生するとここに表示されます"
-                color: Theme.textSecondary
+                text: [root.player?.trackArtist || root.player?.identity, VolumeService.sink ? VolumeService.sinkName : ""].filter(value => value).join(" · ")
+                textFormat: Text.PlainText
+                color: Theme.muted
                 font.family: Theme.fontFamily
-                font.pixelSize: 12
-                elide: Text.ElideRight
-            }
-            QsProgressBar {
-                Layout.fillWidth: true
-                from: 0
-                to: root.player && root.player.length > 0 ? root.player.length : 1
-                value: root.player ? root.player.position : 0
-                visible: root.player && root.player.lengthSupported
-            }
-            RowLayout {
-                Layout.fillWidth: true
-                QsButton {
-                    text: "⏮"
-                    enabled: root.player && root.player.canGoPrevious
-                    onClicked: root.player.previous()
-                }
-                QsButton {
-                    text: root.player && root.player.playbackState === Mpris.Playing ? "一時停止" : "再生"
-                    enabled: root.player && root.player.canTogglePlaying
-                    onClicked: root.player.playPause()
-                }
-                QsButton {
-                    text: "⏭"
-                    enabled: root.player && root.player.canGoNext
-                    onClicked: root.player.next()
-                }
-                Item {
-                    Layout.fillWidth: true
-                }
-                Text {
-                    visible: root.player && root.player.lengthSupported
-                    text: root.player ? root.duration(root.player.position) + " / " + root.duration(root.player.length) : ""
-                    color: Theme.textSecondary
-                    font.family: Theme.fontFamily
-                    font.pixelSize: 11
-                }
+                font.pixelSize: Theme.fontSizeSmall
             }
         }
+
+        QsButton {
+            visible: root.players.length > 1
+            icon: Icons.mediaMusic
+            toolTip: "プレーヤーを切り替え"
+            implicitWidth: 30
+            implicitHeight: 30
+            variant: QsButton.Ghost
+            onClicked: MediaService.selectNext()
+        }
+        QsButton {
+            icon: Icons.mediaPrev
+            toolTip: "前の曲"
+            variant: QsButton.Ghost
+            implicitWidth: 30
+            implicitHeight: 30
+            enabled: root.player?.canGoPrevious ?? false
+            onClicked: root.player?.previous()
+        }
+        QsButton {
+            icon: root.playing ? Icons.mediaPause : Icons.mediaPlay
+            toolTip: root.playing ? "一時停止" : "再生"
+            variant: QsButton.Primary
+            implicitWidth: 30
+            implicitHeight: 30
+            enabled: MediaService.canChangePlayback(root.player)
+            onClicked: MediaService.togglePlayback(root.player)
+        }
+        QsButton {
+            icon: Icons.mediaNext
+            toolTip: "次の曲"
+            variant: QsButton.Ghost
+            implicitWidth: 30
+            implicitHeight: 30
+            enabled: root.player?.canGoNext ?? false
+            onClicked: root.player?.next()
+        }
     }
+
+    RowLayout {
+        Layout.fillWidth: true
+        visible: (root.player?.lengthSupported ?? false) && (root.player?.positionSupported ?? false)
+        spacing: 6
+
+        QsSectionLabel {
+            text: root.duration(root.player?.position ?? 0)
+        }
+        QsSlider {
+            Layout.fillWidth: true
+            implicitHeight: 18
+            Accessible.name: "再生位置"
+            to: root.player?.length > 0 ? root.player.length : 1
+            value: root.player?.position ?? 0
+            enabled: root.player?.canSeek ?? false
+            onMoved: value => {
+                if (root.player?.canSeek)
+                    root.player.position = value;
+            }
+        }
+        QsSectionLabel {
+            text: root.duration(root.player?.length ?? 0)
+        }
+    }
+
     Timer {
         interval: 1000
-        running: root.visible && root.player && root.player.playbackState === Mpris.Playing
+        running: root.visible && root.playing
         repeat: true
-        onTriggered: root.player.positionChanged()
+        onTriggered: root.player?.positionChanged()
     }
 }

@@ -11,8 +11,54 @@ QtObject {
     property string focusedOutputName: ""
     property bool _opening: false
     property string query: ""
-    property string category: "all"
-    property var results: []
+    readonly property var scopes: [
+        {
+            key: "all",
+            label: "すべて",
+            prefix: ""
+        },
+        {
+            key: "apps",
+            label: "アプリ",
+            prefix: "/a"
+        },
+        {
+            key: "tools",
+            label: "ツール",
+            prefix: "/t"
+        },
+        {
+            key: "files",
+            label: "ファイル",
+            prefix: "/f"
+        },
+        {
+            key: "clipboard",
+            label: "履歴",
+            prefix: "/c"
+        },
+        {
+            key: "web",
+            label: "Web",
+            prefix: "/w"
+        },
+        {
+            key: "calc",
+            label: "計算",
+            prefix: "="
+        }
+    ]
+    readonly property var parsed: parse(query)
+    readonly property string category: parsed.category
+    readonly property bool choosingScope: query.trim() === "/"
+    readonly property var results: choosingScope ? scopes.slice(1).map(scope => ({
+                kind: "scope",
+                value: scope.key,
+                title: scope.label,
+                subtitle: scope.prefix
+            })) : _results
+    readonly property bool searching: visible && !choosingScope && (refreshTimer.running || _queryProcess.running)
+    property var _results: []
     property int selectedIndex: 0
     property bool lensSelecting: false
     property bool lensBusy: false
@@ -21,8 +67,54 @@ QtObject {
     property string _activeCategory: ""
     property string _response: ""
 
+    function parse(value: string): var {
+        const input = value.replace(/^\s+/, "");
+        if (input.startsWith("="))
+            return {
+                category: "calc",
+                text: input.slice(1).trim()
+            };
+        const match = /^\/[atfcw](?=\s|$)/i.exec(input);
+        const scope = match && scopes.find(item => item.prefix === match[0].toLowerCase());
+        return scope ? {
+            category: scope.key,
+            text: input.slice(match[0].length).trim()
+        } : {
+            category: "all",
+            text: input.trim()
+        };
+    }
+
+    onQueryChanged: {
+        _results = [];
+        selectedIndex = 0;
+        refresh();
+    }
+
     function refresh(): void {
-        refreshTimer.restart();
+        if (visible && !choosingScope)
+            refreshTimer.restart();
+        else
+            refreshTimer.stop();
+    }
+
+    function openOnOutput(outputName: string, scope: string): void {
+        close();
+        if (scope !== "")
+            setCategory(scope);
+        if (outputName)
+            showOnOutput(outputName);
+        else
+            open();
+    }
+
+    function showOnOutput(outputName: string): void {
+        ControlCenterService.visible = false;
+        PowerService.visible = false;
+        NotificationService.panelVisible = false;
+        focusedOutputName = outputName;
+        visible = true;
+        refresh();
     }
 
     function open(): void {
@@ -37,8 +129,7 @@ QtObject {
         _opening = false;
         visible = false;
         query = "";
-        category = "all";
-        results = [];
+        _results = [];
         selectedIndex = 0;
     }
 
@@ -50,16 +141,19 @@ QtObject {
     }
 
     function setCategory(value: string): void {
-        category = value;
+        const scope = scopes.find(item => item.key === value);
+        if (!scope)
+            return;
+        const terms = choosingScope ? "" : parsed.text;
+        query = scope.prefix + (scope.prefix && scope.prefix !== "=" ? " " : "") + terms;
         selectedIndex = 0;
-        refresh();
     }
 
     function submit(): void {
         if (results.length > 0)
             activate(results[Math.min(selectedIndex, results.length - 1)]);
-        else if (query.trim())
-            searchWeb(query.trim());
+        else if (category === "web" && parsed.text)
+            searchWeb(parsed.text);
     }
 
     function searchWeb(value: string): void {
@@ -71,6 +165,15 @@ QtObject {
     function activate(item: var): void {
         if (!item)
             return;
+        if (item.kind === "scope") {
+            setCategory(item.value);
+            return;
+        }
+        if (item.kind === "calculation") {
+            _actionProcess.execute(["clipboard", "copy-text", item.value]);
+            close();
+            return;
+        }
         if (item.kind === "web") {
             searchWeb(item.value);
             return;
@@ -94,11 +197,30 @@ QtObject {
                 startLensSelection();
                 return;
             }
-            if (item.value === "control-center" || item.value === "notifications") {
-                ControlCenterService.requestedPage = 0;
-                ControlCenterService.visible = item.value === "control-center";
-                NotificationService.panelVisible = item.value === "notifications";
-            } else if (item.value === "qr")
+            const pages = {
+                "control-center": 0,
+                calendar: 1,
+                monitor: 2,
+                focus: 3,
+                audio: 4,
+                network: 5,
+                bluetooth: 6,
+                settings: 7
+            };
+            if (item.value in pages || item.value === "notifications" || item.value === "record") {
+                const output = focusedOutputName;
+                close();
+                if (item.value === "notifications") {
+                    ControlCenterService.visible = false;
+                    NotificationService.openFor(output);
+                } else if (item.value === "record") {
+                    RecorderService.toggle(output);
+                } else {
+                    ControlCenterService.openPage(pages[item.value], output);
+                }
+                return;
+            }
+            if (item.value === "qr")
                 ControlCenterService.startQrSelection();
             else if (item.value === "color")
                 ControlCenterService.pickColor();
@@ -147,9 +269,11 @@ QtObject {
             onStreamFinished: {
                 try {
                     const output = JSON.parse(text);
-                    root.focusedOutputName = output?.name || "";
+                    if (root._opening)
+                        root.focusedOutputName = output?.name || "";
                 } catch (e) {
-                    root.focusedOutputName = "";
+                    if (root._opening)
+                        root.focusedOutputName = "";
                 }
             }
         }
@@ -159,8 +283,7 @@ QtObject {
             if (!root.focusedOutputName && Quickshell.screens.length > 0)
                 root.focusedOutputName = Quickshell.screens[0].name;
             root._opening = false;
-            root.visible = true;
-            root.refresh();
+            root.showOnOutput(root.focusedOutputName);
         }
     }
 
@@ -169,7 +292,7 @@ QtObject {
         onTriggered: {
             if (root._queryProcess.running)
                 return;
-            root._activeQuery = root.query;
+            root._activeQuery = root.parsed.text;
             root._activeCategory = root.category;
             root._response = "";
             root._queryProcess.arguments = ["search", "query", root._activeQuery, root._activeCategory];
@@ -182,17 +305,17 @@ QtObject {
             onStreamFinished: root._response = text
         }
         onExited: {
-            if (!root.visible)
+            if (!root.visible || root.choosingScope)
                 return;
-            if (root._activeQuery !== root.query || root._activeCategory !== root.category) {
+            if (root._activeQuery !== root.parsed.text || root._activeCategory !== root.category) {
                 root.refresh();
                 return;
             }
             try {
-                root.results = JSON.parse(root._response);
+                root._results = JSON.parse(root._response);
                 root.selectedIndex = 0;
             } catch (e) {
-                root.results = [];
+                root._results = [];
                 console.warn("Search query failed:", e);
             }
         }

@@ -6,9 +6,22 @@ import Quickshell.Io
 QtObject {
     property bool visible: false
     property bool locked: false
+    property string outputName: ""
+    property point upperAnchor
+    property point lowerAnchor
 
-    function toggle() {
-        visible = !visible;
+    function toggleAt(output: string, button: Item): void {
+        if (visible && outputName === output) {
+            visible = false;
+            return;
+        }
+        SearchService.close();
+        upperAnchor = button.mapToItem(null, button.width, 0);
+        lowerAnchor = button.mapToItem(null, button.width, button.height);
+        ControlCenterService.visible = false;
+        NotificationService.panelVisible = false;
+        outputName = output;
+        visible = true;
     }
 
     function lock() {

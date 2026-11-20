@@ -5,15 +5,12 @@ import qs.services
 
 Rectangle {
     id: root
-    implicitWidth: display.implicitWidth + 20
-    implicitHeight: 28
+    implicitWidth: display.implicitWidth + 16
+    implicitHeight: 36
     width: implicitWidth
     height: implicitHeight
-    radius: height / 2
-    color: Theme.surfaceContainerHigh
-    Behavior on color {
-        QsColorAnimation {}
-    }
+    radius: 8
+    color: "transparent"
 
     required property var brightnessService
     property real brightnessVal: brightnessService.brightness
@@ -24,10 +21,20 @@ Rectangle {
         cornerRadius: root.radius
     }
 
+    HoverHandler {
+        id: statusHover
+    }
+
+    QsHoverBackground {
+        hovered: statusHover.hovered
+    }
+
     QsIconLabel {
         id: display
+        hoverBackground: false
+        hovered: statusHover.hovered
         anchors.centerIn: parent
+        icon: Icons.sun
         text: Math.round(root.brightnessVal * 100) + "%"
-        icon: Icons.sunDim
     }
 }

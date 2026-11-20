@@ -110,20 +110,20 @@ func (b *Backend) backlight(ctx context.Context, args []string) error {
 		command := []string{"-m"}
 		switch args[1] {
 		case "display":
+			command = append(command, "-c", "backlight")
 		case "keyboard":
 			command = append(command, "-d", "tpacpi::kbd_backlight")
 		default:
 			return errors.New("unknown backlight device")
 		}
-		data, err := b.output(ctx, nil, "brightnessctl", append(command, "info")...)
-		if err != nil {
-			return err
+		return b.readBacklight(ctx, append(command, "info"))
+	}
+	if len(args) == 2 && args[0] == "display-set" {
+		percent, err := strconv.Atoi(args[1])
+		if err != nil || percent < 0 || percent > 100 {
+			return errors.New("invalid display brightness percentage")
 		}
-		value, err := parseBacklight(string(data))
-		if err != nil {
-			return err
-		}
-		return b.json(value)
+		return b.readBacklight(ctx, []string{"-m", "-c", "backlight", "set", strconv.Itoa(percent) + "%"})
 	}
 	if len(args) == 2 && args[0] == "keyboard-set" {
 		level, err := strconv.Atoi(args[1])
@@ -133,6 +133,18 @@ func (b *Backend) backlight(ctx context.Context, args []string) error {
 		return b.run(ctx, nil, "brightnessctl", "-d", "tpacpi::kbd_backlight", "set", args[1])
 	}
 	return errors.New("invalid backlight arguments")
+}
+
+func (b *Backend) readBacklight(ctx context.Context, args []string) error {
+	data, err := b.output(ctx, nil, "brightnessctl", args...)
+	if err != nil {
+		return err
+	}
+	value, err := parseBacklight(string(data))
+	if err != nil {
+		return err
+	}
+	return b.json(value)
 }
 
 var lidValue = regexp.MustCompile(`<\s*(true|false)\s*>`)

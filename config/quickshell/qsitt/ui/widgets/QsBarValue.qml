@@ -11,7 +11,7 @@ Item {
     property bool showLabel: false
 
     property color progressColor: "black"
-    property color trackColor: Theme.outline
+    property color trackColor: Theme.border
 
     property real iconSize: 16
 

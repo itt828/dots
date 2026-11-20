@@ -5,15 +5,12 @@ import qs.services
 
 Rectangle {
     id: root
-    implicitWidth: display.implicitWidth + 20
-    implicitHeight: 28
+    implicitWidth: display.implicitWidth + 16
+    implicitHeight: 36
     width: implicitWidth
     height: implicitHeight
-    radius: height / 2
-    color: Theme.surfaceContainerHigh
-    Behavior on color {
-        QsColorAnimation {}
-    }
+    radius: 8
+    color: "transparent"
     scale: area.pressed ? 0.94 : 1
     Behavior on scale {
         QsNumberAnimation {
@@ -24,6 +21,7 @@ Rectangle {
     onCurrentVolumeChanged: highlight.flash()
     onIsMutedChanged: highlight.flash()
 
+    required property string outputName
     required property var volumeService
     property real currentVolume: volumeService.volume
     property bool isMuted: volumeService.muted
@@ -33,8 +31,18 @@ Rectangle {
         cornerRadius: root.radius
     }
 
+    HoverHandler {
+        id: statusHover
+    }
+
+    QsHoverBackground {
+        hovered: statusHover.hovered
+    }
+
     QsIconLabel {
         id: display
+        hoverBackground: false
+        hovered: statusHover.hovered
         anchors.centerIn: parent
         text: Math.round(currentVolume * 100) + "%"
 
@@ -52,11 +60,7 @@ Rectangle {
     MouseArea {
         id: area
         anchors.fill: parent
-        onClicked: {
-            ControlCenterService.requestedPage = 4;
-            NotificationService.panelVisible = false;
-            ControlCenterService.visible = true;
-        }
+        onClicked: ControlCenterService.openPage(4, root.outputName)
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
         QsToolTip {

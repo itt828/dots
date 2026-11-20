@@ -11,16 +11,14 @@ Scope {
     id: root
 
     Variants {
-        model: Quickshell.screens.filter(screen => SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(screen.name))
+        model: Quickshell.screens
 
         PanelWindow {
             id: powerMenuWindow
             required property var modelData
             screen: modelData
-            visible: menuContent.shown || menuContent.reveal > 0
-            mask: Region {
-                item: menuContent.shown ? powerMenuWindow.contentItem : null
-            }
+            visible: PowerService.visible || menuContent.reveal > 0
+            mask: dismissArea.inputRegion
 
             anchors {
                 top: true
@@ -29,16 +27,21 @@ Scope {
                 right: true
             }
             color: "transparent"
+            exclusionMode: ExclusionMode.Ignore
+            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.keyboardFocus: menuContent.shown ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
             WlrLayershell.namespace: "qsitt:power-menu"
             BackgroundEffect.blurRegion: Region {
                 item: menuContent.blurActive ? menuContent : null
                 radius: menuContent.radius
             }
 
-            MouseArea {
-                anchors.fill: parent
-                enabled: menuContent.shown
-                onClicked: PowerService.visible = false
+            QsPopupDismissArea {
+                id: dismissArea
+
+                output: powerMenuWindow.modelData
+                enabled: PowerService.visible
+                onPressed: PowerService.visible = false
             }
 
             QsWindowShadow {
@@ -47,15 +50,21 @@ Scope {
 
             QsPopupSurface {
                 id: menuContent
-                shown: PowerService.visible
+                readonly property int inset: Theme.barOuterMargin
+                readonly property real lowerY: Math.max(Theme.barHeight + inset, PowerService.lowerAnchor.y + inset)
+                readonly property bool opensAbove: lowerY + height + inset > powerMenuWindow.modelData.height
 
-                anchors.top: parent.top
-                anchors.right: parent.right
-                anchors.topMargin: Theme.barHeight + 12
-                anchors.rightMargin: 16
-
-                width: 180
+                shown: PowerService.visible && PowerService.outputName === powerMenuWindow.modelData.name
+                transformOrigin: opensAbove ? Item.BottomRight : Item.TopRight
+                entryX: 0
+                entryY: opensAbove ? 10 : -10
+                x: Math.max(inset, Math.min(PowerService.lowerAnchor.x - width, powerMenuWindow.modelData.width - width - inset))
+                y: opensAbove ? Math.max(inset, PowerService.upperAnchor.y - height - inset) : lowerY
+                width: Math.min(180, powerMenuWindow.modelData.width - 2 * inset)
                 height: contentCol.implicitHeight + 20
+                focus: shown
+                Keys.onEscapePressed: PowerService.visible = false
+
                 color: Theme.glassPopup
                 radius: 12
                 border.color: Theme.glassOutline

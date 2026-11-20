@@ -5,15 +5,12 @@ import qs.services
 
 Rectangle {
     id: root
-    implicitWidth: display.implicitWidth + 20
-    implicitHeight: 28
+    implicitWidth: display.implicitWidth + 16
+    implicitHeight: 36
     width: implicitWidth
     height: implicitHeight
-    radius: height / 2
-    color: Theme.surfaceContainerHigh
-    Behavior on color {
-        QsColorAnimation {}
-    }
+    radius: 8
+    color: "transparent"
     scale: area.pressed ? 0.94 : 1
     Behavior on scale {
         QsNumberAnimation {
@@ -22,6 +19,7 @@ Rectangle {
     }
 
     required property var notificationService
+    required property string outputName
 
     QsHighlightEffect {
         id: highlight
@@ -40,11 +38,21 @@ Rectangle {
         highlight.flash();
     }
 
+    HoverHandler {
+        id: statusHover
+    }
+
+    QsHoverBackground {
+        hovered: statusHover.hovered
+    }
+
     QsIconLabel {
         id: display
+        hoverBackground: false
+        hovered: statusHover.hovered
         anchors.centerIn: parent
-        icon: notificationService.dnd ? Icons.bellSlash : (notificationService.history.count > 0 ? Icons.bellRinging : Icons.bell)
-        text: notificationService.history.count.toString()
+        icon: notificationService.dnd ? Icons.bellSlash : Icons.bell
+        text: notificationService.history.count > 0 ? notificationService.history.count.toString() : ""
     }
 
     MouseArea {
@@ -53,7 +61,7 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         onClicked: {
             ControlCenterService.visible = false;
-            notificationService.panelVisible = !notificationService.panelVisible;
+            notificationService.toggleFor(root.outputName);
         }
     }
 }

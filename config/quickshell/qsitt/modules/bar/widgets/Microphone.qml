@@ -10,10 +10,7 @@ Rectangle {
     width: implicitWidth
     height: implicitHeight
     radius: height / 2
-    color: Theme.surfaceContainerHigh
-    Behavior on color {
-        QsColorAnimation {}
-    }
+    color: "transparent"
     scale: area.pressed ? 0.94 : 1
     Behavior on scale {
         QsNumberAnimation {
@@ -30,11 +27,21 @@ Rectangle {
         cornerRadius: root.radius
     }
 
+    HoverHandler {
+        id: statusHover
+    }
+
+    QsHoverBackground {
+        hovered: statusHover.hovered
+    }
+
     QsIconLabel {
         id: display
+        hoverBackground: false
+        hovered: statusHover.hovered
         anchors.centerIn: parent
         icon: isMuted ? Icons.microphoneSlash : Icons.microphone
-        color: isMuted ? Theme.danger : Theme.text
+        color: isMuted ? Theme.error : Theme.textPrimary
     }
 
     MouseArea {

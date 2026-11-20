@@ -89,7 +89,7 @@ Rectangle {
 
             Text {
                 text: "キーボードバックライト"
-                color: Theme.text
+                color: Theme.textPrimary
                 font.family: Theme.fontFamily
             }
 

@@ -9,10 +9,10 @@ Rectangle {
     id: root
     Layout.fillWidth: true
     Layout.fillHeight: true
-    Layout.minimumHeight: 200
+    Layout.minimumHeight: 60
     color: "transparent"
     radius: 14
-    border.color: Theme.outline
+    border.color: Theme.border
     border.width: 0
     clip: true
 
@@ -28,7 +28,7 @@ Rectangle {
             Text {
                 font.family: Theme.fontFamily
                 text: "履歴  ·  " + root.notificationService.history.count
-                color: Theme.text
+                color: Theme.textPrimary
                 font.pixelSize: 16
                 font.weight: Font.DemiBold
                 Layout.fillWidth: true
@@ -86,7 +86,7 @@ Rectangle {
             Text {
                 font.family: Theme.fontFamily
                 anchors.centerIn: parent
-                text: "No new notifications"
+                text: "新しい通知はありません"
                 visible: list.count === 0
                 color: Theme.textSecondary
             }

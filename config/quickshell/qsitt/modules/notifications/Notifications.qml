@@ -11,10 +11,13 @@ PanelWindow {
     id: root
 
     readonly property var notificationService: NotificationService
+    readonly property int shadowPadding: Theme.windowShadowPadding
+    readonly property int trailingPadding: shadowPadding + Theme.toastSlide
+    property int nextPopupId: 0
     property real reveal: popupModel.count > 0 && !notificationService.panelVisible ? 1 : 0
     Behavior on reveal {
         QsNumberAnimation {
-            duration: Theme.motionExit
+            duration: root.notificationService.panelVisible ? Theme.motionExit : Theme.motionFast
         }
     }
 
@@ -27,22 +30,9 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "qsitt:notification-popups"
-    BackgroundEffect.blurRegion: Region {
-        Region {
-            item: popupRepeater.count > 0 ? popupRepeater.itemAt(0).blurSurface : null
-            radius: 16
-        }
-        Region {
-            item: popupRepeater.count > 1 ? popupRepeater.itemAt(1).blurSurface : null
-            radius: 16
-        }
-        Region {
-            item: popupRepeater.count > 2 ? popupRepeater.itemAt(2).blurSurface : null
-            radius: 16
-        }
-    }
-    implicitWidth: 400 + Theme.windowShadowPadding * 2
-    implicitHeight: Math.min(popupList.implicitHeight + Theme.windowShadowPadding * 2, screen.height - 100)
+    WlrLayershell.keyboardFocus: popupModel.count > 0 ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+    implicitWidth: 382 + shadowPadding + trailingPadding
+    implicitHeight: Math.max(1, Math.min(popupList.implicitHeight + shadowPadding * 2, (screen?.height ?? 1024) - 100))
     mask: Region {
         item: root.notificationService.panelVisible ? null : popupList
     }
@@ -50,8 +40,8 @@ PanelWindow {
     color: "transparent"
 
     margins {
-        top: Theme.barHeight + 14 - Theme.windowShadowPadding
-        right: 0
+        top: Theme.belowBar - root.shadowPadding
+        right: Theme.popupInset - root.trailingPadding + (ControlCenterService.visible && root.screen?.name === ControlCenterService.visibleOutput ? Theme.controlWidth + 16 : 0)
     }
 
     ListModel {
@@ -61,12 +51,23 @@ PanelWindow {
     Connections {
         target: notificationService
 
+        function onDndChanged(): void {
+            if (notificationService.dnd) {
+                for (let index = 0; index < popupModel.count; ++index)
+                    popupModel.setProperty(index, "closing", true);
+            }
+        }
+
         function onNotificationReceived(notification) {
-            if (notificationService.dnd || notificationService.panelVisible)
+            if (notificationService.dnd || notificationService.panelVisible) {
+                notificationService.disposeIfUnstored(notification);
                 return;
+            }
             if (popupModel.count >= 3)
-                popupModel.remove(0);
-            popupModel.append({
+                root.removeAt(popupModel.count - 1);
+            popupModel.insert(0, {
+                "popupId": ++root.nextPopupId,
+                "closing": false,
                 "notificationObj": notification,
                 "appName": notification.appName || "System",
                 "summary": notification.summary || "",
@@ -78,21 +79,38 @@ PanelWindow {
         }
     }
 
-    function removePopup(notification) {
-        for (var i = 0; i < popupModel.count; i++) {
-            if (popupModel.get(i).notificationObj === notification) {
-                popupModel.remove(i);
-                break;
-            }
+    function removeAt(index: int): void {
+        const item = popupModel.get(index).notificationObj;
+        popupModel.remove(index);
+        notificationService.disposeIfUnstored(item);
+    }
+
+    function findPopup(id: int): int {
+        for (let index = 0; index < popupModel.count; ++index) {
+            if (popupModel.get(index).popupId === id)
+                return index;
         }
+        return -1;
+    }
+
+    function closePopup(id: int): void {
+        const index = findPopup(id);
+        if (index >= 0)
+            popupModel.setProperty(index, "closing", true);
+    }
+
+    function removePopup(id: int): void {
+        const index = findPopup(id);
+        if (index >= 0)
+            removeAt(index);
     }
 
     Column {
         id: popupList
         opacity: root.reveal
-        x: Theme.windowShadowPadding
-        y: Theme.windowShadowPadding
-        width: parent.width - Theme.windowShadowPadding * 2
+        x: root.shadowPadding
+        y: root.shadowPadding
+        width: parent.width - root.shadowPadding - root.trailingPadding
         spacing: 10
         move: Transition {
             QsNumberAnimation {
@@ -107,7 +125,6 @@ PanelWindow {
             delegate: Item {
                 id: popupDelegate
                 required property var model
-                readonly property Item blurSurface: popup.blurActive && !root.notificationService.panelVisible ? popup : null
 
                 width: popupList.width
                 implicitHeight: popup.implicitHeight
@@ -115,6 +132,8 @@ PanelWindow {
 
                 QsWindowShadow {
                     surface: popup
+                    blur: 16
+                    offset: Qt.vector2d(0, 8)
                 }
 
                 NotificationPopup {
@@ -128,11 +147,14 @@ PanelWindow {
                     iconSource: popupDelegate.model.icon
                     imageSource: popupDelegate.model.image
                     isPopup: true
+                    shown: !popupDelegate.model.closing
+                    countdownVisible: !root.notificationService.panelVisible
 
-                    onClosed: shown = false
-                    onVisibleChanged: {
-                        if (!visible && !shown)
-                            root.removePopup(notification);
+                    readonly property bool exitFinished: !shown && reveal <= 0
+                    onClosed: root.closePopup(popupDelegate.model.popupId)
+                    onExitFinishedChanged: {
+                        if (exitFinished)
+                            Qt.callLater(root.removePopup, popupDelegate.model.popupId);
                     }
                 }
             }

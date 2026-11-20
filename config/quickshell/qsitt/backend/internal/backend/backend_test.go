@@ -45,6 +45,32 @@ func TestBacklightParsing(t *testing.T) {
 	}
 }
 
+func TestDisplayBrightnessUsesTheBacklightClass(t *testing.T) {
+	dir := t.TempDir()
+	t.Setenv("PATH", dir)
+	launcher := `#!/bin/sh
+[ "$*" = '-m -c backlight set 40%' ] || exit 7
+printf 'test,backlight,80,40%%,200\n'
+`
+	if err := os.WriteFile(filepath.Join(dir, "brightnessctl"), []byte(launcher), 0700); err != nil {
+		t.Fatal(err)
+	}
+	var out bytes.Buffer
+	b := Backend{Out: &out, Err: io.Discard}
+	if err := b.backlight(context.Background(), []string{"display-set", "40"}); err != nil {
+		t.Fatal(err)
+	}
+	var state Backlight
+	if err := json.NewDecoder(&out).Decode(&state); err != nil || state.Brightness != .4 {
+		t.Fatalf("unexpected display brightness: %+v, %v", state, err)
+	}
+	for _, percent := range []string{"-1", "101", "high"} {
+		if err := b.backlight(context.Background(), []string{"display-set", percent}); err == nil {
+			t.Errorf("accepted brightness %q", percent)
+		}
+	}
+}
+
 func TestStateRoundTripAndValidation(t *testing.T) {
 	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
 	t.Setenv("XDG_STATE_HOME", t.TempDir())

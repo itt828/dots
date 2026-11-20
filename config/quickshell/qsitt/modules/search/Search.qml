@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls as Controls
 import Quickshell
 import Quickshell.Wayland
 import qs.ui.theme
@@ -11,32 +12,27 @@ Scope {
     id: root
 
     readonly property var searchService: SearchService
-    readonly property var categories: [
-        {
-            key: "all",
-            label: "すべて"
-        },
-        {
-            key: "apps",
-            label: "アプリ"
-        },
-        {
-            key: "web",
-            label: "Web / Lens"
-        },
-        {
-            key: "files",
-            label: "ファイル"
-        },
-        {
-            key: "tools",
-            label: "ツール"
-        },
-        {
-            key: "clipboard",
-            label: "クリップボード"
-        }
-    ]
+    readonly property var categories: SearchService.scopes
+    readonly property var categoryShortcuts: ["all", "apps", "web", "files", "tools", "clipboard", "calc"]
+
+    function resultIcon(kind: string, value: string): string {
+        if (kind === "scope")
+            kind = ({
+                    apps: "app",
+                    files: "file",
+                    tools: "tool",
+                    calc: "calculation"
+                })[value] ?? value;
+        return ({
+                app: Icons.applications,
+                file: Icons.folder,
+                tool: Icons.cpu,
+                calculation: Icons.calculator,
+                clipboard: Icons.clipboard,
+                "clipboard-image": Icons.clipboard,
+                "clipboard-file": Icons.clipboard
+            })[kind] ?? Icons.globe;
+    }
 
     Variants {
         model: Quickshell.screens
@@ -51,7 +47,7 @@ Scope {
 
             screen: modelData
             visible: root.searchService.lensSelecting
-            color: Theme.withAlpha(Theme.text, 0.4)
+            color: Theme.withAlpha(Theme.textPrimary, 0.4)
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
             anchors {
@@ -67,8 +63,8 @@ Scope {
                 width: Math.abs(lensSelector.currentX - lensSelector.startX)
                 height: Math.abs(lensSelector.currentY - lensSelector.startY)
                 visible: lensArea.pressed
-                color: Theme.withAlpha(Theme.primary, 0.2)
-                border.color: Theme.primary
+                color: Theme.withAlpha(Theme.mustard800, 0.2)
+                border.color: Theme.mustard800
                 border.width: 3
             }
 
@@ -81,7 +77,7 @@ Scope {
                 text: "Google Lens: 範囲をドラッグ • 右クリックでキャンセル"
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSizeBody
-                color: Theme.primaryText
+                color: Theme.surface
                 style: Text.Outline
                 styleColor: "#80000000"
             }
@@ -130,6 +126,8 @@ Scope {
         PanelWindow {
             id: searchWindow
             required property var modelData
+            readonly property bool hasBar: SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(modelData.name)
+
             screen: modelData
             // Item.visible also reflects its parent window's visibility.
             // Use the popup state directly so a hidden window can open again.
@@ -156,8 +154,9 @@ Scope {
             Rectangle {
                 id: dismissLayer
                 anchors.fill: parent
+                anchors.topMargin: searchWindow.hasBar ? Theme.barHeight : 0
                 color: Theme.glassScrim
-                opacity: panel.reveal
+                opacity: panel.progress
                 enabled: panel.shown
                 MouseArea {
                     anchors.fill: parent
@@ -173,15 +172,47 @@ Scope {
                 id: panel
                 shown: root.searchService.visible && searchWindow.modelData.name === root.searchService.focusedOutputName
                 transformOrigin: Item.Top
+                entryX: 0
+                entryY: -20
+                closedScale: 0.96
+                property real resultsHeight: 72
+
+                function updateResultsHeight(): void {
+                    if (!shown || root.searchService.searching)
+                        return;
+                    const rows = root.searchService.results;
+                    resultsHeight = Math.min(420, Math.max(72, rows.reduce((sum, row) => sum + (row.preview ? 91 : 54), 0)));
+                }
+
+                onShownChanged: if (shown)
+                    Qt.callLater(updateResultsHeight)
+                onRevealChanged: if (!shown && reveal <= 0)
+                    resultsHeight = 72
+
+                Behavior on height {
+                    enabled: panel.shown && panel.progress >= 0.99
+                    QsNumberAnimation {}
+                }
+
+                Connections {
+                    target: root.searchService
+                    function onResultsChanged(): void {
+                        Qt.callLater(panel.updateResultsHeight);
+                    }
+                    function onSearchingChanged(): void {
+                        if (!root.searchService.searching)
+                            Qt.callLater(panel.updateResultsHeight);
+                    }
+                }
                 anchors {
                     top: parent.top
-                    topMargin: Theme.barHeight + 12
+                    topMargin: Theme.belowBar + 42
                     horizontalCenter: parent.horizontalCenter
                 }
-                width: Math.min(780, parent.width - 32)
-                height: Math.min(680, parent.height - anchors.topMargin - 24)
+                width: Math.min(664, searchWindow.modelData.width - 32)
+                height: Math.max(1, Math.min(searchWindow.modelData.height - anchors.topMargin - 24, 152 + resultsHeight))
                 radius: Theme.radiusLarge
-                color: Theme.glassPanel
+                color: Theme.surface
                 border.color: Theme.glassOutline
                 border.width: 1
                 clip: true
@@ -193,23 +224,15 @@ Scope {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 22
+                    anchors.margins: 14
                     spacing: 10
-
-                    Text {
-                        text: "検索"
-                        color: Theme.text
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 22
-                        font.bold: true
-                    }
 
                     Rectangle {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 64
+                        Layout.preferredHeight: 52
                         radius: Theme.radius
-                        color: Theme.surfaceContainer
-                        border.color: searchInput.activeFocus ? Theme.primary : Theme.outline
+                        color: Theme.bgSecondary
+                        border.color: searchInput.activeFocus ? Theme.mustard800 : Theme.border
                         border.width: 1
                         Behavior on border.color {
                             QsColorAnimation {}
@@ -229,34 +252,37 @@ Scope {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                                 verticalAlignment: TextInput.AlignVCenter
-                                color: Theme.text
+                                color: Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontSizeBody
-                                selectionColor: Theme.primary
-                                selectedTextColor: Theme.primaryText
+                                selectionColor: Theme.mustard800
+                                selectedTextColor: Theme.surface
                                 text: root.searchService.query
                                 focus: true
-                                onTextChanged: {
-                                    root.searchService.query = text;
-                                    root.searchService.refresh();
-                                }
-                                onAccepted: root.searchService.submit()
+                                onTextEdited: root.searchService.query = text
+                                onAccepted: if (!searchInput.inputMethodComposing)
+                                    root.searchService.submit()
                                 Keys.onPressed: event => {
+                                    if (searchInput.inputMethodComposing)
+                                        return;
                                     if (event.key === Qt.Key_Escape) {
                                         root.searchService.close();
                                         event.accepted = true;
                                     } else if (event.key === Qt.Key_Down) {
                                         if (root.searchService.results.length > 0) {
-                                            root.searchService.selectedIndex = Math.min(root.searchService.selectedIndex + 1, root.searchService.results.length - 1);
+                                            root.searchService.selectedIndex = (root.searchService.selectedIndex + 1) % root.searchService.results.length;
                                             resultsView.positionViewAtIndex(root.searchService.selectedIndex, ListView.Contain);
                                         }
                                         event.accepted = true;
                                     } else if (event.key === Qt.Key_Up) {
-                                        root.searchService.selectedIndex = Math.max(0, root.searchService.selectedIndex - 1);
-                                        resultsView.positionViewAtIndex(root.searchService.selectedIndex, ListView.Contain);
+                                        const count = root.searchService.results.length;
+                                        if (count > 0) {
+                                            root.searchService.selectedIndex = (root.searchService.selectedIndex + count - 1) % count;
+                                            resultsView.positionViewAtIndex(root.searchService.selectedIndex, ListView.Contain);
+                                        }
                                         event.accepted = true;
-                                    } else if (event.key >= Qt.Key_1 && event.key <= Qt.Key_6 && (event.modifiers & Qt.ControlModifier)) {
-                                        root.searchService.setCategory(root.categories[event.key - Qt.Key_1].key);
+                                    } else if (event.key >= Qt.Key_1 && event.key <= Qt.Key_7 && (event.modifiers & Qt.ControlModifier)) {
+                                        root.searchService.setCategory(root.categoryShortcuts[event.key - Qt.Key_1]);
                                         event.accepted = true;
                                     }
                                 }
@@ -269,7 +295,7 @@ Scope {
                                 verticalCenter: parent.verticalCenter
                             }
                             visible: searchInput.text.length === 0
-                            text: "アプリ・ファイル・Web・ツールを検索"
+                            text: "アプリ・ツール・ファイルを検索"
                             color: Theme.textSecondary
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSizeBody
@@ -277,7 +303,7 @@ Scope {
                         }
                     }
 
-                    RowLayout {
+                    Flow {
                         Layout.fillWidth: true
                         spacing: 5
                         Repeater {
@@ -285,24 +311,21 @@ Scope {
                             delegate: Rectangle {
                                 required property var modelData
                                 required property int index
-                                implicitWidth: categoryText.implicitWidth + 20
-                                implicitHeight: 30
-                                radius: 12
-                                color: root.searchService.category === modelData.key ? Theme.primaryContainer : categoryArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+                                implicitWidth: categoryText.implicitWidth + (panel.width < 525 ? 8 : 16)
+                                implicitHeight: 27
+                                radius: 7
+                                color: root.searchService.category === modelData.key ? Theme.mustard200 : categoryArea.containsMouse ? Theme.hover : Theme.bgTertiary
                                 scale: categoryArea.pressed ? 0.96 : 1
                                 Behavior on scale {
                                     QsNumberAnimation {
                                         duration: Theme.motionFast
                                     }
                                 }
-                                Behavior on color {
-                                    QsColorAnimation {}
-                                }
                                 Text {
                                     id: categoryText
                                     anchors.centerIn: parent
-                                    text: modelData.label
-                                    color: root.searchService.category === modelData.key ? Theme.primary : Theme.textSecondary
+                                    text: modelData.prefix ? modelData.prefix + "  " + modelData.label : modelData.label
+                                    color: root.searchService.category === modelData.key ? Theme.mustard800 : Theme.textSecondary
                                     font.family: Theme.fontFamily
                                     font.pixelSize: Theme.fontSizeSmall
                                 }
@@ -318,22 +341,34 @@ Scope {
                                 }
                             }
                         }
-                        Item {
-                            Layout.fillWidth: true
-                        }
                     }
 
                     ListView {
                         id: resultsView
+
+                        currentIndex: count > 0 ? root.searchService.selectedIndex : -1
+                        highlightMoveDuration: Theme.motionFast
+                        highlightResizeDuration: Theme.motionFast
+                        highlightMoveVelocity: -1
+                        highlightResizeVelocity: -1
+                        highlight: Rectangle {
+                            radius: 12
+                            color: Theme.mustard200
+                            z: 0
+                        }
+
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         clip: true
-                        spacing: 6
+                        spacing: 3
                         model: root.searchService.results
+                        Controls.ScrollBar.vertical: Controls.ScrollBar {
+                            policy: Controls.ScrollBar.AsNeeded
+                        }
                         Text {
                             anchors.centerIn: parent
                             visible: root.searchService.results.length === 0
-                            text: root.searchService.query.length > 0 ? "候補が見つかりません" : "登録済みのアプリ・ツールがありません"
+                            text: root.searchService.searching ? "検索中…" : root.searchService.category === "calc" ? "例: = (128 + 32) / 2" : root.searchService.query.length > 0 ? "候補が見つかりません" : "登録済みのアプリ・ツールがありません"
                             color: Theme.textSecondary
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSizeBody
@@ -342,12 +377,9 @@ Scope {
                             required property var modelData
                             required property int index
                             width: resultsView.width
-                            height: modelData.preview ? 96 : 66
+                            height: modelData.preview ? 88 : 51
                             radius: 12
-                            color: root.searchService.selectedIndex === index ? Theme.primaryContainer : resultArea.containsMouse ? Theme.surfaceContainerHigh : "transparent"
-                            Behavior on color {
-                                QsColorAnimation {}
-                            }
+                            color: root.searchService.selectedIndex !== index && resultArea.containsMouse ? Theme.hover : "transparent"
 
                             RowLayout {
                                 anchors.fill: parent
@@ -359,7 +391,7 @@ Scope {
                                     Layout.preferredHeight: 34
                                     visible: !modelData.preview
                                     radius: 12
-                                    color: Theme.surfaceContainerHigh
+                                    color: Theme.hover
                                     Image {
                                         id: appIcon
                                         anchors.centerIn: parent
@@ -370,13 +402,12 @@ Scope {
                                         fillMode: Image.PreserveAspectFit
                                         asynchronous: true
                                     }
-                                    Text {
+                                    QsIcon {
                                         anchors.centerIn: parent
                                         visible: modelData.kind !== "app" || appIcon.status === Image.Error
-                                        text: modelData.kind === "app" ? "A" : modelData.kind === "file" ? "F" : modelData.kind === "clipboard" ? "C" : modelData.kind === "clipboard-file" ? (modelData.mime && modelData.mime.startsWith("video/") ? "▶" : modelData.mime && modelData.mime.startsWith("image/") ? "▣" : "♫") : modelData.kind === "tool" ? "T" : "W"
-                                        color: Theme.primary
-                                        font.family: Theme.fontFamily
-                                        font.bold: true
+                                        icon: root.resultIcon(modelData.kind, modelData.value)
+                                        size: 18
+                                        color: Theme.mustard800
                                     }
                                 }
                                 Rectangle {
@@ -384,7 +415,7 @@ Scope {
                                     Layout.preferredHeight: 70
                                     visible: !!modelData.preview
                                     radius: 12
-                                    color: Theme.surfaceContainerHigh
+                                    color: Theme.hover
                                     clip: true
                                     Image {
                                         anchors.fill: parent
@@ -396,25 +427,24 @@ Scope {
                                 ColumnLayout {
                                     Layout.fillWidth: true
                                     spacing: 1
-                                    Text {
+                                    QsMarqueeText {
                                         Layout.fillWidth: true
                                         text: modelData.title
-                                        color: Theme.text
-                                        elide: Text.ElideRight
+                                        color: Theme.textPrimary
                                         font.family: Theme.fontFamily
                                         font.pixelSize: Theme.fontSizeBody
                                     }
-                                    Text {
+                                    QsMarqueeText {
                                         Layout.fillWidth: true
                                         text: modelData.subtitle
                                         color: Theme.textSecondary
-                                        elide: Text.ElideMiddle
+                                        elideMode: Text.ElideMiddle
                                         font.family: Theme.fontFamily
                                         font.pixelSize: Theme.fontSizeSmall
                                     }
                                 }
                                 Text {
-                                    text: modelData.kind === "app" ? "アプリ" : modelData.kind === "file" ? "ファイル" : modelData.kind === "clipboard" ? "履歴" : modelData.kind === "clipboard-image" ? "画像" : modelData.kind === "clipboard-file" ? "メディア" : modelData.kind === "tool" ? "ツール" : "Web"
+                                    text: modelData.kind === "scope" ? "絞り込み" : modelData.kind === "calculation" ? "コピー" : modelData.kind === "app" ? "アプリ" : modelData.kind === "file" ? "ファイル" : modelData.kind === "clipboard" ? "履歴" : modelData.kind === "clipboard-image" ? "画像" : modelData.kind === "clipboard-file" ? "メディア" : modelData.kind === "tool" ? "ツール" : "Web"
                                     color: Theme.textSecondary
                                     font.pixelSize: Theme.fontSizeSmall
                                 }
@@ -435,7 +465,7 @@ Scope {
                     RowLayout {
                         Layout.fillWidth: true
                         Text {
-                            text: "↑↓ 選択  •  Enter 実行  •  Ctrl+1〜6 カテゴリ  •  Esc 閉じる"
+                            text: "↑↓ 選択   Enter 実行   / 絞り込み一覧   Esc 閉じる"
                             color: Theme.textSecondary
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSizeSmall
@@ -446,7 +476,7 @@ Scope {
                         Text {
                             visible: root.searchService.category === "clipboard"
                             text: "履歴を消去"
-                            color: Theme.primary
+                            color: Theme.mustard800
                             font.family: Theme.fontFamily
                             font.pixelSize: Theme.fontSizeSmall
                             MouseArea {

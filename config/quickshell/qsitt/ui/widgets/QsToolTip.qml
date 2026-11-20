@@ -24,14 +24,14 @@ Item {
     Rectangle {
         id: background
         anchors.fill: parent
-        color: Theme.surfaceContainerHigh
+        color: Theme.hover
         radius: 8
     }
     Text {
         id: label
         anchors.centerIn: parent
         text: root.text
-        color: Theme.text
+        color: Theme.textPrimary
         font.family: Theme.fontFamily
         font.pixelSize: 12
     }

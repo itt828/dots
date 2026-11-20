@@ -11,7 +11,7 @@ Item {
     property string labelText: ""
     property bool showLabel: false
 
-    property color color: Theme.text
+    property color color: Theme.textPrimary
     property color progressColor: Theme.surface
     property color trackColor: Theme.textSecondary
     property real strokeWidth: 3

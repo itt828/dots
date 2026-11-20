@@ -14,7 +14,7 @@ Rectangle {
     readonly property var battery: UPower.devices.values.find(device => device.isLaptopBattery && device.isPresent) ?? null
     readonly property var mediaPlayer: Mpris.players.values.find(player => player.isPlaying && player.canTogglePlaying) ?? Mpris.players.values.find(player => player.canTogglePlaying) ?? null
 
-    color: Theme.text
+    color: Theme.textPrimary
 
     Rectangle {
         visible: root.battery !== null
@@ -29,7 +29,7 @@ Rectangle {
         QsIconLabel {
             id: batteryLabel
             anchors.centerIn: parent
-            color: root.battery && root.battery.percentage < 0.2 && root.battery.state === UPowerDeviceState.Discharging ? Theme.danger : Theme.surface
+            color: root.battery && root.battery.percentage < 0.2 && root.battery.state === UPowerDeviceState.Discharging ? Theme.error : Theme.surface
             icon: {
                 if (!root.battery)
                     return "";
@@ -85,7 +85,7 @@ Rectangle {
                 font.family: Theme.fontFamily
                 Layout.alignment: Qt.AlignHCenter
                 font.pixelSize: 24
-                color: Theme.outline
+                color: Theme.border
                 verticalAlignment: Text.AlignVCenter
 
                 text: Qt.formatDate(new Date(), "dddd, MMMM d")
@@ -148,7 +148,7 @@ Rectangle {
                 font.family: Theme.fontFamily
                 visible: root.context.showFailure
                 text: "Incorrect password"
-                color: Theme.danger
+                color: Theme.error
                 Layout.alignment: Qt.AlignHCenter
                 font.pixelSize: 14
                 verticalAlignment: Text.AlignVCenter
@@ -170,12 +170,12 @@ Rectangle {
                 QsIcon {
                     icon: root.mediaPlayer && root.mediaPlayer.isPlaying ? Icons.mediaPause : Icons.mediaPlay
                     size: 18
-                    color: Theme.text
+                    color: Theme.textPrimary
                 }
 
                 Text {
                     text: root.mediaPlayer ? (root.mediaPlayer.isPlaying ? "一時停止" : "再生") : "メディアなし"
-                    color: Theme.text
+                    color: Theme.textPrimary
                     font.family: Theme.fontFamily
                     font.pixelSize: 13
                 }

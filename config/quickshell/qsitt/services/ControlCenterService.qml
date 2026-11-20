@@ -1,6 +1,7 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 import QtQuick
+import Quickshell
 import Quickshell.Io
 
 QtObject {
@@ -8,6 +9,15 @@ QtObject {
 
     property bool visible: false
     property int requestedPage: 0
+    property string settingsSection: "display"
+    property string requestedOutput: ""
+    readonly property string visibleOutput: {
+        const screens = Quickshell.screens;
+        if (screens.some(screen => screen.name === requestedOutput))
+            return requestedOutput;
+        const target = screens.find(screen => SettingsService.targetScreens.includes(screen.name));
+        return target?.name ?? screens[0]?.name ?? "";
+    }
     property bool qrSelecting: false
     property bool qrBusy: false
     property string qrGeometry: ""
@@ -18,10 +28,26 @@ QtObject {
     property string _pickerResult: ""
     property string _qrError: ""
 
-    function toggle() {
-        requestedPage = 0;
+    function openPage(page, output, section) {
+        SearchService.close();
+        PowerService.visible = false;
         NotificationService.panelVisible = false;
-        visible = !visible;
+        requestedOutput = output || "";
+        requestedPage = page;
+        settingsSection = section || "display";
+        visible = true;
+    }
+
+    function toggle(output) {
+        if (visible && (!output || output === visibleOutput))
+            visible = false;
+        else
+            openPage(0, output);
+    }
+
+    function screenshot(): void {
+        visible = false;
+        _screenshotDelay.start();
     }
 
     function startQrSelection() {
@@ -56,6 +82,15 @@ QtObject {
 
     function notifyTimer(): void {
         _timerNotificationProcess.running = true;
+    }
+
+    readonly property BackendProcess _screenshot: BackendProcess {
+        arguments: ["niri", "screenshot"]
+    }
+
+    readonly property Timer _screenshotDelay: Timer {
+        interval: 180
+        onTriggered: _screenshot.running = true
     }
 
     readonly property BackendProcess _qrProcess: BackendProcess {

@@ -1,58 +1,63 @@
 pragma ComponentBehavior: Bound
 import QtQuick
+import QtQuick.Controls as Controls
 import QtQuick.Layouts
+import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
+import qs.modules.controlcenter.widgets
 import qs.ui.theme
 import qs.services
 import qs.ui.widgets
 import "pages"
-import qs.modules.controlcenter.widgets
-import qs.modules.notifications
 
 Scope {
     id: root
 
-    readonly property var controlCenterService: ControlCenterService
-    readonly property var volumeService: VolumeService
-    readonly property var networkService: NetworkService
-    readonly property var bluetoothService: BluetoothService
-    readonly property var notificationService: NotificationService
+    readonly property var tabs: [
+        {
+            page: 0,
+            label: "概要"
+        },
+        {
+            page: 5,
+            label: "ネットワーク"
+        },
+        {
+            page: 6,
+            label: "Bluetooth"
+        },
+        {
+            page: 4,
+            label: "音声"
+        },
+        {
+            page: 7,
+            label: "設定"
+        }
+    ]
 
     Variants {
-        model: Quickshell.screens.filter(screen => SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(screen.name))
+        model: Quickshell.screens
 
         PanelWindow {
-            id: controlCenterWindow
-
+            id: panel
             required property var modelData
-            property int currentPage: 0
-            Connections {
-                target: ControlCenterService
-                function onRequestedPageChanged(): void {
-                    controlCenterWindow.currentPage = ControlCenterService.requestedPage;
-                }
-                function onVisibleChanged(): void {
-                    if (ControlCenterService.visible)
-                        controlCenterWindow.currentPage = ControlCenterService.requestedPage;
-                }
-            }
+            readonly property int currentPage: ControlCenterService.requestedPage
+            readonly property bool compact: surface.width < 405
+            readonly property int padding: compact ? 12 : 18
+            readonly property int topInset: Theme.belowBar
+            readonly property bool modalDialogOpen: content.selectedPage?.modalDialogOpen ?? false
 
             screen: modelData
-            visible: true
+            visible: ControlCenterService.visible || surface.reveal > 0
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.namespace: "qsitt:control-center"
-            BackgroundEffect.blurRegion: Region {
-                item: controlCenterContent.blurActive ? controlCenterContent : null
-                radius: Theme.radiusLarge
-            }
-            WlrLayershell.keyboardFocus: ControlCenterService.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+            WlrLayershell.keyboardFocus: !surface.shown ? WlrKeyboardFocus.None : panel.modalDialogOpen ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand
 
-            mask: Region {
-                item: ControlCenterService.visible ? dismissLayer : null
-            }
+            mask: dismissArea.inputRegion
 
             anchors {
                 top: true
@@ -61,45 +66,89 @@ Scope {
                 bottom: true
             }
 
-            Rectangle {
-                id: dismissLayer
-                anchors.fill: parent
-                visible: controlCenterContent.visible
-                opacity: controlCenterContent.reveal
-                enabled: ControlCenterService.visible
-                color: Theme.glassScrim
+            QsPopupDismissArea {
+                id: dismissArea
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.controlCenterService.visible = false
-                }
+                output: panel.modelData
+                enabled: ControlCenterService.visible
+                coverBar: surface.shown && panel.modalDialogOpen
+                onPressed: ControlCenterService.visible = false
             }
 
             QsWindowShadow {
-                surface: controlCenterContent
+                surface: surface
+            }
+
+            Shape {
+                id: connector
+
+                readonly property real phase: surface.progress / 0.88
+
+                x: surface.x + surface.width - 104 + surface.offsetX
+                y: Theme.barHeight - 1
+                width: 72
+                height: Math.max(1, surface.y + surface.offsetY - y + 4)
+                visible: Theme.motionEnabled && phase > 0 && phase < 1 && (SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(panel.modelData.name))
+                opacity: visible ? Math.sin(Math.PI * phase) * 0.65 : 0
+
+                ShapePath {
+                    strokeWidth: -1
+                    fillColor: Theme.surface
+                    startX: 0
+                    startY: 0
+                    PathCubic {
+                        control1X: 29
+                        control1Y: 0
+                        control2X: 14
+                        control2Y: connector.height
+                        x: 12
+                        y: connector.height
+                    }
+                    PathLine {
+                        x: 60
+                        y: connector.height
+                    }
+                    PathCubic {
+                        control1X: 58
+                        control1Y: connector.height
+                        control2X: 43
+                        control2Y: 0
+                        x: 72
+                        y: 0
+                    }
+                    PathLine {
+                        x: 0
+                        y: 0
+                    }
+                }
             }
 
             QsPopupSurface {
-                id: controlCenterContent
+                id: surface
 
-                shown: ControlCenterService.visible
-
+                shown: ControlCenterService.visible && ControlCenterService.visibleOutput === panel.modelData.name
                 anchors {
                     top: parent.top
-                    topMargin: Theme.barHeight + 12
-                    horizontalCenter: parent.horizontalCenter
+                    topMargin: panel.topInset
+                    right: parent.right
+                    rightMargin: Theme.popupInset
                 }
-                transformOrigin: Item.Top
-
-                width: Math.min(660, parent.width - 32)
-                height: Math.min(740, parent.height - anchors.topMargin - 20)
-                color: Theme.glassPanel
+                entryX: 10
+                entryY: -15
+                width: Math.max(1, Math.min(Theme.controlWidth, panel.modelData.width - Theme.popupInset * 2))
+                height: Math.max(1, Math.min(panel.modelData.height - anchors.topMargin - 24, panel.padding * 2 + header.implicitHeight + nav.implicitHeight + content.implicitHeight + 24))
+                color: Theme.surface
                 radius: Theme.radiusLarge
-                border.color: Theme.glassOutline
+                border.color: Theme.borderPrimary
                 border.width: 1
                 clip: true
-                focus: ControlCenterService.visible
-                Keys.onEscapePressed: root.controlCenterService.visible = false
+                Behavior on height {
+                    enabled: surface.shown && surface.progress >= 0.99
+                    QsNumberAnimation {}
+                }
+                onShownChanged: if (shown)
+                    Qt.callLater(() => surface.forceActiveFocus())
+                Keys.onEscapePressed: ControlCenterService.visible = false
 
                 MouseArea {
                     anchors.fill: parent
@@ -107,228 +156,225 @@ Scope {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 20
-                    spacing: Theme.spacingLarge
+                    anchors.margins: panel.padding
+                    spacing: 12
 
                     RowLayout {
+                        id: header
                         Layout.fillWidth: true
-                        spacing: Theme.spacing
+                        spacing: 8
 
                         ColumnLayout {
-                            spacing: 2
+                            Layout.fillWidth: true
+                            spacing: 3
 
-                            Text {
-                                id: dateLabel
+                            QsMarqueeText {
+                                Layout.fillWidth: true
+                                text: "コントロールセンター"
+                                color: Theme.ink
                                 font.family: Theme.fontFamily
-                                text: Qt.formatDateTime(new Date(), "dddd, MMMM d")
-                                color: Theme.textSecondary
+                                font.pixelSize: 21
+                                font.weight: Font.Bold
+                            }
+                            QsMarqueeText {
+                                Layout.fillWidth: true
+                                text: OutputService.label(panel.modelData)
+                                color: Theme.muted
+                                font.family: Theme.fontFamily
                                 font.pixelSize: Theme.fontSizeSmall
-
-                                Timer {
-                                    interval: 60000
-                                    running: controlCenterWindow.visible
-                                    repeat: true
-                                    onTriggered: dateLabel.text = Qt.formatDateTime(new Date(), "dddd, MMMM d")
-                                }
                             }
                         }
 
-                        Item {
-                            Layout.fillWidth: true
-                        }
-
                         QsButton {
-                            text: "設定"
-                            toolTip: "外観・クラムシェルモードの設定"
-                            highlighted: controlCenterWindow.currentPage === 7
-                            onClicked: controlCenterWindow.currentPage = 7
+                            visible: panel.currentPage !== 7
+                            icon: Icons.settings
+                            toolTip: "設定"
+                            variant: QsButton.Ghost
+                            onClicked: ControlCenterService.openPage(7, panel.modelData.name)
                         }
+                        QsButton {
+                            icon: Icons.x
+                            toolTip: "閉じる"
+                            variant: QsButton.Ghost
+                            onClicked: ControlCenterService.visible = false
+                        }
+                    }
+
+                    Rectangle {
+                        id: nav
+                        Layout.fillWidth: true
+                        implicitHeight: 40
+                        radius: 12
+                        color: Theme.bgTertiary
+                        border.color: Theme.borderPrimary
+
+                        readonly property int tabIndex: root.tabs.findIndex(tab => tab.page === panel.currentPage)
+                        readonly property Item selectedTab: tabIndex < 0 ? null : tabButtons.itemAt(tabIndex)
 
                         Rectangle {
-                            implicitWidth: 34
-                            implicitHeight: 34
-                            radius: 17
-                            color: closeArea.containsMouse ? Theme.surfaceContainerHigh : Theme.surfaceContainer
-                            scale: closeArea.pressed ? 0.9 : 1
-                            Behavior on scale {
-                                QsNumberAnimation {
-                                    duration: Theme.motionFast
+                            visible: nav.selectedTab !== null
+                            x: nav.selectedTab ? tabRow.x + nav.selectedTab.x : 0
+                            y: 4
+                            width: nav.selectedTab?.width ?? 0
+                            height: nav.height - 8
+                            radius: 8
+                            color: Theme.bgSecondary
+
+                            Behavior on x {
+                                QsNumberAnimation {}
+                            }
+                            Behavior on width {
+                                QsNumberAnimation {}
+                            }
+                        }
+
+                        RowLayout {
+                            id: tabRow
+                            anchors.fill: parent
+                            anchors.margins: 4
+                            spacing: 3
+
+                            Repeater {
+                                id: tabButtons
+                                model: root.tabs
+                                QsButton {
+                                    required property var modelData
+                                    Layout.fillWidth: true
+                                    Layout.minimumWidth: 0
+                                    Layout.fillHeight: true
+                                    text: modelData.label
+                                    horizontalPadding: panel.compact ? 1 : 6
+                                    labelSize: panel.compact ? 10 : 12
+                                    variant: QsButton.Ghost
+                                    checkable: true
+                                    highlighted: panel.currentPage === modelData.page
+                                    highlightColor: "transparent"
+                                    onClicked: ControlCenterService.requestedPage = modelData.page
                                 }
                             }
-                            Behavior on color {
-                                QsColorAnimation {}
-                            }
-
-                            QsIcon {
-                                anchors.centerIn: parent
-                                icon: Icons.x
-                                size: 16
-                                color: Theme.textSecondary
-                            }
-
-                            MouseArea {
-                                id: closeArea
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: root.controlCenterService.visible = false
-                            }
                         }
                     }
 
-                    RowLayout {
-                        visible: controlCenterWindow.currentPage !== 0
-                        Layout.fillWidth: true
-                        QsButton {
-                            text: "‹  ホーム"
-                            onClicked: controlCenterWindow.currentPage = 0
-                        }
-                        Text {
-                            text: ({
-                                    4: "Audio",
-                                    5: "Network",
-                                    6: "Bluetooth",
-                                    7: "設定"
-                                })[controlCenterWindow.currentPage] || ""
-                            color: Theme.text
-                            font.family: Theme.fontFamily
-                            font.pixelSize: 18
-                        }
-                        Item {
-                            Layout.fillWidth: true
-                        }
-                    }
-                    StackLayout {
-                        id: pageStack
+                    QsPageStack {
+                        id: content
+
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        currentIndex: controlCenterWindow.currentPage === 0 ? 0 : controlCenterWindow.currentPage - 3
-                        onCurrentIndexChanged: pageAnimation.restart()
-                        transform: Translate {
-                            id: pageOffset
-                        }
-                        ParallelAnimation {
-                            id: pageAnimation
-                            QsNumberAnimation {
-                                target: pageStack
-                                property: "opacity"
-                                from: 0
-                                to: 1
-                            }
-                            QsNumberAnimation {
-                                target: pageOffset
-                                property: "x"
-                                from: 12
-                                to: 0
-                            }
-                        }
-                        Flickable {
-                            clip: true
-                            contentWidth: width
-                            contentHeight: home.implicitHeight
-                            boundsBehavior: Flickable.StopAtBounds
-                            ColumnLayout {
-                                id: home
-                                width: parent.width
-                                spacing: 16
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    spacing: 10
-                                    QsSummaryCard {
-                                        title: "Network"
-                                        icon: Icons.wifiHigh
-                                        subtitle: root.networkService.connectionName
-                                        active: root.networkService.isConnected
-                                        onClicked: controlCenterWindow.currentPage = 5
-                                    }
-                                    QsSummaryCard {
-                                        title: "Bluetooth"
-                                        icon: "\ue0da"
-                                        subtitle: root.bluetoothService.enabled ? "接続済み " + root.bluetoothService.devices.filter(d => d.connected).length + " 台" : "オフ"
-                                        active: root.bluetoothService.enabled
-                                        onClicked: controlCenterWindow.currentPage = 6
-                                    }
-                                    QsSummaryCard {
-                                        title: "Audio"
-                                        icon: Icons.volumeHigh
-                                        subtitle: root.volumeService.muted ? "ミュート" : Math.round(root.volumeService.volume * 100) + "% · " + root.volumeService.sinkName
-                                        active: !root.volumeService.muted
-                                        onClicked: controlCenterWindow.currentPage = 4
-                                    }
+                        currentIndex: panel.currentPage
+                        animate: surface.shown && surface.progress >= 0.99
+                        navigationOrder: [0, 1, 2, 3, 5, 6, 4, 7]
+                        pages: [
+                            Component {
+                                HomePage {
+                                    compact: panel.compact
+                                    outputName: panel.modelData.name
+                                    onOpenPage: page => ControlCenterService.requestedPage = page
                                 }
-                                Rectangle {
-                                    Layout.fillWidth: true
-                                    implicitHeight: 78
-                                    radius: 16
-                                    color: Theme.surfaceContainer
-                                    RowLayout {
-                                        anchors.fill: parent
-                                        anchors.margins: 16
-                                        spacing: 14
-                                        QsButton {
-                                            text: root.volumeService.muted ? "消音中" : "音量"
-                                            onClicked: root.volumeService.toggleMute()
-                                        }
-                                        QsSlider {
-                                            Layout.fillWidth: true
-                                            from: 0
-                                            to: 1
-                                            value: root.volumeService.volume
-                                            onMoved: value => root.volumeService.setVolume(value)
-                                        }
-                                        Text {
-                                            text: Math.round(root.volumeService.volume * 100) + "%"
-                                            color: Theme.text
-                                            font.family: Theme.fontFamily
-                                            Layout.preferredWidth: 40
-                                        }
-                                    }
-                                }
-                                MediaControl {
-                                    visible: SettingsService.showMediaInfo
-                                }
-                                RowLayout {
-                                    Layout.fillWidth: true
-                                    QsButton {
-                                        icon: root.notificationService.dnd ? Icons.bellSlash : Icons.bell
-                                        highlighted: root.notificationService.dnd
-                                        checkable: true
-                                        toolTip: root.notificationService.dnd ? "応答不可: オン（クリックで通知を再開）" : "応答不可: オフ（クリックで通知を停止）"
-                                        onClicked: root.notificationService.dnd = !root.notificationService.dnd
-                                    }
-                                    QsButton {
-                                        text: "通知  " + root.notificationService.history.count + "  ›"
-                                        onClicked: {
-                                            root.controlCenterService.visible = false;
-                                            root.notificationService.panelVisible = true;
-                                        }
-                                    }
-                                    Item {
+                            },
+                            Component {
+                                ScrollPage {
+                                    CalendarWidget {
                                         Layout.fillWidth: true
                                     }
-                                    QsButton {
-                                        text: "ロック"
-                                        onClicked: {
-                                            root.controlCenterService.visible = false;
-                                            PowerService.lock();
+                                }
+                            },
+                            Component {
+                                ScrollPage {
+                                    SystemMonitorPage {
+                                        Layout.fillWidth: true
+                                    }
+                                }
+                            },
+                            Component {
+                                ScrollPage {
+                                    ColumnLayout {
+                                        Layout.fillWidth: true
+                                        spacing: 12
+                                        TimerStopwatch {
+                                            Layout.fillWidth: true
+                                        }
+                                        ToolList {
+                                            Layout.fillWidth: true
+                                            controlCenterService: ControlCenterService
+                                        }
+                                        QsButton {
+                                            Layout.fillWidth: true
+                                            text: RecorderService.recording ? "録画を停止" : "範囲を選択して画面録画"
+                                            icon: Icons.record
+                                            enabled: RecorderService.recording || !RecorderService.busy
+                                            onClicked: {
+                                                if (RecorderService.recording)
+                                                    RecorderService.stop();
+                                                else
+                                                    RecorderService.start(panel.modelData.name, true);
+                                            }
                                         }
                                     }
                                 }
+                            },
+                            Component {
+                                ScrollPage {
+                                    AudioPage {
+                                        Layout.fillWidth: true
+                                        volumeService: VolumeService
+                                    }
+                                }
+                            },
+                            Component {
+                                ScrollPage {
+                                    NetworkPage {
+                                        Layout.fillWidth: true
+                                        networkService: NetworkService
+                                    }
+                                }
+                            },
+                            Component {
+                                ScrollPage {
+                                    BluetoothPage {
+                                        Layout.fillWidth: true
+                                        bluetoothService: BluetoothService
+                                    }
+                                }
+                            },
+                            Component {
+                                ScrollPage {
+                                    modalDialogOpen: settingsPage.modalDialogOpen
+
+                                    SettingsPage {
+                                        id: settingsPage
+
+                                        Layout.fillWidth: true
+                                        outputName: panel.modelData.name
+                                    }
+                                }
                             }
-                        }
-                        AudioPage {
-                            volumeService: root.volumeService
-                        }
-                        NetworkPage {
-                            networkService: root.networkService
-                        }
-                        BluetoothPage {
-                            bluetoothService: root.bluetoothService
-                        }
-                        SettingsPage {}
+                        ]
                     }
                 }
             }
+        }
+    }
+
+    component ScrollPage: Flickable {
+        id: scroll
+        default property alias pageContent: body.data
+        property bool modalDialogOpen: false
+
+        clip: true
+        contentWidth: width
+        contentHeight: body.implicitHeight
+        implicitHeight: contentHeight
+        boundsBehavior: Flickable.StopAtBounds
+        onVisibleChanged: if (visible)
+            contentY = 0
+
+        ColumnLayout {
+            id: body
+            width: scroll.width
+        }
+
+        Controls.ScrollBar.vertical: Controls.ScrollBar {
+            policy: Controls.ScrollBar.AsNeeded
         }
     }
 }

@@ -12,14 +12,14 @@ Scope {
         target: "notifications"
         function toggle(): void {
             ControlCenterService.visible = false;
-            NotificationService.panelVisible = !NotificationService.panelVisible;
+            NotificationService.toggleFor("");
         }
         function close(): void {
             NotificationService.panelVisible = false;
         }
     }
     Variants {
-        model: Quickshell.screens.filter(s => SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(s.name))
+        model: NotificationService.panelScreens
         PanelWindow {
             id: window
             required property var modelData
@@ -54,20 +54,23 @@ Scope {
 
             QsPopupSurface {
                 id: notificationContent
-                shown: NotificationService.panelVisible
+                shown: NotificationService.panelVisible && NotificationService.visiblePanelOutput === window.modelData.name
                 anchors {
                     top: parent.top
-                    bottom: parent.bottom
                     right: parent.right
-                    topMargin: Theme.barHeight + 12
-                    bottomMargin: 16
-                    rightMargin: 16
+                    topMargin: Theme.belowBar
+                    rightMargin: Theme.popupInset
                 }
-                width: Math.min(460, parent.width - 32)
+                width: Math.max(1, Math.min(Theme.controlWidth, window.modelData.width - 2 * Theme.popupInset))
+                height: Math.max(1, Math.min(window.modelData.height - anchors.topMargin - 16, 162 + NotificationService.history.count * 100))
                 color: Theme.glassPanel
                 radius: 22
                 border.color: Theme.glassOutline
                 border.width: 1
+                Behavior on height {
+                    enabled: notificationContent.shown && notificationContent.progress >= 0.99
+                    QsNumberAnimation {}
+                }
                 focus: shown
                 Keys.onEscapePressed: NotificationService.panelVisible = false
                 MouseArea {
@@ -82,13 +85,13 @@ Scope {
                         ColumnLayout {
                             Text {
                                 text: "通知"
-                                color: Theme.text
+                                color: Theme.textPrimary
                                 font.family: Theme.fontFamily
                                 font.pixelSize: 22
                                 font.bold: true
                             }
                             Text {
-                                text: Qt.formatDateTime(new Date(), "M月d日 dddd")
+                                text: NotificationService.history.count + " 件の通知"
                                 color: Theme.textSecondary
                                 font.family: Theme.fontFamily
                             }
@@ -97,16 +100,27 @@ Scope {
                             Layout.fillWidth: true
                         }
                         QsButton {
+                            icon: Icons.settings
+                            toolTip: "通知設定"
+                            onClicked: ControlCenterService.openPage(7, window.modelData.name, "notifications")
+                        }
+                        QsButton {
                             text: "閉じる"
                             onClicked: NotificationService.panelVisible = false
                         }
                     }
-                    QsButton {
-                        icon: NotificationService.dnd ? Icons.bellSlash : Icons.bell
-                        highlighted: NotificationService.dnd
-                        checkable: true
-                        toolTip: NotificationService.dnd ? "応答不可: オン（クリックで通知を再開）" : "応答不可: オフ（クリックで通知を停止）"
-                        onClicked: NotificationService.dnd = !NotificationService.dnd
+                    RowLayout {
+                        Layout.fillWidth: true
+                        QsIconLabel {
+                            Layout.fillWidth: true
+                            icon: NotificationService.dnd ? Icons.bellSlash : Icons.bell
+                            text: "おやすみモード"
+                        }
+                        QsSwitch {
+                            checked: NotificationService.dnd
+                            Accessible.name: "おやすみモード"
+                            onToggled: checked => NotificationService.dnd = checked
+                        }
                     }
                     NotificationHistory {
                         notificationService: NotificationService

@@ -26,9 +26,9 @@ Rectangle {
             Layout.preferredWidth: 42
             Layout.preferredHeight: 42
             radius: 8
-            color: root.controlCenterService.pickedColor !== "" ? root.controlCenterService.pickedColor : Theme.primaryContainer
+            color: root.controlCenterService.pickedColor !== "" ? root.controlCenterService.pickedColor : Theme.mustard200
             border.width: 1
-            border.color: Theme.outline
+            border.color: Theme.border
         }
 
         ColumnLayout {
@@ -39,7 +39,7 @@ Rectangle {
                 font.family: Theme.fontFamily
                 Layout.fillWidth: true
                 text: "カラーピッカー"
-                color: Theme.text
+                color: Theme.textPrimary
                 font.bold: true
             }
 
@@ -56,7 +56,7 @@ Rectangle {
         Text {
             font.family: Theme.fontFamily
             text: root.controlCenterService.pickerBusy ? "…" : "実行"
-            color: root.controlCenterService.pickerBusy ? Theme.outline : Theme.accent
+            color: root.controlCenterService.pickerBusy ? Theme.border : Theme.accent
             font.bold: true
         }
     }

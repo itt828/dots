@@ -13,6 +13,7 @@
 | `power poweroff\|reboot\|suspend\|logout` | 電源・セッション操作 |
 | `desktop-theme prefer-light\|prefer-dark` | GNOME color-scheme 同期 |
 | `audio profiles` / `set-profile <card> <profile>` | プロファイル取得・切替 |
+| `bluetooth pair <BlueZ device path>` | BlueZ のペアリングを開始。画面への要求と stdin からの応答は JSON Lines |
 | `state load <kind>` / `save <kind> <value>` | `settings`・`theme`・`mode` の読み書き |
 | `search index` / `query <query> <category>` | Go で SQLite 索引を更新・検索し、結果を JSON 配列で返す |
 | `clipboard watch <mime>` / `add text\|image\|files` / `copy <id>` / `clear` | Go で履歴を監視・保存・再コピー・削除。`add` は stdin から読む |

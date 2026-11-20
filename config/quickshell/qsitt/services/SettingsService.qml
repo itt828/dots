@@ -12,7 +12,10 @@ QtObject {
             animationDuration: 200,
             debug: false,
             lidClamshellMode: false,
-            showMediaInfo: true
+            showMediaInfo: true,
+            barMedia: true,
+            notificationSeconds: 8,
+            notificationHistory: true
         })
     property var values: ({})
     property var pendingChanges: ({})
@@ -25,6 +28,10 @@ QtObject {
     readonly property bool debug: get("debug")
     readonly property bool lidClamshellMode: get("lidClamshellMode")
     readonly property bool showMediaInfo: get("showMediaInfo")
+
+    readonly property bool barMedia: get("barMedia")
+    readonly property int notificationSeconds: get("notificationSeconds")
+    readonly property bool notificationHistory: get("notificationHistory")
 
     function get(key: string): var {
         return Object.prototype.hasOwnProperty.call(values, key) ? values[key] : defaults[key];
@@ -39,8 +46,10 @@ QtObject {
             return Array.isArray(value) && value.every(item => typeof item === "string");
         if (key === "animationDuration")
             return typeof value === "number" && Number.isFinite(value) && value >= 0;
-        if (key === "debug" || key === "lidClamshellMode" || key === "showMediaInfo")
+        if (key === "debug" || key === "lidClamshellMode" || key === "showMediaInfo" || key === "barMedia" || key === "notificationHistory")
             return typeof value === "boolean";
+        if (key === "notificationSeconds")
+            return [5, 8, 12, 20].includes(value);
         return false;
     }
 
