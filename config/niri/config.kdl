@@ -16,7 +16,7 @@ input {
     }
     tablet {
     }
-    warp-mouse-to-focus
+    // warp-mouse-to-focus
     focus-follows-mouse max-scroll-amount="0%"
 }
 
@@ -57,7 +57,7 @@ layout {
         active-color "#d9a3a3"
         inactive-color "#6f8792"
     }
-    // Match qsitt's window shadow (KDL colors use #RRGGBBAA).
+    // Match kalumiru's window shadow (KDL colors use #RRGGBBAA).
     shadow {
         on
         softness 16
@@ -73,7 +73,7 @@ layer-rule {
     place-within-backdrop true
 }
 
-// Frosted glass shared by Ghostty and qsitt's requested blur regions.
+// Frosted glass shared by Ghostty and kalumiru's requested blur regions.
 blur {
     passes 3
     offset 4
@@ -82,7 +82,7 @@ blur {
 }
 
 layer-rule {
-    match namespace="^qsitt:"
+    match namespace="^kalumiru:"
     background-effect {
         // Blur the windows behind panels rather than only the wallpaper.
         xray false
@@ -96,6 +96,15 @@ window-rule {
         blur true
         xray false
     }
+}
+
+window-rule {
+    match app-id="^chatgpt$" is-floating=true
+
+    shadow { off; }
+    border { off; }
+    focus-ring { off; }
+    draw-border-with-background false
 }
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
@@ -134,7 +143,7 @@ window-rule {
     }
 }
 
-spawn-at-startup "qs" "-c" "qsitt"
+spawn-at-startup "qs" "-c" "kalumiru"
 // spawn-at-startup "sh" "-c" "ags run --gtk 4"
 spawn-at-startup "xwayland-satellite"
 spawn-at-startup "awww-daemon"
@@ -154,13 +163,13 @@ debug {
 binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
     Mod+Return { spawn "ghostty"; }
-    Mod+D { spawn "qs" "-c" "qsitt" "ipc" "call" "search" "toggle"; }
+    Mod+D { spawn "qs" "-c" "kalumiru" "ipc" "call" "search" "toggle"; }
     Mod+N { spawn "swaync-client" "-t";}
     XF86Display { spawn "niri-mirror"; }
     Mod+T { spawn "niri-tablet"; }
     // Mod+Shift+B { spawn "qs" "-c"  "noctalia-shell"; }
     // Mod+Shift+B { spawn "sh" "-c" "ags run --gtk 4"; }
-    Mod+Shift+B { spawn "qs" "-c" "qsitt"; }
+    Mod+Shift+B { spawn "qs" "-c" "kalumiru"; }
     XF86AudioMute        allow-when-locked=true { spawn "pactl" "set-sink-mute" "@DEFAULT_SINK@" "toggle"; }
     XF86AudioRaiseVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "+5%"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn "pactl" "set-sink-volume" "@DEFAULT_SINK@" "-5%"; }
