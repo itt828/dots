@@ -11,10 +11,11 @@ import qs.ui.widgets
 FloatingWindow {
     id: root
 
+    readonly property int tokensCategory: 7
     property int category: 0
 
     title: "kalumiru UI ギャラリー"
-    visible: false
+    visible: true
     color: Theme.bgPrimary
     implicitWidth: 800
     implicitHeight: 620
@@ -30,6 +31,13 @@ FloatingWindow {
 
         function open(): void {
             root.visible = true;
+        }
+
+        function openTokens(): void {
+            root.category = root.tokensCategory;
+            gallery.contentY = 0;
+            root.visible = true;
+            navigation.contentY = Math.max(0, navigation.contentHeight - navigation.height);
         }
 
         function close(): void {
@@ -76,26 +84,46 @@ FloatingWindow {
             Layout.fillHeight: true
             spacing: 14
 
-            ColumnLayout {
-                Layout.alignment: Qt.AlignTop
+            Flickable {
+                id: navigation
+
                 Layout.fillWidth: false
+                Layout.fillHeight: true
                 Layout.preferredWidth: 132
-                spacing: 3
+                Layout.preferredHeight: 1
+                contentWidth: width
+                contentHeight: categories.height
+                flickableDirection: Flickable.VerticalFlick
+                boundsBehavior: Flickable.StopAtBounds
+                clip: true
 
-                Repeater {
-                    model: ["すべて", "ボタン", "入力", "表示", "ワークスペース", "メディア", "通知"]
-                    delegate: QsButton {
-                        required property int index
-                        required property string modelData
+                Controls.ScrollBar.vertical: Controls.ScrollBar {}
 
-                        Layout.fillWidth: true
-                        implicitHeight: 28
-                        text: modelData
-                        checkable: true
-                        highlighted: root.category === index
-                        onClicked: {
-                            root.category = index;
-                            gallery.contentY = 0;
+                ColumnLayout {
+                    id: categories
+
+                    width: navigation.width
+                    spacing: 3
+
+                    Repeater {
+                        model: ["すべての部品", "ボタン", "入力", "表示", "ワークスペース", "メディア", "通知", "トークン"]
+                        delegate: QsButton {
+                            required property int index
+                            required property string modelData
+
+                            Layout.fillWidth: true
+                            implicitHeight: 28
+                            text: modelData
+                            checkable: true
+                            highlighted: root.category === index
+                            onClicked: {
+                                root.category = index;
+                                gallery.contentY = 0;
+                            }
+                            onActiveFocusChanged: {
+                                if (activeFocus)
+                                    navigation.contentY = Math.max(y + height - navigation.height, Math.min(y, navigation.contentY));
+                            }
                         }
                     }
                 }
@@ -145,6 +173,10 @@ FloatingWindow {
                     NotificationStories {
                         visible: root.category === 0 || root.category === 6
                         previewActive: root.visible
+                    }
+
+                    DesignTokens {
+                        visible: root.category === root.tokensCategory
                     }
                 }
             }
