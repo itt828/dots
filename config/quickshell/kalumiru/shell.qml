@@ -19,17 +19,27 @@ ShellRoot {
         LidService.start();
     }
 
-    Bar {}
+    Bar {
+        id: mainBar
+    }
     ControlCenterIpc {}
-    ControlCenter {}
+    ControlCenter {
+        bar: mainBar
+    }
     Lock {}
     Notifications {}
-    NotificationPanel {}
+    NotificationPanel {
+        bar: mainBar
+    }
     Osd {}
     DebugWindow {}
     QrScanner {}
-    Search {}
+    Search {
+        bar: mainBar
+    }
     SearchIpc {}
     ThemeIpc {}
-    PowerMenu {}
+    PowerMenu {
+        bar: mainBar
+    }
 }

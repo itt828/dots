@@ -4,10 +4,15 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Io
+import qs.modules.bar
 import qs.services
 import qs.ui.theme
 
 Scope {
+    id: root
+
+    required property Bar bar
+
     IpcHandler {
         target: "notifications"
         function toggle(): void {
@@ -19,12 +24,12 @@ Scope {
         }
     }
     Variants {
-        model: NotificationService.panelScreens
+        model: Quickshell.screens
         PanelWindow {
             id: window
             required property var modelData
             screen: modelData
-            visible: notificationContent.shown || notificationContent.reveal > 0
+            visible: (NotificationService.panelVisible && NotificationService.visiblePanelOutput !== "") || notificationContent.reveal > 0
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Overlay
@@ -34,18 +39,18 @@ Scope {
                 radius: notificationContent.radius
             }
             WlrLayershell.keyboardFocus: notificationContent.shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
-            mask: Region {
-                item: notificationContent.shown ? window.contentItem : null
-            }
+            mask: dismissArea.inputRegion
             anchors {
                 top: true
                 bottom: true
                 left: true
                 right: true
             }
-            MouseArea {
-                anchors.fill: parent
-                enabled: notificationContent.shown
+            QsPopupDismissArea {
+                id: dismissArea
+
+                enabled: NotificationService.panelVisible && NotificationService.visiblePanelOutput !== ""
+                passthroughRegion: root.bar.popupTriggerRegion(window.screen)
                 onClicked: NotificationService.panelVisible = false
             }
             QsWindowShadow {
@@ -75,6 +80,7 @@ Scope {
                 Keys.onEscapePressed: NotificationService.panelVisible = false
                 MouseArea {
                     anchors.fill: parent
+                    acceptedButtons: Qt.AllButtons
                 }
                 ColumnLayout {
                     anchors.fill: parent

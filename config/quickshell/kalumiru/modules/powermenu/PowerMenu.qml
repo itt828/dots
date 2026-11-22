@@ -3,12 +3,15 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
+import qs.modules.bar
 import qs.services
 import qs.ui.widgets
 import qs.ui.theme
 
 Scope {
     id: root
+
+    required property Bar bar
 
     Variants {
         model: Quickshell.screens
@@ -39,9 +42,9 @@ Scope {
             QsPopupDismissArea {
                 id: dismissArea
 
-                output: powerMenuWindow.modelData
                 enabled: PowerService.visible
-                onPressed: PowerService.visible = false
+                passthroughRegion: root.bar.popupTriggerRegion(powerMenuWindow.screen)
+                onClicked: PowerService.visible = false
             }
 
             QsWindowShadow {
@@ -72,6 +75,7 @@ Scope {
 
                 MouseArea {
                     anchors.fill: parent
+                    acceptedButtons: Qt.AllButtons
                 }
 
                 ColumnLayout {

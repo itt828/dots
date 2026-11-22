@@ -6,7 +6,7 @@ import qs.ui.theme
 import qs.ui.widgets
 import qs.services
 
-Rectangle {
+Pill {
     id: root
 
     required property int availableWidth
@@ -28,14 +28,7 @@ Rectangle {
 
     visible: presenting || reveal > 0
     implicitWidth: Math.round(fullWidth * Math.max(0, Math.min(1, reveal)))
-    implicitHeight: 38
-    radius: 10
-    color: Theme.bgTertiary
-    clip: true
     opacity: Math.max(0, Math.min(1, reveal))
-    transform: Translate {
-        y: (1 - root.reveal) * -6
-    }
 
     function updateTrack(): void {
         if (!trackTitle)
@@ -99,105 +92,110 @@ Rectangle {
         duration: Theme.motionNormal
     }
 
-    RowLayout {
-        anchors.centerIn: parent
-        width: root.fullWidth - 10
-        height: parent.height
-        spacing: 2
+    Item {
+        anchors.fill: parent
+        clip: true
 
-        Item {
-            id: track
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            Layout.minimumWidth: 0
-            activeFocusOnTab: root.presenting
-            Accessible.role: Accessible.Button
-            Accessible.name: "再生中 " + (root.player?.trackTitle ?? "")
-            Accessible.onPressAction: open()
-            Keys.onReturnPressed: open()
-            Keys.onSpacePressed: open()
+        RowLayout {
+            anchors.centerIn: parent
+            width: root.fullWidth - 10
+            height: parent.height
+            spacing: 2
 
-            function open(): void {
-                if (!root.presenting || !root.player)
-                    return;
-                root.trackActivated(root.player.dbusName);
-            }
+            Item {
+                id: track
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                Layout.minimumWidth: 0
+                activeFocusOnTab: root.presenting
+                Accessible.role: Accessible.Button
+                Accessible.name: "再生中 " + (root.player?.trackTitle ?? "")
+                Accessible.onPressAction: open()
+                Keys.onReturnPressed: open()
+                Keys.onSpacePressed: open()
 
-            RowLayout {
-                anchors.fill: parent
-                spacing: 8
-                opacity: 0.35 + 0.65 * root.trackReveal
-                transform: Translate {
-                    y: (1 - root.trackReveal) * 6
+                function open(): void {
+                    if (!root.presenting || !root.player)
+                        return;
+                    root.trackActivated(root.player.dbusName);
                 }
 
-                Rectangle {
-                    Layout.preferredWidth: 28
-                    Layout.preferredHeight: 28
-                    radius: 6
-                    color: Theme.mustard200
-                    clip: true
-
-                    Image {
-                        id: art
-                        anchors.fill: parent
-                        source: root.displayedArt
-                        fillMode: Image.PreserveAspectCrop
-                        asynchronous: true
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 8
+                    opacity: 0.35 + 0.65 * root.trackReveal
+                    transform: Translate {
+                        y: (1 - root.trackReveal) * 6
                     }
-                    QsIcon {
-                        anchors.centerIn: parent
-                        icon: Icons.mediaMusic
-                        size: 16
-                        color: Theme.mustard800
-                        visible: art.status !== Image.Ready
+
+                    Rectangle {
+                        Layout.preferredWidth: 28
+                        Layout.preferredHeight: 28
+                        radius: 6
+                        color: Theme.mustard200
+                        clip: true
+
+                        Image {
+                            id: art
+                            anchors.fill: parent
+                            source: root.displayedArt
+                            fillMode: Image.PreserveAspectCrop
+                            asynchronous: true
+                        }
+                        QsIcon {
+                            anchors.centerIn: parent
+                            icon: Icons.mediaMusic
+                            size: 16
+                            color: Theme.mustard800
+                            visible: art.status !== Image.Ready
+                        }
+                    }
+
+                    QsMarqueeText {
+                        Layout.fillWidth: true
+                        text: root.displayedTitle + (root.displayedArtist ? " · " + root.displayedArtist : "")
+                        color: Theme.ink
+                        font.family: Theme.fontFamily
+                        font.pixelSize: Theme.fontSizeSmall
+                        font.weight: Font.DemiBold
+                        textFormat: Text.PlainText
                     }
                 }
 
-                QsMarqueeText {
-                    Layout.fillWidth: true
-                    text: root.displayedTitle + (root.displayedArtist ? " · " + root.displayedArtist : "")
-                    color: Theme.ink
-                    font.family: Theme.fontFamily
-                    font.pixelSize: Theme.fontSizeSmall
-                    font.weight: Font.DemiBold
-                    textFormat: Text.PlainText
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: track.open()
                 }
             }
 
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: track.open()
+            QsButton {
+                icon: Icons.mediaPrev
+                toolTip: "前の曲"
+                variant: QsButton.Ghost
+                implicitWidth: 27
+                implicitHeight: 29
+                enabled: root.player?.canGoPrevious ?? false
+                onClicked: root.player?.previous()
             }
-        }
-
-        QsButton {
-            icon: Icons.mediaPrev
-            toolTip: "前の曲"
-            variant: QsButton.Ghost
-            implicitWidth: 27
-            implicitHeight: 29
-            enabled: root.player?.canGoPrevious ?? false
-            onClicked: root.player?.previous()
-        }
-        QsButton {
-            icon: root.playing ? Icons.mediaPause : Icons.mediaPlay
-            toolTip: root.playing ? "一時停止" : "再生"
-            variant: QsButton.Ghost
-            implicitWidth: 27
-            implicitHeight: 29
-            enabled: MediaService.canChangePlayback(root.player)
-            onClicked: MediaService.togglePlayback(root.player)
-        }
-        QsButton {
-            icon: Icons.mediaNext
-            toolTip: "次の曲"
-            variant: QsButton.Ghost
-            implicitWidth: 27
-            implicitHeight: 29
-            enabled: root.player?.canGoNext ?? false
-            onClicked: root.player?.next()
+            QsButton {
+                icon: root.playing ? Icons.mediaPause : Icons.mediaPlay
+                toolTip: root.playing ? "一時停止" : "再生"
+                variant: QsButton.Ghost
+                implicitWidth: 27
+                implicitHeight: 29
+                enabled: MediaService.canChangePlayback(root.player)
+                onClicked: MediaService.togglePlayback(root.player)
+            }
+            QsButton {
+                icon: Icons.mediaNext
+                toolTip: "次の曲"
+                variant: QsButton.Ghost
+                implicitWidth: 27
+                implicitHeight: 29
+                enabled: root.player?.canGoNext ?? false
+                onClicked: root.player?.next()
+            }
         }
     }
 }

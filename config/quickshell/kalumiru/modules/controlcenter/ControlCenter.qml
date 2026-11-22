@@ -2,9 +2,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
-import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
+import qs.modules.bar
 import qs.modules.controlcenter.widgets
 import qs.ui.theme
 import qs.services
@@ -14,6 +14,7 @@ import "pages"
 Scope {
     id: root
 
+    required property Bar bar
     readonly property var tabs: [
         {
             page: 0,
@@ -69,58 +70,13 @@ Scope {
             QsPopupDismissArea {
                 id: dismissArea
 
-                output: panel.modelData
                 enabled: ControlCenterService.visible
-                coverBar: surface.shown && panel.modalDialogOpen
-                onPressed: ControlCenterService.visible = false
+                passthroughRegion: surface.shown && panel.modalDialogOpen ? null : root.bar.popupTriggerRegion(panel.screen)
+                onClicked: ControlCenterService.visible = false
             }
 
             QsWindowShadow {
                 surface: surface
-            }
-
-            Shape {
-                id: connector
-
-                readonly property real phase: surface.progress / 0.88
-
-                x: surface.x + surface.width - 104 + surface.offsetX
-                y: Theme.barHeight - 1
-                width: 72
-                height: Math.max(1, surface.y + surface.offsetY - y + 4)
-                visible: Theme.motionEnabled && phase > 0 && phase < 1 && (SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(panel.modelData.name))
-                opacity: visible ? Math.sin(Math.PI * phase) * 0.65 : 0
-
-                ShapePath {
-                    strokeWidth: -1
-                    fillColor: Theme.surface
-                    startX: 0
-                    startY: 0
-                    PathCubic {
-                        control1X: 29
-                        control1Y: 0
-                        control2X: 14
-                        control2Y: connector.height
-                        x: 12
-                        y: connector.height
-                    }
-                    PathLine {
-                        x: 60
-                        y: connector.height
-                    }
-                    PathCubic {
-                        control1X: 58
-                        control1Y: connector.height
-                        control2X: 43
-                        control2Y: 0
-                        x: 72
-                        y: 0
-                    }
-                    PathLine {
-                        x: 0
-                        y: 0
-                    }
-                }
             }
 
             QsPopupSurface {
@@ -152,6 +108,7 @@ Scope {
 
                 MouseArea {
                     anchors.fill: parent
+                    acceptedButtons: Qt.AllButtons
                 }
 
                 ColumnLayout {

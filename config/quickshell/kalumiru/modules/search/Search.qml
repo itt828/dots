@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import Quickshell
 import Quickshell.Wayland
+import qs.modules.bar
 import qs.ui.theme
 import qs.ui.widgets
 import qs.services
@@ -11,6 +12,7 @@ import qs.services
 Scope {
     id: root
 
+    required property Bar bar
     readonly property var searchService: SearchService
     readonly property var categories: SearchService.scopes
     readonly property var categoryShortcuts: ["all", "apps", "web", "files", "tools", "clipboard", "calc"]
@@ -126,15 +128,12 @@ Scope {
         PanelWindow {
             id: searchWindow
             required property var modelData
-            readonly property bool hasBar: SettingsService.targetScreens.length === 0 || SettingsService.targetScreens.includes(modelData.name)
 
             screen: modelData
-            // Item.visible also reflects its parent window's visibility.
-            // Use the popup state directly so a hidden window can open again.
-            visible: panel.shown || panel.reveal > 0
+            visible: root.searchService.visible || panel.reveal > 0
             color: "transparent"
             exclusionMode: ExclusionMode.Ignore
-            WlrLayershell.layer: WlrLayer.Top
+            WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.namespace: "kalumiru:search"
             BackgroundEffect.blurRegion: Region {
                 item: panel.blurActive ? panel : null
@@ -147,21 +146,14 @@ Scope {
                 right: true
                 bottom: true
             }
-            mask: Region {
-                item: panel.shown ? dismissLayer : null
-            }
+            mask: dismissArea.inputRegion
 
-            Rectangle {
-                id: dismissLayer
-                anchors.fill: parent
-                anchors.topMargin: searchWindow.hasBar ? Theme.barHeight : 0
-                color: Theme.glassScrim
-                opacity: panel.progress
-                enabled: panel.shown
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.searchService.close()
-                }
+            QsPopupDismissArea {
+                id: dismissArea
+
+                enabled: root.searchService.visible
+                passthroughRegion: root.bar.popupTriggerRegion(searchWindow.screen)
+                onClicked: root.searchService.close()
             }
 
             QsWindowShadow {
@@ -219,6 +211,7 @@ Scope {
 
                 MouseArea {
                     anchors.fill: parent
+                    acceptedButtons: Qt.AllButtons
                     onClicked: searchInput.forceActiveFocus()
                 }
 

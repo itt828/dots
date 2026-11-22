@@ -77,7 +77,8 @@ QtObject {
     readonly property int controlWidth: 494
     readonly property int expandedWidth: 1280
     readonly property int barHeight: 46
-    readonly property int barRadius: 15
     readonly property int barOuterMargin: 8
+    readonly property int barPillHeight: barHeight - barOuterMargin
+    readonly property int barRadius: barPillHeight / 2
     readonly property int belowBar: barHeight + 16
 }

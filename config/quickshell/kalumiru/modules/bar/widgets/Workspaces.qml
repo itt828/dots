@@ -9,8 +9,11 @@ Rectangle {
     required property var workspaceService
     property string outputName: ""
     property bool showOtherOutputs: false
-    readonly property int buttonSize: 24
-    readonly property int buttonRadius: 6
+    readonly property int buttonWidth: 16
+    readonly property int buttonHeight: 24
+    readonly property int dividerWidth: 17
+    readonly property int dotSize: 9
+    readonly property int focusedExtraWidth: 20
 
     readonly property var displayEntries: {
         const all = workspaceService.workspaces || [];
@@ -34,30 +37,11 @@ Rectangle {
         return entries;
     }
 
-    readonly property int activeIndex: displayEntries.findIndex(workspace => workspace?.output === outputName && workspace.is_active)
-    property bool markerVisible: false
-    property bool markerFocused: false
-    property real markerX: 0
-
-    function placeMarker(): void {
-        const entry = workspaceRepeater.itemAt(activeIndex);
-        if (!entry) {
-            markerVisible = false;
-            return;
-        }
-
-        markerX = entry.x;
-        markerFocused = entry.focused;
-        markerVisible = true;
-    }
-
-    onDisplayEntriesChanged: Qt.callLater(placeMarker)
-
     color: Theme.bgTertiary
     radius: 11
     visible: displayEntries.length > 0
     implicitWidth: workspaceRow.implicitWidth + 8
-    implicitHeight: buttonSize + 8
+    implicitHeight: buttonHeight + 8
 
     Flickable {
         anchors.fill: parent
@@ -69,85 +53,59 @@ Rectangle {
         boundsBehavior: Flickable.StopAtBounds
         interactive: contentWidth > width
 
-        Rectangle {
-            id: marker
-
-            x: root.markerX
-            width: root.buttonSize
-            height: root.buttonSize
-            anchors.verticalCenter: workspaceRow.verticalCenter
-            radius: root.buttonRadius
-            visible: root.markerVisible
-            color: root.markerFocused ? Theme.mustard800 : Theme.bgSecondary
-            border.color: Theme.mustard800
-            border.width: root.markerFocused ? 0 : 1
-
-            Behavior on x {
-                enabled: marker.visible
-                QsNumberAnimation {}
-            }
-        }
-
         Row {
             id: workspaceRow
 
             height: parent.height
-            spacing: 4
+            spacing: 2
 
             Repeater {
-                id: workspaceRepeater
+                model: root.displayEntries.length
 
-                model: root.displayEntries
-                onItemAdded: Qt.callLater(root.placeMarker)
-                onItemRemoved: Qt.callLater(root.placeMarker)
-
-                Rectangle {
+                Item {
                     id: entry
 
-                    required property var modelData
-                    readonly property bool divider: modelData === null
-                    readonly property bool local: !divider && modelData.output === root.outputName
-                    readonly property bool selected: !divider && (modelData.is_active ?? false)
-                    readonly property bool focused: !divider && (modelData.is_focused ?? false)
-                    readonly property bool urgent: !divider && (modelData.is_urgent ?? false) && !focused
-                    readonly property bool overMarker: local && marker.visible && x + width / 2 >= marker.x && x + width / 2 < marker.x + marker.width
-                    readonly property bool filled: overMarker ? root.markerFocused : selected && !local && focused
-                    readonly property bool outlined: selected && !local && !focused
+                    required property int index
+                    readonly property var workspace: root.displayEntries[index] ?? null
+                    readonly property bool divider: workspace === null
+                    readonly property bool focused: workspace?.is_focused ?? false
+                    readonly property bool selected: focused || (workspace?.is_active ?? false)
+                    readonly property bool urgent: workspace?.is_urgent ?? false
 
-                    onXChanged: if (local && selected)
-                        Qt.callLater(root.placeMarker)
-                    width: divider ? 1 : root.buttonSize
-                    height: divider ? 16 : root.buttonSize
+                    width: divider ? root.dividerWidth : root.buttonWidth + (focused ? root.focusedExtraWidth : 0)
+                    height: root.buttonHeight
                     anchors.verticalCenter: parent.verticalCenter
-                    radius: root.buttonRadius
-                    color: {
-                        if (divider)
-                            return Theme.borderPrimary;
-                        if (selected && !local)
-                            return focused ? Theme.mustard800 : Theme.bgSecondary;
-                        if (urgent && !overMarker)
-                            return Theme.errorSurface;
-                        return "transparent";
-                    }
-                    border.width: activeFocus ? 2 : outlined || (!divider && !overMarker && !selected) ? 1 : 0
-                    border.color: activeFocus ? Theme.focus : outlined ? Theme.mustard800 : Theme.border
                     activeFocusOnTab: !divider
                     Accessible.ignored: divider
                     Accessible.role: Accessible.Button
-                    Accessible.name: divider ? "" : modelData.name || "ワークスペース " + modelData.idx
+                    Accessible.name: divider ? "" : workspace.name || "ワークスペース " + workspace.idx
                     Accessible.selected: selected
                     Accessible.onPressAction: activate()
 
                     function activate(): void {
                         if (!divider)
-                            root.workspaceService.activateWorkspace(modelData.output, modelData.idx);
+                            root.workspaceService.activateWorkspace(workspace.output, workspace.idx);
+                    }
+
+                    Behavior on width {
+                        enabled: !entry.divider
+                        QsNumberAnimation {}
                     }
 
                     QsHoverBackground {
                         hovered: !entry.divider && area.containsMouse
-                        anchors.margins: entry.border.width
-                        radius: entry.radius
-                        color: entry.filled ? Theme.withAlpha(Theme.surface, 0.16) : entry.overMarker || entry.outlined ? Theme.withAlpha(Theme.ink, 0.06) : Theme.hover
+                        anchors.margins: 1
+                        radius: height / 2
+                    }
+
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: entry.divider ? 1 : Math.max(root.dotSize, entry.width - root.buttonWidth + root.dotSize)
+                        height: entry.divider ? 16 : root.dotSize
+                        radius: entry.divider ? 0 : height / 2
+                        color: entry.divider ? Theme.borderPrimary : entry.selected ? Theme.mustard800 : "transparent"
+                        border.width: entry.divider ? 0 : entry.activeFocus ? 2 : entry.selected ? 0 : 1
+                        border.color: entry.activeFocus ? Theme.focus : entry.urgent ? Theme.error : Theme.muted
                     }
 
                     MouseArea {

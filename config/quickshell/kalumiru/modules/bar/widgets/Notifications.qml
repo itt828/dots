@@ -34,6 +34,7 @@ Rectangle {
     }
 
     property int lastCount: notificationService.history.count
+    readonly property bool iconOnly: lastCount === 0
     onLastCountChanged: {
         highlight.flash();
     }
@@ -52,7 +53,7 @@ Rectangle {
         hovered: statusHover.hovered
         anchors.centerIn: parent
         icon: notificationService.dnd ? Icons.bellSlash : Icons.bell
-        text: notificationService.history.count > 0 ? notificationService.history.count.toString() : ""
+        text: root.iconOnly ? "" : root.lastCount.toString()
     }
 
     MouseArea {
