@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Effects
@@ -133,6 +134,8 @@ QsPopupSurface {
                         font.pixelSize: 10
                         opacity: 0.7
                         Layout.fillWidth: true
+                        Layout.minimumWidth: 0
+                        elide: Text.ElideRight
                     }
 
                     QsButton {
@@ -169,6 +172,8 @@ QsPopupSurface {
                 }
 
                 Flow {
+                    id: actionFlow
+
                     Layout.fillWidth: true
                     Layout.preferredHeight: implicitHeight
                     spacing: 6
@@ -177,6 +182,7 @@ QsPopupSurface {
                         delegate: QsButton {
                             required property var modelData
                             text: modelData.text
+                            maximumTextWidth: Math.max(0, actionFlow.width - horizontalPadding * 2)
                             onClicked: {
                                 modelData.invoke();
                                 root.closed();

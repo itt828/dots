@@ -9,12 +9,13 @@ import qs.services
 Rectangle {
     id: root
 
-    required property string outputName
     required property int availableWidth
-    readonly property var player: MediaService.barPlayer
+    property var player: MediaService.barPlayer
+    property bool mediaEnabled: SettingsService.barMedia
+    signal trackActivated(string busName)
     readonly property bool playing: player?.playbackState === MprisPlaybackState.Playing
 
-    readonly property bool presenting: SettingsService.barMedia && player !== null && availableWidth >= 152
+    readonly property bool presenting: mediaEnabled && player !== null && availableWidth >= 152
     readonly property int fullWidth: Math.max(152, Math.min(316, availableWidth))
     readonly property string trackTitle: player?.trackTitle ?? ""
     readonly property string trackArtist: player?.trackArtist ?? ""
@@ -119,8 +120,7 @@ Rectangle {
             function open(): void {
                 if (!root.presenting || !root.player)
                     return;
-                MediaService.selectedBus = root.player.dbusName;
-                ControlCenterService.openPage(4, root.outputName);
+                root.trackActivated(root.player.dbusName);
             }
 
             RowLayout {

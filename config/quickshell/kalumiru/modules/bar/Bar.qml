@@ -20,7 +20,6 @@ Scope {
             screen: modelData
             color: "transparent"
             WlrLayershell.namespace: "kalumiru:bar"
-            // Keep the press active when the compositor moves focus from an open menu to the bar.
             WlrLayershell.keyboardFocus: ControlCenterService.visible || PowerService.visible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
             exclusiveZone: Theme.barHeight + Theme.barOuterMargin
             implicitHeight: Math.max(exclusiveZone, Theme.barHeight + Math.ceil(barShadow.blur + barShadow.offset.y))
@@ -80,8 +79,11 @@ Scope {
 
                 centerContent: BarUi.NowPlaying {
                     id: nowPlaying
-                    outputName: barWindow.modelData.name
                     availableWidth: Math.max(0, barContent.width - 2 * (barContent.rightWidth + barContent.centerTrailingWidth + 16))
+                    onTrackActivated: busName => {
+                        MediaService.selectedBus = busName;
+                        ControlCenterService.openPage(4, barWindow.modelData.name);
+                    }
                 }
 
                 centerTrailingContent: BarUi.Clock {

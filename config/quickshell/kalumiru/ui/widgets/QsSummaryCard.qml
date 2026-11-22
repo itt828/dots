@@ -65,6 +65,7 @@ Rectangle {
             Text {
                 Layout.fillWidth: true
                 text: root.title
+                textFormat: Text.PlainText
                 color: root.enabled ? Theme.ink : Theme.disabledInk
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.fontSizeBody

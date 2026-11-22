@@ -18,6 +18,7 @@ Rectangle {
     property bool highlighted: false
     property int horizontalPadding: 16
     property int labelSize: Theme.fontSizeBody
+    property real maximumTextWidth: -1
     property int variant: QsButton.Secondary
     property color highlightColor: Theme.accent
     signal clicked
@@ -67,6 +68,9 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             visible: root.text !== ""
             text: root.text
+            textFormat: Text.PlainText
+            width: root.maximumTextWidth < 0 ? implicitWidth : Math.min(implicitWidth, root.maximumTextWidth)
+            elide: Text.ElideRight
             color: !root.enabled ? Theme.disabledInk : root.destructive ? Theme.surface : Theme.ink
             font.family: Theme.fontFamily
             font.pixelSize: root.labelSize

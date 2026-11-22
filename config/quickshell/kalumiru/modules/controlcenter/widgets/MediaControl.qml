@@ -9,8 +9,10 @@ import qs.ui.theme
 QsPanelCard {
     id: root
 
-    readonly property var players: MediaService.players
-    readonly property var player: MediaService.player
+    property var mediaService: MediaService
+    property string outputLabel: VolumeService.sink ? VolumeService.sinkName : ""
+    readonly property var players: mediaService.players
+    readonly property var player: mediaService.player
     property bool compact: false
     readonly property bool playing: player?.playbackState === MprisPlaybackState.Playing
 
@@ -63,7 +65,7 @@ QsPanelCard {
             }
             QsMarqueeText {
                 Layout.fillWidth: true
-                text: [root.player?.trackArtist || root.player?.identity, VolumeService.sink ? VolumeService.sinkName : ""].filter(value => value).join(" · ")
+                text: [root.player?.trackArtist || root.player?.identity, root.outputLabel].filter(value => value).join(" · ")
                 textFormat: Text.PlainText
                 color: Theme.muted
                 font.family: Theme.fontFamily
@@ -78,7 +80,7 @@ QsPanelCard {
             implicitWidth: 30
             implicitHeight: 30
             variant: QsButton.Ghost
-            onClicked: MediaService.selectNext()
+            onClicked: root.mediaService.selectNext()
         }
         QsButton {
             icon: Icons.mediaPrev

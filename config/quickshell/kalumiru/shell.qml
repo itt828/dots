@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import qs.modules.bar
 import qs.modules.controlcenter
+import qs.modules.debug
 import qs.modules.lock
 import qs.modules.notifications
 import qs.modules.osd
@@ -25,6 +26,7 @@ ShellRoot {
     Notifications {}
     NotificationPanel {}
     Osd {}
+    DebugWindow {}
     QrScanner {}
     Search {}
     SearchIpc {}
