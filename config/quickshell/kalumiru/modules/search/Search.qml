@@ -169,6 +169,11 @@ Scope {
                 closedScale: 0.96
                 property real resultsHeight: 72
 
+                function focusSearchInput(): void {
+                    if (shown)
+                        searchInput.forceActiveFocus();
+                }
+
                 function updateResultsHeight(): void {
                     if (!shown || root.searchService.searching)
                         return;
@@ -176,8 +181,12 @@ Scope {
                     resultsHeight = Math.min(420, Math.max(72, rows.reduce((sum, row) => sum + (row.preview ? 91 : 54), 0)));
                 }
 
-                onShownChanged: if (shown)
-                    Qt.callLater(updateResultsHeight)
+                onShownChanged: {
+                    if (shown) {
+                        Qt.callLater(focusSearchInput);
+                        Qt.callLater(updateResultsHeight);
+                    }
+                }
                 onRevealChanged: if (!shown && reveal <= 0)
                     resultsHeight = 72
 
@@ -252,6 +261,8 @@ Scope {
                                 selectedTextColor: Theme.surface
                                 text: root.searchService.query
                                 focus: true
+                                Window.onActiveChanged: if (Window.active)
+                                    panel.focusSearchInput()
                                 onTextEdited: root.searchService.query = text
                                 onAccepted: if (!searchInput.inputMethodComposing)
                                     root.searchService.submit()
@@ -479,14 +490,6 @@ Scope {
                             }
                         }
                     }
-                }
-            }
-
-            Connections {
-                target: root.searchService
-                function onVisibleChanged(): void {
-                    if (root.searchService.visible)
-                        Qt.callLater(() => searchInput.forceActiveFocus());
                 }
             }
         }

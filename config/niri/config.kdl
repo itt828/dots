@@ -73,7 +73,6 @@ layer-rule {
     place-within-backdrop true
 }
 
-// Frosted glass shared by Ghostty and kalumiru's requested blur regions.
 blur {
     passes 3
     offset 4
@@ -84,7 +83,6 @@ blur {
 layer-rule {
     match namespace="^kalumiru:"
     background-effect {
-        // Blur the windows behind panels rather than only the wallpaper.
         xray false
     }
 }
@@ -99,13 +97,13 @@ window-rule {
 }
 
 window-rule {
-    match app-id="^chatgpt$" is-floating=true
-
-    shadow { off; }
-    border { off; }
-    focus-ring { off; }
+    match app-id=r#"^Zotero$"#
     draw-border-with-background false
+    default-column-width {
+        proportion 1.0
+    }
 }
+
 
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 animations {
@@ -115,9 +113,9 @@ window-rule {
     clip-to-geometry true
 }
 window-rule {
-    match app-id=r#"^org\.wezfurlong\.wezterm$"#
+    match app-id=r#"^net.thunderbird.Thunderbird$"#
     default-column-width {
-        proportion 0.5
+        proportion 1.0
     }
 }
 window-rule {
