@@ -1,13 +1,11 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Services.SystemTray
-import qs.ui.widgets
 import qs.ui.theme
 
 Flickable {
     id: root
 
-    required property var rootWindow
     required property int maximumWidth
     readonly property int itemCount: trayItems.count
 
@@ -19,6 +17,10 @@ Flickable {
     flickableDirection: Flickable.HorizontalFlick
     boundsBehavior: Flickable.StopAtBounds
     interactive: contentWidth > width
+
+    TrayMenu {
+        id: contextMenu
+    }
 
     Row {
         id: icons
@@ -33,11 +35,11 @@ Flickable {
             delegate: Rectangle {
                 id: tile
 
-                required property var modelData
+                required property SystemTrayItem modelData
                 width: 34
                 height: 36
                 radius: root.itemCount === 1 ? width / 2 : 8
-                color: area.containsMouse ? Theme.hover : "transparent"
+                color: area.containsMouse || (contextMenu.visible && contextMenu.trayItem === modelData) ? Theme.hover : "transparent"
 
                 Image {
                     anchors.centerIn: parent
@@ -56,12 +58,10 @@ Flickable {
                     cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     onClicked: mouse => {
-                        if (mouse.button === Qt.LeftButton) {
+                        if (mouse.button === Qt.LeftButton && !tile.modelData.onlyMenu)
                             tile.modelData.activate();
-                        } else {
-                            const position = mapToItem(null, mouse.x, mouse.y);
-                            tile.modelData.display(root.rootWindow, Math.floor(position.x), Math.floor(position.y));
-                        }
+                        else if (tile.modelData.hasMenu)
+                            contextMenu.openFor(tile, tile.modelData);
                     }
                 }
             }

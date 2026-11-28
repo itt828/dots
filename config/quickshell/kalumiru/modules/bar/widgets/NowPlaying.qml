@@ -15,8 +15,9 @@ Pill {
     signal trackActivated(string busName)
     readonly property bool playing: player?.playbackState === MprisPlaybackState.Playing
 
+    readonly property int horizontalPadding: 9
     readonly property bool presenting: mediaEnabled && player !== null && availableWidth >= 152
-    readonly property int fullWidth: Math.max(152, Math.min(316, availableWidth))
+    readonly property int fullWidth: Math.max(152, Math.min(324, availableWidth))
     readonly property string trackTitle: player?.trackTitle ?? ""
     readonly property string trackArtist: player?.trackArtist ?? ""
     readonly property url trackArt: player?.trackArtUrl ?? ""
@@ -98,7 +99,7 @@ Pill {
 
         RowLayout {
             anchors.centerIn: parent
-            width: root.fullWidth - 10
+            width: root.fullWidth - 2 * root.horizontalPadding
             height: parent.height
             spacing: 2
 

@@ -2,8 +2,8 @@ import qs.services
 import qs.ui.theme
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls as Controls
 import QtQuick.Controls.Fusion
-import Quickshell.Wayland
 import Quickshell.Services.Mpris
 import Quickshell.Services.UPower
 import qs.ui.widgets
@@ -123,23 +123,53 @@ Rectangle {
                 color: Theme.surface
                 focus: true
                 enabled: !root.context.unlockInProgress
+                // Qt disables input-method support for read-only fields. Keep it off
+                // on the lock surface and apply physical key presses directly.
+                readOnly: true
                 echoMode: TextInput.Password
-                inputMethodHints: Qt.ImhHiddenText | Qt.ImhSensitiveData | Qt.ImhNoPredictiveText
+                passwordMaskDelay: 0
+                Controls.ContextMenu.menu: null
 
                 placeholderText: "Password"
                 placeholderTextColor: "#88ffffff"
 
-                // Update the text in the context when the text in the box changes.
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                        event.accepted = true;
+                        root.context.tryUnlock(passwordBox.text);
+                        return;
+                    }
+
+                    let start = passwordBox.selectionStart;
+                    let end = passwordBox.selectionEnd;
+                    let replacement = "";
+                    const text = passwordBox.text;
+                    if (event.key === Qt.Key_Backspace || event.key === Qt.Key_Delete) {
+                        const surrogatePair = /[\uD800-\uDBFF][\uDC00-\uDFFF]/;
+                        if (start === end && event.key === Qt.Key_Backspace && start > 0)
+                            start -= surrogatePair.test(text.slice(Math.max(0, start - 2), start)) ? 2 : 1;
+                        else if (start === end && event.key === Qt.Key_Delete && end < text.length)
+                            end += surrogatePair.test(text.slice(end, end + 2)) ? 2 : 1;
+                    } else {
+                        const modifiers = event.modifiers;
+                        const controlShortcut = (modifiers & Qt.ControlModifier) && !(modifiers & Qt.AltModifier);
+                        if (controlShortcut || (modifiers & Qt.MetaModifier) || !event.text || /[\x00-\x1f\x7f-\x9f]/.test(event.text))
+                            return;
+                        replacement = event.text;
+                    }
+
+                    event.accepted = true;
+                    passwordBox.text = text.slice(0, start) + replacement + text.slice(end);
+                    passwordBox.cursorPosition = Math.min(start + replacement.length, passwordBox.length);
+                }
+
                 onTextChanged: root.context.currentText = this.text
 
-                // Try to unlock when enter is pressed.
-                onAccepted: root.context.tryUnlock(passwordBox.text)
-
-                // Update the text in the box to match the text in the context.
                 Connections {
                     target: root.context
                     function onCurrentTextChanged() {
-                        passwordBox.text = root.context.currentText;
+                        if (passwordBox.text !== root.context.currentText)
+                            passwordBox.text = root.context.currentText;
                     }
                 }
             }

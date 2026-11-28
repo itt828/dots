@@ -15,7 +15,7 @@ FloatingWindow {
     property int category: 0
 
     title: "kalumiru UI ギャラリー"
-    visible: true
+    visible: false
     color: Theme.bgPrimary
     implicitWidth: 800
     implicitHeight: 620

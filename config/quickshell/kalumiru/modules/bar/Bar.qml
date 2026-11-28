@@ -18,7 +18,7 @@ Scope {
 
         default property alias content: controls.data
         property bool circular: false
-        property int horizontalPadding: 4
+        property int horizontalPadding: 8
 
         implicitWidth: circular ? implicitHeight : controls.implicitWidth + 2 * horizontalPadding
 
@@ -41,8 +41,7 @@ Scope {
             required property var modelData
             readonly property bool expanded: width >= Theme.expandedWidth
             readonly property Region popupTriggers: Region {
-                regions: [searchPill.inputRegion, nowPlaying.inputRegion, clockPill.inputRegion,
-                    notificationPill.inputRegion, settingsPill.inputRegion, powerPill.inputRegion]
+                regions: [searchPill.inputRegion, nowPlaying.inputRegion, clockPill.inputRegion, notificationPill.inputRegion, settingsPill.inputRegion, powerPill.inputRegion]
             }
 
             screen: modelData
@@ -52,14 +51,54 @@ Scope {
             exclusiveZone: Theme.barHeight + Theme.barOuterMargin
             implicitHeight: Theme.barHeight + 12
             mask: Region {
-                regions: [barWindow.popupTriggers, workspacePill.inputRegion, titlePill.inputRegion,
-                    trayPill.inputRegion, recordingPill.inputRegion]
+                regions: [barWindow.popupTriggers, workspacePill.inputRegion, titlePill.inputRegion, trayPill.inputRegion, recordingPill.inputRegion]
             }
 
             anchors {
                 top: true
                 left: true
                 right: true
+            }
+
+            PopupWindow {
+                id: mediaMenu
+
+                grabFocus: true
+                color: "transparent"
+                implicitWidth: visibilityOption.implicitWidth + 8
+                implicitHeight: visibilityOption.implicitHeight + 8
+                anchor {
+                    edges: Edges.Bottom
+                    gravity: Edges.Bottom
+                    margins.bottom: -5
+                }
+
+                function openFor(pill: Item): void {
+                    anchor.item = pill;
+                    visible = true;
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: Theme.surface
+                    radius: Theme.radius
+                    border.color: Theme.borderPrimary
+                    border.width: 1
+
+                    QsButton {
+                        id: visibilityOption
+
+                        anchors.centerIn: parent
+                        focus: true
+                        text: SettingsService.barMedia ? "メディアを非表示" : "メディアを表示"
+                        variant: QsButton.Ghost
+                        Keys.onEscapePressed: mediaMenu.visible = false
+                        onClicked: {
+                            mediaMenu.visible = false;
+                            SettingsService.set("barMedia", !SettingsService.barMedia);
+                        }
+                    }
+                }
             }
 
             Item {
@@ -98,7 +137,7 @@ Scope {
                         id: workspacePill
 
                         circular: workspaces.displayEntries.length === 1 && !workspaces.displayEntries[0].is_focused
-                        horizontalPadding: 2
+                        horizontalPadding: 6
                         width: Math.max(0, Math.min(implicitWidth, barContent.leftRoom - searchPill.width - barContent.gap))
                         visible: workspaces.displayEntries.length > 0 && width >= (circular ? implicitHeight : 36)
 
@@ -117,7 +156,7 @@ Scope {
                     WidgetPill {
                         id: titlePill
 
-                        horizontalPadding: 12
+                        horizontalPadding: 16
                         width: Math.max(0, Math.min(implicitWidth, 160 + 2 * horizontalPadding, barContent.leftRoom - searchPill.width - barContent.gap - (workspacePill.visible ? workspacePill.width + barContent.gap : 0)))
                         visible: windowTitle.text !== "" && width > 2 * horizontalPadding
 
@@ -145,6 +184,11 @@ Scope {
                             MediaService.selectedBus = busName;
                             ControlCenterService.openPage(4, barWindow.modelData.name);
                         }
+
+                        TapHandler {
+                            acceptedButtons: Qt.RightButton
+                            onTapped: mediaMenu.openFor(nowPlaying)
+                        }
                     }
 
                     WidgetPill {
@@ -152,7 +196,13 @@ Scope {
 
                         BarUi.Clock {
                             radius: height / 2
+                            toolTip: "カレンダー · 右クリックでメディア設定"
                             onClicked: ControlCenterService.openPage(1, barWindow.modelData.name)
+                        }
+
+                        TapHandler {
+                            acceptedButtons: Qt.RightButton
+                            onTapped: mediaMenu.openFor(clockPill)
                         }
                     }
                 }
@@ -173,7 +223,6 @@ Scope {
                             id: tray
 
                             maximumWidth: Math.min(180, Math.floor(barContent.width * 0.18))
-                            rootWindow: barWindow
                         }
                     }
 
@@ -215,6 +264,9 @@ Scope {
                             volumeService: VolumeService
                             outputName: barWindow.modelData.name
                         }
+                        BarUi.Microphone {
+                            volumeService: VolumeService
+                        }
                         BarUi.Brightness {
                             visible: barWindow.expanded && BrightnessService.initialized
                             brightnessService: BrightnessService
@@ -225,15 +277,6 @@ Scope {
                             outputName: barWindow.modelData.name
                         }
                         BarUi.Battery {}
-                        QsButton {
-                            icon: Icons.settings
-                            toolTip: "コントロールセンター"
-                            variant: QsButton.Ghost
-                            radius: height / 2
-                            highlighted: ControlCenterService.visible
-                            highlightColor: Theme.mustard200
-                            onClicked: ControlCenterService.toggle(barWindow.modelData.name)
-                        }
                     }
 
                     WidgetPill {

@@ -11,5 +11,12 @@ palette = "kalumiru" # kalumiru | catppuccin | icon-v4
 mode = "light" # light | dark
 
 [search.shortcuts]
-apps = ["org.mozilla.firefox.desktop", "discord.desktop"]
-tools = []
+# Use desktop entry IDs, including the .desktop suffix.
+apps = [
+    "org.mozilla.firefox.desktop",
+    "discord.desktop",
+    "net.thunderbird.Thunderbird.desktop",
+    "logseq.desktop",
+    "chatgpt.desktop",
+]
+tools = ["lens"]
